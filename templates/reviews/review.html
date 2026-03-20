@@ -37,7 +37,7 @@
             {% with image=product.primary_image %}
                 {% image_thumbnail image.original "x180" upscale=False as thumb %}
                 <a href="{{ product.get_absolute_url }}">
-                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" class="w-28 h-28 object-cover" />
+                    <img src="{{ thumb.url }}" alt="{{ product.get_title }}" class="w-28 h-28 object-cover" loading="lazy" />
                 </a>
             {% endwith %}
         </div>

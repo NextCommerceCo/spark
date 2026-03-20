@@ -40,7 +40,8 @@
             <div class="max-w-4xl mx-auto mb-10">
                 <img src="{{ thumb.url }}"
                      alt="{{ post.title }}"
-                     class="w-full object-cover" />
+                     class="w-full object-cover"
+                     fetchpriority="high" />
             </div>
         {% endif %}
     {% endwith %}

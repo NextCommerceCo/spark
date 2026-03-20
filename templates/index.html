@@ -15,7 +15,8 @@
     <section class="relative overflow-hidden">
         <img src="{{ settings.homepage_hero_image }}"
              alt="{{ settings.homepage_hero_alt|default:store.name }}"
-             class="w-full h-[50vh] md:h-[70vh] object-cover" />
+             class="w-full h-[50vh] md:h-[70vh] object-cover"
+             fetchpriority="high" />
         {% if settings.homepage_hero_link %}
             <a href="{{ settings.homepage_hero_link }}"
                class="absolute left-0 bottom-0 right-0 flex items-end p-8 md:p-12" style="top: 0;">

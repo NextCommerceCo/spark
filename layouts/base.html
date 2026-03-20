@@ -77,6 +77,27 @@
         </style>
     {% endblock styles %}
 
+    {# Contrast auto-detection — must run before first paint to avoid flash #}
+    <script>
+    (function(){
+        var c = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+        if (c && c.charAt(0) === '#') {
+            var hex = c.replace('#','');
+            if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+            var r = parseInt(hex.substr(0,2),16)/255;
+            var g = parseInt(hex.substr(2,2),16)/255;
+            var b = parseInt(hex.substr(4,2),16)/255;
+            // Relative luminance (WCAG)
+            r = r <= 0.03928 ? r/12.92 : Math.pow((r+0.055)/1.055, 2.4);
+            g = g <= 0.03928 ? g/12.92 : Math.pow((g+0.055)/1.055, 2.4);
+            b = b <= 0.03928 ? b/12.92 : Math.pow((b+0.055)/1.055, 2.4);
+            if (0.2126*r + 0.7152*g + 0.0722*b > 0.6) {
+                document.documentElement.setAttribute('data-light-primary','');
+            }
+        }
+    })();
+    </script>
+
     {% block extrastyles %}{% endblock extrastyles %}
     {% block extrahead %}{% endblock extrahead %}
     {% block tracking %}{% endblock tracking %}
@@ -126,7 +147,7 @@
     {# Modals #}
     {% block modals %}{% endblock modals %}
 
-    {# Core JS #}
+    {# Core JS — jQuery required by platform's {% core_js %} (jquery-validate, cart, side_cart) #}
     {% block scripts %}
         <script type="text/javascript" src="{{ 'js/jquery-3.6.0.min.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
@@ -142,6 +163,70 @@
     {% core_js %}
 
     {% app_hook 'global_footer' %}
+
+    {# Delight: skeleton dismiss + keyboard nav + cart badge #}
+    <script>
+    (function(){
+        // Skeleton: hide once product grid is rendered
+        var skel = document.getElementById('product-skeleton');
+        if (skel) {
+            var grid = document.getElementById('product-grid');
+            if (grid && grid.children.length > 0) {
+                skel.style.display = 'none';
+            } else if (!grid) {
+                skel.style.display = 'none';
+            }
+        }
+
+        // Keyboard nav: product grid — Enter on focused card navigates to PDP
+        document.querySelectorAll('.product-card').forEach(function(card) {
+            if (!card.getAttribute('tabindex')) card.setAttribute('tabindex', '0');
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+        });
+
+        // Keyboard nav: Escape closes mobile nav and side cart
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var mobileNav = document.getElementById('mobile-nav');
+                if (mobileNav && !mobileNav.classList.contains('hidden')) {
+                    mobileNav.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    var toggle = document.querySelector('[data-toggle="mobile-nav"]');
+                    if (toggle) toggle.focus();
+                    return;
+                }
+                var sideCart = document.querySelector('.sidecart');
+                if (sideCart && document.body.classList.contains('sidecart-open')) {
+                    document.body.classList.remove('sidecart-open');
+                    var cartIcon = document.getElementById('cart-icon');
+                    if (cartIcon) cartIcon.focus();
+                }
+            }
+        });
+
+        // Cart badge: listen for spark:cart:updated events
+        document.addEventListener('spark:cart:updated', function(e) {
+            var badge = document.getElementById('cart-badge');
+            if (!badge) return;
+            var count = e.detail && e.detail.count;
+            if (count && count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = '';
+                badge.removeAttribute('data-animate');
+                // Force reflow for animation restart
+                void badge.offsetWidth;
+                badge.setAttribute('data-animate', '');
+            } else {
+                badge.style.display = 'none';
+            }
+        });
+    })();
+    </script>
 
 </body>
 </html>

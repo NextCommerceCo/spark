@@ -69,9 +69,11 @@
                 {# Cart #}
                 <a href="#cart-modal"
                    data-toggle="side-cart"
-                   class="p-2 hover:opacity-80"
-                   aria-label="{% t 'navigation.cart' %}">
+                   class="p-2 hover:opacity-80 relative"
+                   aria-label="{% t 'navigation.cart' %}"
+                   id="cart-icon">
                     {% include 'partials/icons/cart.html' %}
+                    <span class="cart-badge" id="cart-badge" style="display: none;" aria-live="polite"></span>
                 </a>
             </div>
         </nav>

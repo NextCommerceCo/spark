@@ -56,7 +56,7 @@
                                     {% if image.original %}
                                         {% image_thumbnail image.original "100x100" crop="center" upscale=False as thumb %}
                                         <a href="{{ product.get_absolute_url }}" class="flex-shrink-0">
-                                            <img src="{{ thumb.url }}" alt="{{ product.get_title }}" width="100" height="100" class="bg-slate-50" />
+                                            <img src="{{ thumb.url }}" alt="{{ product.get_title }}" width="100" height="100" class="bg-slate-50" loading="lazy" />
                                         </a>
                                     {% endif %}
                                 {% endwith %}

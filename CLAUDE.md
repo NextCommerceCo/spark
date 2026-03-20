@@ -13,7 +13,7 @@ Spark is a modern starter theme for NEXT Commerce storefronts. Tailwind CSS + va
 - **Web Components:** `<spark-add-to-cart>`, `<spark-quantity>` — progressive enhancement via `SparkCartClient` GraphQL client
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
-- **jQuery:** Still loaded — platform's `{% core_js %}` requires it. Goal is to remove eventually.
+- **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS.
 - **Design System:** See [DESIGN.md](DESIGN.md) for all visual decisions.
 
 ## CSS Pipeline
@@ -32,9 +32,12 @@ css/input.css → [tailwindcss CLI] → assets/main.css → [sass-compat.py] →
 
 ## Development
 ```bash
-make dev        # Run Tailwind watcher + ntk watcher in parallel
-make css        # Compile Tailwind once
-make build      # Compile + minify for production
+ntk watch       # Watches files + auto-compiles Tailwind + runs sass-compat + pushes
+ntk tailwind    # One-shot: compile Tailwind + sass-compat + push CSS
+ntk tailwind --minify  # Production build: compile minified + push
+make dev        # Legacy: Run Tailwind watcher + ntk watcher in parallel
+make css        # Legacy: Compile Tailwind once
+make build      # Legacy: Compile + minify for production
 ```
 
 ## CRITICAL: Tailwind + DTL
@@ -165,7 +168,6 @@ Shadow DOM quantity stepper: [-] | input | [+]
 - **Checkout template** (`checkout/checkout.html`) — requires deeper platform understanding
 - **Expanded settings** — cart, checkout, product listing, buttons
 - **Dark mode** — Tailwind makes it trivial, not needed for v1
-- **Remove jQuery** — blocked by platform's `{% core_js %}`
 
 ## Push Convention
 Only push changed files: `ntk push templates/index.html`

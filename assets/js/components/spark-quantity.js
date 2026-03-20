@@ -89,6 +89,16 @@
         connectedCallback() {
             this._updateFromAttributes();
             this._bindEvents();
+
+            // Create a hidden input in light DOM for form submission
+            var name = this.getAttribute('name');
+            if (name) {
+                this._hidden = document.createElement('input');
+                this._hidden.type = 'hidden';
+                this._hidden.name = name;
+                this._hidden.value = this._value;
+                this.appendChild(this._hidden);
+            }
         }
 
         attributeChangedCallback() {
@@ -118,6 +128,7 @@
             this._input.value = clamped;
             this._input.setAttribute('aria-valuenow', clamped);
             this._updateButtons(clamped);
+            if (this._hidden) this._hidden.value = clamped;
             this.dispatchEvent(new CustomEvent('change', {
                 detail: { value: clamped },
                 bubbles: true,

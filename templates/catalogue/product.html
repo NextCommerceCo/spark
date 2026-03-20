@@ -158,6 +158,11 @@
                         {% for field in cart_form %}
                             {% if field.is_hidden %}
                                 {{ field }}
+                            {% elif field.name == 'quantity' %}
+                                <div class="flex items-center gap-4 mb-4">
+                                    <label for="{{ field.id_for_label }}" class="text-sm text-slate-600">{{ field.label }}</label>
+                                    <spark-quantity name="quantity" value="1" min="1" max="{{ max_cart_quantity_per_line|default:15 }}"></spark-quantity>
+                                </div>
                             {% else %}
                                 <div class="flex items-center gap-4 mb-4">
                                     <label for="{{ field.id_for_label }}" class="text-sm text-slate-600">{{ field.label }}</label>
@@ -181,9 +186,9 @@
 
                 {# Description #}
                 {% if product.get_description %}
-                    <div class="mt-8 pt-6 border-t border-slate-200">
-                        <h2 class="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-3">{% t "store.catalogue.description" %}</h2>
-                        <div class="text-sm text-slate-600 leading-relaxed">
+                    <div class="mt-10 pt-6 border-t border-slate-200">
+                        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">{% t "store.catalogue.description" %}</h2>
+                        <div class="text-base text-slate-600 leading-relaxed">
                             {{ product.get_description|safe }}
                         </div>
                     </div>
@@ -216,11 +221,15 @@
 <section id="reviews" class="border-t border-slate-200">
     <div class="container py-12 md:py-16">
         {% if product.num_approved_reviews == 0 %}
-            <div class="text-center py-4">
-                <p class="text-slate-500 mb-4">{% t "store.catalogue.no_reviews" %}</p>
+            <div class="text-center py-6">
+                <svg class="mx-auto mb-3 text-slate-300" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+                <p class="text-slate-600 font-medium mb-1">{% t "store.catalogue.no_reviews" %}</p>
+                <p class="text-sm text-slate-400 mb-4">Be the first to share your experience</p>
                 {% if product|is_review_permitted:user %}
                     <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview"
-                       class="btn btn-secondary">
+                       class="btn btn-primary">
                         {% t "store.catalogue.write_a_review" %}
                     </a>
                 {% endif %}
@@ -288,6 +297,23 @@
 </section>
 {% endif %}
 
+{# Sticky mobile ATC bar — appears when main ATC button scrolls out of view #}
+{% if session.availability.is_available_to_buy %}
+<div id="sticky-atc" class="sticky-atc" aria-hidden="true">
+    <div class="sticky-atc-inner">
+        <div class="sticky-atc-info">
+            <span class="sticky-atc-title">{{ product.get_title }}</span>
+            {% if session.price.exists %}
+                <span class="sticky-atc-price">{{ session.price.price|currency:session.price.currency }}</span>
+            {% endif %}
+        </div>
+        <button type="button" class="btn btn-primary sticky-atc-btn" id="sticky-atc-btn">
+            {% t "store.catalogue.add_to_cart" %}
+        </button>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extrascripts %}
@@ -344,6 +370,34 @@
                     }
                 } catch(e) {}
             });
+        });
+    }
+})();
+</script>
+
+<script>
+// Sticky mobile ATC bar
+(function() {
+    var mainBtn = document.getElementById('add-to-cart-btn');
+    var stickyBar = document.getElementById('sticky-atc');
+    var stickyBtn = document.getElementById('sticky-atc-btn');
+    if (!mainBtn || !stickyBar) return;
+
+    var showing = false;
+    function checkScroll() {
+        var rect = mainBtn.getBoundingClientRect();
+        var shouldShow = rect.bottom < 0;
+        if (shouldShow !== showing) {
+            showing = shouldShow;
+            stickyBar.classList.toggle('sticky-atc-visible', shouldShow);
+            stickyBar.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        }
+    }
+    window.addEventListener('scroll', checkScroll, { passive: true });
+
+    if (stickyBtn) {
+        stickyBtn.addEventListener('click', function() {
+            mainBtn.click();
         });
     }
 })();

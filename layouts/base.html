@@ -147,11 +147,14 @@
     {# Modals #}
     {% block modals %}{% endblock modals %}
 
-    {# Core JS — jQuery required by platform's {% core_js %} (jquery-validate, cart, side_cart) #}
+    {# Theme + vendor JS #}
     {% block scripts %}
         <script type="text/javascript" src="{{ 'js/jquery-3.6.0.min.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
     {% endblock %}
+
+    {# Platform core JS (validation, cart helpers — depends on jQuery above) #}
+    {% core_js %}
 
     {# Spark gallery + Web Components #}
     <script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
@@ -162,11 +165,8 @@
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
 
-    {# Side cart #}
+    {# Side cart (depends on platform's cart.js + side_cart.js from core_js) #}
     {% include 'partials/side_cart.html' %}
-
-    {# Platform core JS #}
-    {% core_js %}
 
     {% app_hook 'global_footer' %}
 

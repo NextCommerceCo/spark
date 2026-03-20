@@ -583,18 +583,23 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════
-       Platform Side Cart — Legacy Compatibility
+       Platform Side Cart — Legacy Compatibility (Isolated)
        ═══════════════════════════════════════════════════════════════════
        DO NOT REMOVE. Platform's side_cart.js renders into these selectors.
        These styles are required by the platform JS loaded in partials/side_cart.html.
        Modifying class names will break the side cart.
 
-       Context: ~535 lines copied from Intro Bootstrap. The platform's side_cart.js
-       expects these CSS classes to exist. When/if Spark builds a full Web Component
-       replacement (<spark-side-cart> with Shadow DOM), this entire block can be removed.
-       See TODOS.md: "Revisit side cart architecture" (P3).
+       Originally copied from Intro Bootstrap. Cleaned up (2026-03-20):
+       - Removed Bootstrap scrollbar measurement hack
+       - Replaced Bootstrap grays (#dee2e6, #adb5bd, etc.) with Spark slate palette
+       - Added .form-control styling for platform-rendered <select> elements
+       - Unified border colors to #E2E8F0 (slate-200)
+       - Close button: neutral slate instead of red, hover transition
+       - Focus states use --primary-color instead of Bootstrap blue
+       - Cart item borders: slate-200 instead of black
 
-       ENG REVIEW DECISION (2026-03-20): Isolate, don't remove.
+       When Spark builds a full <spark-side-cart> Web Component with Shadow DOM,
+       this entire block (~450 lines) can be removed.
        ═══════════════════════════════════════════════════════════════════ */
 
     .sidecart-open {
@@ -625,25 +630,25 @@
     }
 
     .sidecart .cart-btn {
-        background-color: #dee2e6;
+        background-color: #E2E8F0;
         border: 1px solid transparent;
-        color: #363636;
+        color: #1E293B;
         cursor: pointer;
         justify-content: center;
         padding: 0.8rem 1rem;
         text-align: center;
         white-space: nowrap;
         user-select: none;
-        transition: all 0.2s ease;
+        transition: background-color 150ms ease-out;
     }
 
     .sidecart .cart-btn:hover {
         border: 1px solid transparent;
-        background-color: #adb5bd;
+        background-color: #CBD5E1;
     }
 
     .sidecart .cart-btn:focus:not(:active) {
-        box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+        box-shadow: 0 0 0 2px var(--primary-color);
     }
 
     .sidecart .text-right {
@@ -660,7 +665,7 @@
     }
 
     .sidecart a {
-        color: #475569;
+        color: #1E293B;
     }
 
     .sidecart a:hover {
@@ -678,10 +683,14 @@
 
     .sidecart button.close {
         font-weight: normal;
-        color: #EF4444;
+        color: #475569;
         line-height: 0.5;
-        text-shadow: 0 1px 0 #fff;
         float: right;
+        transition: color 150ms ease-out;
+    }
+
+    .sidecart button.close:hover {
+        color: #1E293B;
     }
 
     .sidecart-dialog {
@@ -719,10 +728,14 @@
     }
 
     .sidecart-header button.close {
-        font-size: 2.35em;
+        font-size: 2rem;
         position: absolute;
-        right: 20px;
-        color: #000;
+        right: 1rem;
+        color: #475569;
+    }
+
+    .sidecart-header button.close:hover {
+        color: #1E293B;
     }
 
     .sidecart-title {
@@ -747,7 +760,7 @@
         display: flex;
         bottom: 0;
         width: auto;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid #E2E8F0;
         background-color: #fff;
     }
 
@@ -774,12 +787,24 @@
         color: white !important;
     }
 
-    .sidecart-scrollbar-measure {
-        position: absolute;
-        top: -9999px;
-        width: 50px;
-        height: 50px;
-        overflow: scroll;
+    /* Platform select styling (side_cart.js renders <select class="form-control">) */
+    .sidecart .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 2rem 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: #1E293B;
+        background-color: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 0.25rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 14px 10px;
     }
 
     .cart-items {
@@ -791,13 +816,13 @@
         flex-flow: row;
         justify-content: flex-start;
         box-shadow: none;
-        border-bottom: 1px solid #000;
+        border-bottom: 1px solid #E2E8F0;
         padding: 0.75rem;
         margin: 0 0 0.75rem 0;
     }
 
     .cart-item:first-child {
-        border-top: 1px solid #000;
+        border-top: 1px solid #E2E8F0;
     }
 
     .cart-item img {
@@ -845,26 +870,7 @@
         margin-right: 0;
     }
 
-    .cart-item .item-description .basket-action select {
-        display: block;
-        width: 100%;
-        padding: 0.25rem 2.25rem 0.25rem 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #212529;
-        background-color: #fff;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 16px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-    }
+    /* Select styling now handled by .sidecart .form-control above */
 
     .cart-item .item-description label {
         display: inline-block;
@@ -891,7 +897,7 @@
     table.sidecart-table td {
         padding: 0.75rem;
         vertical-align: top;
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid #E2E8F0;
     }
 
     table.sidecart-table tr:first-child td {
@@ -950,7 +956,7 @@
     .coupon-form .form-input-group input {
         flex: 1 1 75%;
         background-color: #fff;
-        border: 1px solid #e9ecef;
+        border: 1px solid #E2E8F0;
         padding: 0.8rem 1rem;
     }
 

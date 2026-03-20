@@ -6,7 +6,25 @@
             {# Store branding + social #}
             <div>
                 <a href="{{ homepage_url }}" class="block mb-4">
-                    {% include 'partials/store_logo.html' %}
+                    {% if store.branding.icon %}
+                        {% with image=store.branding.icon %}
+                            {% image_thumbnail image "40x" upscale=False as thumb_footer_icon %}
+                            {% image_thumbnail image "80x" upscale=False as thumb_footer_icon_2x %}
+                            <img src="{{ thumb_footer_icon.url }}"
+                                 alt="{{ store.name }}"
+                                 class="h-8 w-auto"
+                                 srcset="{{ thumb_footer_icon.url }}, {{ thumb_footer_icon_2x.url }} 2x" />
+                        {% endwith %}
+                    {% elif store.branding.logo %}
+                        {% with image=store.branding.logo %}
+                            {% image_thumbnail image "150x" upscale=False as thumb_footer_logo %}
+                            <img src="{{ thumb_footer_logo.url }}"
+                                 alt="{{ store.name }}"
+                                 class="h-8 w-auto" />
+                        {% endwith %}
+                    {% else %}
+                        <span class="text-sm font-semibold uppercase tracking-wider" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">{{ store.name }}</span>
+                    {% endif %}
                 </a>
                 {% if store.tagline %}
                     <p class="text-sm leading-relaxed mb-4" style="opacity: 0.7;">{{ store.tagline }}</p>

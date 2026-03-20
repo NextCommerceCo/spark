@@ -135,7 +135,7 @@
                             <label class="text-sm font-medium text-slate-700 mb-2 block">{{ field.label }}</label>
                             <div class="flex flex-wrap gap-2">
                                 {% for choice in field.field.choices %}
-                                    <label class="flex items-center gap-2 px-4 py-2 border border-slate-200 cursor-pointer hover:border-slate-400 transition-colors text-sm text-slate-700">
+                                    <label class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 cursor-pointer hover:border-slate-400 transition-colors text-sm text-slate-700 min-h-[44px]">
                                         <input type="radio"
                                                name="{{ field.html_name }}"
                                                value="{{ choice.0 }}"
@@ -181,7 +181,8 @@
 
                 {# Description #}
                 {% if product.get_description %}
-                    <div class="mt-8 pt-8 border-t border-slate-200">
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                        <h2 class="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-3">{% t "store.catalogue.description" %}</h2>
                         <div class="text-sm text-slate-600 leading-relaxed">
                             {{ product.get_description|safe }}
                         </div>
@@ -215,7 +216,7 @@
 <section id="reviews" class="border-t border-slate-200">
     <div class="container py-12 md:py-16">
         {% if product.num_approved_reviews == 0 %}
-            <div class="text-center py-8">
+            <div class="text-center py-4">
                 <p class="text-slate-500 mb-4">{% t "store.catalogue.no_reviews" %}</p>
                 {% if product|is_review_permitted:user %}
                     <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview"

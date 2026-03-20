@@ -277,15 +277,16 @@
         }
     }
 
-    /* Main image container — square aspect, constrained */
+    /* Main image container */
     .spark-gallery-main {
         position: relative;
         overflow: hidden;
         background-color: #F8FAFC;
         aspect-ratio: 1;
+        max-height: 560px;
     }
 
-    /* Hero image — contained within the square, centered */
+    /* Hero image — contained, centered */
     .spark-gallery-hero {
         width: 100%;
         height: 100%;
@@ -311,8 +312,8 @@
 
     .spark-gallery-thumb {
         flex-shrink: 0;
-        width: 64px;
-        height: 64px;
+        width: 72px;
+        height: 72px;
         border: 2px solid transparent;
         cursor: pointer;
         padding: 0;
@@ -368,6 +369,14 @@
     .spark-gallery:focus-within .spark-gallery-prev,
     .spark-gallery:focus-within .spark-gallery-next {
         opacity: 1;
+    }
+
+    /* Always show arrows on touch devices (no hover capability) */
+    @media (hover: none) {
+        .spark-gallery-prev,
+        .spark-gallery-next {
+            opacity: 0.7;
+        }
     }
 
     /* ─── Search Overlay ─── */

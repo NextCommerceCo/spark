@@ -195,7 +195,8 @@
             });
         });
 
-        // Keyboard nav: Escape closes mobile nav and side cart
+        // Keyboard nav: Escape closes mobile nav
+        // (Side cart Escape handling is in side_cart.html via SparkSideCart)
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 var mobileNav = document.getElementById('mobile-nav');
@@ -204,32 +205,29 @@
                     document.body.classList.remove('overflow-hidden');
                     var toggle = document.querySelector('[data-toggle="mobile-nav"]');
                     if (toggle) toggle.focus();
-                    return;
-                }
-                var sideCart = document.querySelector('.sidecart');
-                if (sideCart && document.body.classList.contains('sidecart-open')) {
-                    document.body.classList.remove('sidecart-open');
-                    var cartIcon = document.getElementById('cart-icon');
-                    if (cartIcon) cartIcon.focus();
                 }
             }
         });
 
-        // Cart badge: listen for spark:cart:updated events
-        document.addEventListener('spark:cart:updated', function(e) {
+        // Cart badge: listen for cart events
+        function updateCartBadge(count) {
             var badge = document.getElementById('cart-badge');
             if (!badge) return;
-            var count = e.detail && e.detail.count;
             if (count && count > 0) {
                 badge.textContent = count > 99 ? '99+' : count;
                 badge.style.display = '';
                 badge.removeAttribute('data-animate');
-                // Force reflow for animation restart
                 void badge.offsetWidth;
                 badge.setAttribute('data-animate', '');
             } else {
                 badge.style.display = 'none';
             }
+        }
+        document.addEventListener('spark:cart:updated', function(e) {
+            updateCartBadge(e.detail && e.detail.count);
+        });
+        document.addEventListener('spark:cart:added', function(e) {
+            updateCartBadge(e.detail && e.detail.count);
         });
     })();
     </script>

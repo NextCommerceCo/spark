@@ -54,85 +54,83 @@
     };
     sidecart.init(sidecart_options);
 
-    // Side cart open/close helpers
-    function sparkOpenSideCart() {
+    // Namespaced side cart API
+    // Usage: SparkSideCart.open(), .close(), .toggle(), .isOpen
+    window.SparkSideCart = (function() {
         var modal = document.getElementById('cart-modal');
-        if (!modal) return;
-        if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
-            sidecart.basket.reloadBasketData();
+
+        function refreshCart() {
+            if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
+                sidecart.basket.reloadBasketData();
+            }
         }
-        modal.classList.add('show');
-        document.body.classList.add('sidecart-open');
-    }
 
-    function sparkCloseSideCart() {
-        var modal = document.getElementById('cart-modal');
-        if (!modal) return;
-        modal.classList.remove('show');
-        document.body.classList.remove('sidecart-open');
-    }
+        function open() {
+            if (!modal) return;
+            refreshCart();
+            modal.classList.add('show');
+            document.body.classList.add('sidecart-open');
+            // Trap focus inside cart
+            var closeBtn = modal.querySelector('[data-dismiss="side-cart"]');
+            if (closeBtn) closeBtn.focus();
+        }
 
-    function sparkIsSideCartOpen() {
-        var modal = document.getElementById('cart-modal');
-        return modal && modal.classList.contains('show');
-    }
+        function close() {
+            if (!modal) return;
+            modal.classList.remove('show');
+            document.body.classList.remove('sidecart-open');
+            // Return focus to cart icon
+            var cartIcon = document.getElementById('cart-icon');
+            if (cartIcon) cartIcon.focus();
+        }
+
+        function isOpen() {
+            return modal && modal.classList.contains('show');
+        }
+
+        function toggle() {
+            if (isOpen()) { close(); } else { open(); }
+        }
+
+        return { open: open, close: close, toggle: toggle, isOpen: isOpen };
+    })();
 
     // Handle data-dismiss="side-cart" clicks (platform renders this, expects Bootstrap JS)
     document.addEventListener('click', function(e) {
         var btn = e.target.closest('[data-dismiss="side-cart"]');
-        if (btn) sparkCloseSideCart();
+        if (btn) SparkSideCart.close();
     });
 
-    // Also close on Escape key
+    // Close on Escape key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && sparkIsSideCartOpen()) sparkCloseSideCart();
+        if (e.key === 'Escape' && SparkSideCart.isOpen()) SparkSideCart.close();
     });
 
-    // Also close on backdrop click (click on .sidecart outside .sidecart-dialog)
-    var cartModal = document.getElementById('cart-modal');
-    if (cartModal) {
-        cartModal.addEventListener('click', function(e) {
-            if (e.target === cartModal) sparkCloseSideCart();
-        });
-    }
-
-    // Spark integration: when Web Components add to cart via GraphQL,
-    // refresh the platform side cart and optionally open it.
-    var sparkSidecartOpenOnAdd = true;
-    window.sparkSidecartOpenOnAdd = sparkSidecartOpenOnAdd;
-
-    // Watch the add-to-cart button for success state change.
-    // This is more reliable than CustomEvents when third-party scripts
-    // modify addEventListener or fetch.
+    // Close on backdrop click (click on .sidecart outside .sidecart-dialog)
     (function() {
-        var btn = document.getElementById('add-to-cart-btn');
-        if (!btn) return;
-
-        var _scTriggered = false;
-        var observer = new MutationObserver(function() {
-            // Detect success state by checking button text for "Added"
-            var text = btn.textContent || '';
-            if (!_scTriggered && text.indexOf('Added') !== -1) {
-                _scTriggered = true;
-                if (sparkSidecartOpenOnAdd) {
-                    sparkOpenSideCart();
-                } else if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
-                    sidecart.basket.reloadBasketData();
-                }
-                // Reset flag after success duration
-                setTimeout(function() { _scTriggered = false; }, 3000);
-            }
-        });
-
-        observer.observe(btn, { childList: true, subtree: true });
+        var cartModal = document.getElementById('cart-modal');
+        if (cartModal) {
+            cartModal.addEventListener('click', function(e) {
+                if (e.target === cartModal) SparkSideCart.close();
+            });
+        }
     })();
 
-    // Listen for spark:cart:toggle event (from header cart icon or other sources)
-    document.addEventListener('spark:cart:toggle', function() {
-        if (sparkIsSideCartOpen()) {
-            sparkCloseSideCart();
-        } else {
-            sparkOpenSideCart();
+    // Listen for spark:cart:added event (from <spark-add-to-cart> Web Component)
+    document.addEventListener('spark:cart:added', function(e) {
+        var detail = e.detail || {};
+        // Always refresh cart data
+        if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
+            sidecart.basket.reloadBasketData();
         }
+        // Open side cart unless explicitly disabled
+        if (detail.openSideCart !== false) {
+            SparkSideCart.open();
+        }
+    });
+
+    // Listen for spark:cart:toggle event (from header cart icon)
+    document.addEventListener('spark:cart:toggle', function() {
+        SparkSideCart.toggle();
     });
 </script>

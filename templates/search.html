@@ -1,0 +1,61 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}"{{ query }}" | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400">
+            <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
+            <li>/</li>
+            <li class="text-slate-600">{% t "store.search.products_matching" with q=query %}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-8 md:py-12">
+    {% if page.object_list %}
+        <div class="product-grid">
+            {% for result in page.object_list %}
+                {% purchase_info_for_product request result.object as session %}
+                {% if session.availability.is_available_to_buy %}
+                <a href="{{ result.object.get_absolute_url }}" class="product-card group">
+                    {% with image=result.object.primary_image %}
+                        {% if image.original %}
+                            {% image_thumbnail image.original "400x400" crop="center" as thumb %}
+                            <img src="{{ thumb.url }}" alt="{{ result.object.get_title }}" width="400" height="400" loading="lazy" />
+                        {% else %}
+                            <div class="aspect-square bg-slate-100 flex items-center justify-center">
+                                <span class="text-slate-300 text-sm">{% t 'product.no_image' %}</span>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="product-title text-slate-800 group-hover:text-slate-600">{{ result.object.get_title }}</div>
+                    <div class="product-price">
+                        {% if session.price.exists %}
+                            {{ session.price.price|currency:session.price.currency }}
+                            {% if session.price.price_retail > session.price.price %}
+                                <span class="text-slate-400 text-xs line-through ml-1">
+                                    {{ session.price.price_retail|currency:session.price.currency }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% include "partials/pagination.html" with page_obj=page %}
+    {% else %}
+        <div class="py-16 text-center">
+            <h2 class="text-lg text-slate-600 mb-2">{% t "store.search.search_not_found" %}</h2>
+            {% if suggestion %}
+                {% url 'search:search' as search_url %}
+                <p class="text-sm text-slate-500">{% t "store.search.suggestion" with link=search_url %}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

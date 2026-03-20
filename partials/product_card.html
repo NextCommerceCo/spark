@@ -1,0 +1,32 @@
+{# Spark Theme — Product Card (reusable in grids) #}
+{# Usage: {% include 'partials/product_card.html' with product=product %} #}
+{% purchase_info_for_product request product as session %}
+{% if session.availability.is_available_to_buy %}
+<a href="{{ product.get_absolute_url }}" class="product-card group">
+    {% with image=product.primary_image %}
+        {% if image.original %}
+            {% image_thumbnail image.original "400x400" crop="center" as thumb %}
+            <img src="{{ thumb.url }}"
+                 alt="{{ product.get_title }}"
+                 width="400"
+                 height="400"
+                 loading="lazy" />
+        {% else %}
+            <div class="aspect-square bg-slate-100 flex items-center justify-center">
+                <span class="text-slate-300 text-sm">{% t 'product.no_image' %}</span>
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="product-title text-slate-800 group-hover:text-slate-600">{{ product.get_title }}</div>
+    <div class="product-price">
+        {% if session.price.exists %}
+            {{ session.price.price|currency:session.price.currency }}
+            {% if session.price.price_retail > session.price.price %}
+                <span class="text-slate-400 text-xs line-through ml-1">
+                    {{ session.price.price_retail|currency:session.price.currency }}
+                </span>
+            {% endif %}
+        {% endif %}
+    </div>
+</a>
+{% endif %}

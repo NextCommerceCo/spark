@@ -1,0 +1,24 @@
+# Tailwind output (generated from css/input.css)
+assets/main.css
+
+# Tailwind CLI binary (platform-specific, downloaded separately)
+tailwindcss
+
+# ntk config (contains API keys and store-specific settings)
+config.yml
+
+# Tool/session state
+.gstack/
+.claude/
+.preview/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

@@ -1,0 +1,66 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ store.name }} - {{ store.tagline }}{% endblock %}
+
+{% block content_wrapper %}
+{% if settings.account_only %}
+    {% include "partials/account_only.html" %}
+{% else %}
+
+{# Homepage — Product-led, no generic hero banners #}
+<main>
+
+{# Featured image / hero — full-bleed product or category image #}
+{% if settings.homepage_hero_image %}
+    <section class="relative overflow-hidden">
+        <img src="{{ settings.homepage_hero_image }}"
+             alt="{{ settings.homepage_hero_alt|default:store.name }}"
+             class="w-full h-[50vh] md:h-[70vh] object-cover" />
+        {% if settings.homepage_hero_link %}
+            <a href="{{ settings.homepage_hero_link }}"
+               class="absolute left-0 bottom-0 right-0 flex items-end p-8 md:p-12" style="top: 0;">
+                <span class="btn btn-primary">{{ settings.homepage_hero_cta|default:"Shop now" }}</span>
+            </a>
+        {% endif %}
+    </section>
+{% endif %}
+
+{# Featured products #}
+{% if settings.featured_products|length > 0 %}
+<section class="container py-12 md:py-16">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.featured_products' %}</h2>
+    <div class="product-grid">
+        {% for product in settings.featured_products %}
+            {% include 'partials/product_card.html' with product=product %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{# Categories #}
+{% if settings.featured_categories|length > 0 %}
+<section class="container py-12 md:py-16">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.categories' %}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for category in settings.featured_categories %}
+            <a href="{{ category.get_absolute_url }}" class="relative group overflow-hidden">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}"
+                         alt="{{ category.name }}"
+                         class="w-full h-48 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                         loading="lazy" />
+                {% else %}
+                    <div class="w-full h-48 md:h-64 bg-slate-100"></div>
+                {% endif %}
+                <div class="absolute inset-0 bg-black/20 flex items-end p-6">
+                    <h3 class="text-lg font-semibold text-white">{{ category.name }}</h3>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+</main>
+{% endif %}
+{% endblock %}

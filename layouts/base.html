@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+
+<head>
+    <title>{% block title %}{{ store.get_meta_title }} - {{ store.tagline }}{% endblock %}</title>
+    <link rel="alternate" hreflang="{{ LANGUAGE_CODE }}" href="https://{{ request.get_host }}{{ request.path }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="NOARCHIVE,NOCACHE" />
+
+    {% block site_index %}
+        {% if settings.site_index %}
+            <meta name="robots" content="noindex, nofollow">
+        {% endif %}
+    {% endblock site_index %}
+
+    {% block seo %}
+        {% seo %}
+    {% endblock seo %}
+
+    {% block favicon %}
+        {% if store.branding.icon %}
+            {% with image=store.branding.icon %}
+                {% image_thumbnail image "32x32" upscale=False crop="center" as thumb_store_icon %}
+                <link rel="shortcut icon" href="{{ thumb_store_icon.url }}" />
+            {% endwith %}
+        {% endif %}
+    {% endblock favicon %}
+
+    {% block styles %}
+        {% if settings.font_script %}
+            {{ settings.font_script|safe }}
+        {% endif %}
+
+        <link rel="stylesheet" type="text/css" href="{{ 'main.css'|asset_url }}">
+
+        <style>
+            :root {
+                --primary-color: {{ store.branding.primary_color|default:"#1E293B" }};
+                --accent-color: {{ store.branding.accent_color|default:"#475569" }};
+                --primary-color-lighter: color-mix(in srgb, var(--primary-color), #fff 15%);
+                --primary-color-darker: color-mix(in srgb, var(--primary-color), #000 15%);
+                --accent-color-lighter: color-mix(in srgb, var(--accent-color), #fff 15%);
+                --accent-color-darker: color-mix(in srgb, var(--accent-color), #000 15%);
+                {% if settings.font_body %}
+                    --font-body: {{ settings.font_body|safe }};
+                {% endif %}
+                {% if settings.font_header %}
+                    --font-header: {{ settings.font_header|safe }};
+                {% endif %}
+                {% if settings.body_text_color %}
+                    --body-text-color: {{ settings.body_text_color }};
+                {% endif %}
+                {% if settings.body_header_color %}
+                    --body-header-color: {{ settings.body_header_color }};
+                {% endif %}
+                {% if settings.body_link_color %}
+                    --body-link-color: {{ settings.body_link_color }};
+                {% endif %}
+            }
+            {% if settings.font_body %}
+                body { font-family: var(--font-body); }
+            {% endif %}
+            {% if settings.font_header %}
+                h1, h2, h3, h4, h5, h6 { font-family: var(--font-header); }
+            {% endif %}
+            {% if settings.body_text_color %}
+                body { color: var(--body-text-color); }
+            {% endif %}
+            {% if settings.body_header_color %}
+                h1, h2, h3, h4, h5, h6 { color: var(--body-header-color); }
+            {% endif %}
+            {% if settings.body_link_color %}
+                a { color: var(--body-link-color); }
+                a:hover { opacity: 0.8; }
+            {% endif %}
+        </style>
+    {% endblock styles %}
+
+    {% block extrastyles %}{% endblock extrastyles %}
+    {% block extrahead %}{% endblock extrahead %}
+    {% block tracking %}{% endblock tracking %}
+
+    {% app_hook 'global_header' %}
+</head>
+
+<body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+
+    {% block layout %}
+        {% if not settings.account_only %}
+
+            {# Announcement bar #}
+            {% block announcement_bar %}
+                {% if settings.ab_text %}
+                    {% include "partials/announcement_bar.html" %}
+                {% endif %}
+            {% endblock announcement_bar %}
+
+            {# Header / Navigation #}
+            {% block nav_header %}
+                {% include 'partials/header.html' %}
+            {% endblock %}
+
+        {% endif %}
+
+        {# Main content #}
+        {% block content_wrapper %}
+            <main>
+                {% block breadcrumbs %}{% endblock %}
+                <div class="container">
+                    {% include "partials/alert_messages.html" %}
+                </div>
+                {% block content %}{% endblock %}
+            </main>
+        {% endblock %}
+
+        {# Footer #}
+        {% if not settings.account_only %}
+            {% block footer %}
+                {% include "partials/footer.html" %}
+            {% endblock %}
+        {% endif %}
+
+    {% endblock %}
+
+    {# Modals #}
+    {% block modals %}{% endblock modals %}
+
+    {# Core JS #}
+    {% block scripts %}
+        <script type="text/javascript" src="{{ 'js/jquery-3.6.0.min.js'|asset_url }}"></script>
+        <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
+    {% endblock %}
+
+    {# Additional JS #}
+    {% block extrascripts %}{% endblock %}
+
+    {# Side cart #}
+    {% include 'partials/side_cart.html' %}
+
+    {# Platform core JS #}
+    {% core_js %}
+
+    {% app_hook 'global_footer' %}
+
+</body>
+</html>

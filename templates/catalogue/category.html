@@ -1,0 +1,52 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ category.get_meta_title }} | {{ block.super }}{% endblock %}
+
+{% block seo %}
+    {% seo %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400">
+            <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
+            <li>/</li>
+            <li><a href="{% url 'catalogue:index' %}" class="hover:text-slate-600">{% t "navigation.main.shop" %}</a></li>
+            <li>/</li>
+            <li class="text-slate-600">{{ category.name }}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-8 md:py-12">
+
+    {# Category header #}
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-semibold text-slate-800">{{ category.name }}</h1>
+        {% if category.description %}
+            <p class="mt-2 text-sm text-slate-500 max-w-2xl">{{ category.description|safe }}</p>
+        {% endif %}
+    </div>
+
+    {# Product grid #}
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                {% include 'partials/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+
+        {# Pagination #}
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="py-16 text-center">
+            <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+            <a href="{{ homepage_url }}" class="btn btn-secondary">{% t 'navigation.main.home' %}</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

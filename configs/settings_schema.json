@@ -1,0 +1,298 @@
+{
+    "Typography": {
+        "Fonts": [
+            {
+                "name": "font_script",
+                "label": "Custom Font Embed Code",
+                "type": "html",
+                "help_text": "Paste a font embed code (e.g. Google Fonts link tag) to load custom fonts."
+            },
+            {
+                "name": "font_body",
+                "label": "Body Font Family",
+                "type": "text",
+                "help_text": "CSS font-family for body text. Leave blank for system font stack.",
+                "max_length": 500
+            },
+            {
+                "name": "font_header",
+                "label": "Heading Font Family",
+                "type": "text",
+                "help_text": "CSS font-family for headings. Leave blank to inherit body font.",
+                "max_length": 500
+            }
+        ],
+        "Colors": [
+            {
+                "name": "body_text_color",
+                "label": "Body Text Color",
+                "type": "color",
+                "help_text": "Default color for body text."
+            },
+            {
+                "name": "body_header_color",
+                "label": "Heading Color",
+                "type": "color",
+                "help_text": "Default color for headings."
+            },
+            {
+                "name": "body_link_color",
+                "label": "Link Color",
+                "type": "color",
+                "help_text": "Default color for links."
+            }
+        ]
+    },
+    "Navigation": {
+        "Main Navigation": [
+            {
+                "name": "main_menu",
+                "label": "Main Menu",
+                "type": "menu",
+                "help_text": "Primary site navigation menu.",
+                "default": "main_menu"
+            }
+        ],
+        "Navbar Style": [
+            {
+                "name": "navbar_bg_color",
+                "label": "Navbar Background Color",
+                "type": "color",
+                "help_text": "Background color for the header navigation bar. Leave blank for white."
+            },
+            {
+                "name": "navbar_link_color",
+                "label": "Navbar Link Color",
+                "type": "color",
+                "help_text": "Text/icon color for the header navigation. Leave blank for default."
+            }
+        ]
+    },
+    "Footer": {
+        "Footer": [
+            {
+                "name": "footer_menu",
+                "label": "Footer Menu",
+                "type": "menu",
+                "help_text": "Footer links menu."
+            }
+        ],
+        "Footer Style": [
+            {
+                "name": "footer_bg_color",
+                "label": "Footer Background Color",
+                "type": "color",
+                "help_text": "Background color for the footer. Leave blank for light gray."
+            },
+            {
+                "name": "footer_text_color",
+                "label": "Footer Text Color",
+                "type": "color",
+                "help_text": "Text color for the footer. Leave blank for default."
+            },
+            {
+                "name": "footer_link_color",
+                "label": "Footer Link Color",
+                "type": "color",
+                "help_text": "Link color in the footer. Leave blank for default."
+            }
+        ],
+        "Social Media": [
+            {
+                "name": "enable_social",
+                "label": "Show Social Links",
+                "type": "checkbox",
+                "help_text": "Display social media icons in the footer."
+            },
+            {
+                "name": "facebook_link",
+                "label": "Facebook",
+                "type": "url",
+                "help_text": "Facebook page URL.",
+                "max_length": 500
+            },
+            {
+                "name": "instragram_link",
+                "label": "Instagram",
+                "type": "url",
+                "help_text": "Instagram profile URL.",
+                "max_length": 500
+            },
+            {
+                "name": "twitter_link",
+                "label": "X (Twitter)",
+                "type": "url",
+                "help_text": "X / Twitter profile URL.",
+                "max_length": 500
+            },
+            {
+                "name": "youtube_link",
+                "label": "YouTube",
+                "type": "url",
+                "help_text": "YouTube channel URL.",
+                "max_length": 500
+            },
+            {
+                "name": "tiktok_link",
+                "label": "TikTok",
+                "type": "url",
+                "help_text": "TikTok profile URL.",
+                "max_length": 500
+            },
+            {
+                "name": "pinterest_link",
+                "label": "Pinterest",
+                "type": "url",
+                "help_text": "Pinterest profile URL.",
+                "max_length": 500
+            },
+            {
+                "name": "snapchat_link",
+                "label": "Snapchat",
+                "type": "url",
+                "help_text": "Snapchat profile URL.",
+                "max_length": 500
+            },
+            {
+                "name": "vimeo_link",
+                "label": "Vimeo",
+                "type": "url",
+                "help_text": "Vimeo channel URL.",
+                "max_length": 500
+            }
+        ],
+        "Payment Icons": [
+            {
+                "name": "pay_icons",
+                "label": "Payment Icons",
+                "type": "select",
+                "multi-select": true,
+                "help_text": "Select payment method icons to display in the footer.",
+                "options": [
+                    {"name": "Visa", "value": "visa"},
+                    {"name": "Mastercard", "value": "mc"},
+                    {"name": "PayPal", "value": "ppal"},
+                    {"name": "Klarna", "value": "klarna"},
+                    {"name": "Amex", "value": "amex"},
+                    {"name": "Diners", "value": "diners"},
+                    {"name": "Discover", "value": "discover"},
+                    {"name": "Maestro", "value": "maestro"},
+                    {"name": "JCB", "value": "jcb"},
+                    {"name": "Dankort", "value": "dankort"},
+                    {"name": "Google Pay", "value": "googlepay"},
+                    {"name": "Apple Pay", "value": "applepay"}
+                ]
+            }
+        ],
+        "Disclaimer": [
+            {
+                "name": "site_disclaimer",
+                "label": "Site Disclaimer",
+                "type": "richtext",
+                "help_text": "Optional legal disclaimer displayed at the very bottom of the footer."
+            }
+        ]
+    },
+    "Homepage": {
+        "Featured Products": [
+            {
+                "name": "featured_products",
+                "label": "Featured Products",
+                "type": "products",
+                "help_text": "Products to feature on the homepage."
+            }
+        ],
+        "Featured Categories": [
+            {
+                "name": "featured_categories",
+                "label": "Featured Categories",
+                "type": "product_categories",
+                "help_text": "Categories to feature on the homepage."
+            }
+        ],
+        "Hero": [
+            {
+                "name": "homepage_hero_image",
+                "label": "Hero Image",
+                "type": "image_picker",
+                "help_text": "Full-width hero image. Use a high-quality product or lifestyle photo."
+            },
+            {
+                "name": "homepage_hero_alt",
+                "label": "Hero Image Alt Text",
+                "type": "text",
+                "help_text": "Accessible description of the hero image.",
+                "max_length": 250
+            },
+            {
+                "name": "homepage_hero_link",
+                "label": "Hero Link URL",
+                "type": "url",
+                "help_text": "Where the hero image links to (e.g. /catalogue/category/new-arrivals/).",
+                "max_length": 500
+            },
+            {
+                "name": "homepage_hero_cta",
+                "label": "Hero Button Text",
+                "type": "text",
+                "help_text": "Call-to-action button text on the hero.",
+                "max_length": 50,
+                "default": "Shop now"
+            }
+        ]
+    },
+    "Announcement Bar": {
+        "Announcement Bar": [
+            {
+                "name": "ab_text",
+                "label": "Announcement Text",
+                "type": "text",
+                "help_text": "Short announcement displayed at the top of every page. Leave blank to hide.",
+                "max_length": 250
+            },
+            {
+                "name": "ab_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Announcement bar background color. Leave blank for primary color."
+            },
+            {
+                "name": "ab_text_color",
+                "label": "Text Color",
+                "type": "color",
+                "help_text": "Announcement bar text color. Leave blank for white."
+            },
+            {
+                "name": "ab_link",
+                "label": "Announcement Link",
+                "type": "text",
+                "help_text": "Optional link URL for the announcement.",
+                "max_length": 500
+            },
+            {
+                "name": "ab_link_text",
+                "label": "Announcement Link Text",
+                "type": "text",
+                "help_text": "Text for the announcement link.",
+                "max_length": 100,
+                "default": "Learn more"
+            }
+        ]
+    },
+    "Advanced": {
+        "Advanced": [
+            {
+                "name": "site_index",
+                "label": "Disable Search Indexing",
+                "type": "checkbox",
+                "help_text": "Add noindex, nofollow meta tag to prevent search engines from indexing this store."
+            },
+            {
+                "name": "account_only",
+                "label": "Account Only Mode",
+                "type": "checkbox",
+                "help_text": "Hide navigation, footer, and announcement bar. Useful for account-only storefronts."
+            }
+        ]
+    }
+}

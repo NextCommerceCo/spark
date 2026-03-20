@@ -1,0 +1,11 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}404 | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-16 text-center">
+    <h1 class="text-2xl font-semibold text-slate-800 mb-4">Page Not Found</h1>
+    <p class="text-sm text-slate-500 mb-8">The page you're looking for doesn't exist or has been moved.</p>
+    <a href="{{ homepage_url }}" class="btn btn-primary">{% t "navigation.main.home" %}</a>
+</div>
+{% endblock %}

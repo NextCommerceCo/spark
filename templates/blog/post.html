@@ -1,0 +1,55 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    {{ post.get_meta_title }} | {{ block.super }}
+{% endblock %}
+
+{% block seo %}
+    {% seo %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400">
+            <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
+            <li>/</li>
+            <li><a href="{% url 'blog:blog-list' %}" class="hover:text-slate-600">{% t "navigation.main.blog" %}</a></li>
+            <li>/</li>
+            <li class="text-slate-600">{{ post.title }}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-8 md:py-12">
+    {# Post header #}
+    <div class="max-w-3xl mx-auto text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-semibold text-slate-800 leading-tight mb-4">{{ post.title }}</h1>
+        <div class="flex items-center justify-center gap-4 text-sm text-slate-400">
+            <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
+            <span>{{ post.created_at }}</span>
+        </div>
+    </div>
+
+    {# Featured image #}
+    {% with image=post.featured_image %}
+        {% if image %}
+            {% image_thumbnail image "x700" upscale=False as thumb %}
+            <div class="max-w-4xl mx-auto mb-10">
+                <img src="{{ thumb.url }}"
+                     alt="{{ post.title }}"
+                     class="w-full object-cover" />
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Post content #}
+    <div class="max-w-3xl mx-auto">
+        <div class="text-sm text-slate-600 leading-relaxed content-body">
+            {{ post.content|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

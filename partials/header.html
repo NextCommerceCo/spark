@@ -1,0 +1,120 @@
+{# Spark Theme — Header / Navigation #}
+<header class="sticky top-0 z-50 border-b border-slate-200" style="{% if settings.navbar_bg_color %}background-color: {{ settings.navbar_bg_color }};{% else %}background-color: #fff;{% endif %}">
+    <div class="container">
+        <nav class="flex items-center justify-between h-16">
+
+            {# Mobile menu toggle #}
+            <button type="button"
+                    class="md:hidden p-2 -ml-2"
+                    style="{% if settings.navbar_link_color %}color: {{ settings.navbar_link_color }};{% else %}color: #475569;{% endif %}"
+                    aria-label="{% t 'navigation.menu.toggle' %}"
+                    data-toggle="mobile-nav">
+                {% include 'partials/icons/menu.html' %}
+            </button>
+
+            {# Logo — uses same pattern as base.html favicon (store.branding.icon/logo) #}
+            <a href="{{ homepage_url }}" class="flex-shrink-0">
+                {% include 'partials/store_logo.html' %}
+            </a>
+
+            {# Desktop navigation #}
+            <ul class="hidden md:flex items-center gap-8 ml-10">
+                {% for item in settings.main_menu.items %}
+                    {% if item.level > 0 %}
+                        <li class="relative group">
+                            <a href="{{ item.url }}"
+                               class="text-sm font-medium text-slate-600 hover:text-slate-900 py-2 inline-flex items-center gap-1 {% if item.child_active %}text-slate-900{% endif %}">
+                                {{ item.name }}
+                                {% include 'partials/icons/chevron-down.html' %}
+                            </a>
+                            <ul class="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                                {% for child in item.items %}
+                                    <li>
+                                        <a href="{{ child.url }}"
+                                           class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 {% if child.current %}text-slate-900 font-medium{% endif %}">
+                                            {{ child.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{{ item.url }}"
+                               class="text-sm font-medium text-slate-600 hover:text-slate-900 {% if item.current %}text-slate-900{% endif %}">
+                                {{ item.name }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            {# Right-side icons #}
+            <div class="flex items-center gap-4" style="{% if settings.navbar_link_color %}color: {{ settings.navbar_link_color }};{% else %}color: #475569;{% endif %}">
+                {# Search #}
+                <button type="button"
+                        class="p-2 hover:opacity-80"
+                        aria-label="{% t 'navigation.search' %}"
+                        data-toggle="search-overlay">
+                    {% include 'partials/icons/search.html' %}
+                </button>
+
+                {# Account #}
+                <a href="{% url 'customer:summary' %}"
+                   class="hidden md:block p-2 hover:opacity-80"
+                   aria-label="{% t 'navigation.account.account' %}">
+                    {% include 'partials/icons/account.html' %}
+                </a>
+
+                {# Cart #}
+                <a href="#cart-modal"
+                   data-toggle="side-cart"
+                   class="p-2 hover:opacity-80"
+                   aria-label="{% t 'navigation.cart' %}">
+                    {% include 'partials/icons/cart.html' %}
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    {# Mobile navigation drawer #}
+    <div id="mobile-nav" class="hidden md:hidden fixed inset-0 z-50">
+        <div class="absolute inset-0 bg-black/30" data-close="mobile-nav"></div>
+        <div class="absolute left-0 top-0 bottom-0 w-72 bg-white overflow-y-auto">
+            <div class="flex items-center justify-between p-4 border-b border-slate-200">
+                <span class="font-semibold text-slate-800">{{ store.name }}</span>
+                <button type="button" class="p-2 text-slate-600" data-close="mobile-nav">
+                    {% include 'partials/icons/close.html' %}
+                </button>
+            </div>
+            <ul class="py-4">
+                {% for item in settings.main_menu.items %}
+                    <li>
+                        <a href="{{ item.url }}"
+                           class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 {% if item.current %}font-medium text-slate-900{% endif %}">
+                            {{ item.name }}
+                        </a>
+                        {% if item.level > 0 %}
+                            <ul class="pl-4">
+                                {% for child in item.items %}
+                                    <li>
+                                        <a href="{{ child.url }}"
+                                           class="block px-4 py-2 text-sm text-slate-500 hover:text-slate-700">
+                                            {{ child.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                <li class="border-t border-slate-200 mt-2 pt-2">
+                    <a href="{% url 'customer:summary' %}"
+                       class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50">
+                        {% t 'navigation.account.account' %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

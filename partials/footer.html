@@ -1,0 +1,173 @@
+{# Spark Theme — Footer #}
+<footer class="border-t border-slate-200 mt-16" style="{% if settings.footer_bg_color %}background-color: {{ settings.footer_bg_color }};{% else %}background-color: #F8FAFC;{% endif %}{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% endif %}">
+    <div class="container py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+            {# Store branding + social #}
+            <div>
+                <a href="{{ homepage_url }}" class="block mb-4">
+                    {% include 'partials/store_logo.html' %}
+                </a>
+                {% if store.tagline %}
+                    <p class="text-sm leading-relaxed mb-4" style="opacity: 0.7;">{{ store.tagline }}</p>
+                {% endif %}
+                {% if settings.enable_social %}
+                    {% include 'partials/social_links.html' %}
+                {% endif %}
+            </div>
+
+            {# Footer menu #}
+            {% if settings.footer_menu %}
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                        {{ settings.footer_menu.name }}
+                    </h3>
+                    <ul class="space-y-2">
+                        {% for item in settings.footer_menu.items %}
+                            <li>
+                                <a href="{{ item.url }}"
+                                   class="text-sm hover:opacity-80"
+                                   style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                    {{ item.name }}
+                                </a>
+                                {% if item.level > 0 %}
+                                    <ul class="pl-3 mt-1 space-y-1">
+                                        {% for child in item.items %}
+                                            <li>
+                                                <a href="{{ child.url }}"
+                                                   class="text-sm hover:opacity-80"
+                                                   style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                                    {{ child.name }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {# Support links #}
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                    {% t 'footer.support' %}
+                </h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'customer:summary' %}"
+                           class="text-sm hover:opacity-80"
+                           style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                            {% t 'navigation.account.account' %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'support:category-list' %}"
+                           class="text-sm hover:opacity-80"
+                           style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                            {% t 'footer.help' %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {# Contact info #}
+            <div>
+                {% if store.address.line_1 or store.phone or store.email %}
+                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                        {% t 'navigation.footer.contact_us' %}
+                    </h3>
+                    {% if store.address.line_1 %}
+                        <address class="text-sm not-italic leading-relaxed mb-3" style="opacity: 0.7;">
+                            {% if store.legal_name %}{{ store.legal_name }}<br>{% endif %}
+                            {{ store.address.line_1 }}{% if store.address.line_2 %}, {{ store.address.line_2 }}{% endif %}<br>
+                            {% if store.address.city and store.address.state %}{{ store.address.city }}, {{ store.address.state }}
+                            {% elif store.address.city %}{{ store.address.city }}
+                            {% elif store.address.state %}{{ store.address.state }}
+                            {% endif %}
+                            {% if store.address.postcode %} {{ store.address.postcode }}{% endif %}<br>
+                            {% if store.address.country %}{{ store.address.country }}{% endif %}
+                        </address>
+                    {% endif %}
+                    {% if store.phone %}
+                        <p class="text-sm mb-1" style="opacity: 0.7;">
+                            <a href="tel:{{ store.phone }}" class="hover:opacity-80"
+                               style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                {{ store.phone }}
+                            </a>
+                        </p>
+                    {% endif %}
+                    {% if store.email %}
+                        <p class="text-sm" style="opacity: 0.7;">
+                            <a href="mailto:{{ store.email }}" class="hover:opacity-80"
+                               style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                {{ store.email }}
+                            </a>
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {# Payment icons + language/currency #}
+        {% if settings.pay_icons or currencies and currencies|length > 1 or languages_active_storefront %}
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 mt-8 pt-6">
+            {% if settings.pay_icons %}
+                <div class="flex items-center gap-1">
+                    {% for icon in settings.pay_icons %}
+                        <span class="pay-icon pay-icon-{{ icon }}"></span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="flex items-center gap-4">
+                {% if currencies and currencies|length > 1 %}
+                    <form action="{% url 'core:set-currency' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <select name="currency"
+                                class="text-xs bg-transparent border-0 cursor-pointer"
+                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                                onchange="this.form.submit()">
+                            {% for currency in currencies %}
+                                <option value="{{ currency.code }}" {% if request.CURRENCY_CODE == currency.code %}selected{% endif %}>
+                                    {{ currency.symbol }} {{ currency.code }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                {% endif %}
+
+                {% if languages_active_storefront %}
+                    <form action="{% url 'set_language' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ language_neutral_url_path }}">
+                        <select name="language"
+                                class="text-xs bg-transparent border-0 cursor-pointer"
+                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                                onchange="this.form.submit()">
+                            {% for language_code, name in languages_active_storefront %}
+                                <option value="{{ language_code }}" {% if request.LANGUAGE_CODE == language_code %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Copyright #}
+        <div class="border-t border-slate-200 mt-6 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-xs" style="opacity: 0.5;">&copy; {% now "Y" %} {{ store.name }}. {% t 'footer.rights' %}</p>
+        </div>
+
+        {# Site disclaimer #}
+        {% if settings.site_disclaimer %}
+            <div class="mt-4 text-xs leading-relaxed" style="opacity: 0.5;">
+                {{ settings.site_disclaimer|safe }}
+            </div>
+        {% endif %}
+    </div>
+</footer>

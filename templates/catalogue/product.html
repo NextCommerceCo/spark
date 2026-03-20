@@ -1,0 +1,199 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ product.get_meta_title }} | {{ block.super }}{% endblock %}
+
+{% block seo %}
+    {% seo %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400">
+            <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
+            <li>/</li>
+            <li><a href="{% url 'catalogue:index' %}" class="hover:text-slate-600">{% t "navigation.main.shop" %}</a></li>
+            <li>/</li>
+            <li class="text-slate-600">{{ product.get_title }}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-8 md:py-12">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12">
+
+        {# Product images — 60% on desktop #}
+        <div class="md:col-span-3">
+            {% with images=product.get_all_images %}
+                {% if images %}
+                    <div class="space-y-4">
+                        {% for image in images %}
+                            {% image_thumbnail image.original "800x800" crop="center" as product_thumb %}
+                            <img src="{{ product_thumb.url }}"
+                                 alt="{{ product.get_title }}"
+                                 width="800"
+                                 height="800"
+                                 class="w-full"
+                                 {% if not forloop.first %}loading="lazy"{% endif %} />
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="aspect-square bg-slate-100 flex items-center justify-center">
+                        <span class="text-slate-300">{% t 'product.no_image' %}</span>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {# Product info — 40% on desktop, sticky #}
+        <div class="md:col-span-2">
+            <div class="md:sticky md:top-24">
+
+                <h1 class="text-2xl md:text-3xl font-semibold text-slate-800 leading-tight">
+                    {{ product.get_title }}
+                </h1>
+
+                {# Price #}
+                {% purchase_info_for_product request product as session %}
+                <div class="mt-4">
+                    {% if session.price.exists %}
+                        {% if session.price.price_retail > session.price.price %}
+                            <del class="text-sm text-slate-400">{{ session.price.price_retail|currency:session.price.currency }}</del>
+                        {% endif %}
+                        <span class="text-lg text-slate-800 font-medium">
+                            {{ session.price.price|currency:session.price.currency }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {# Variant picker #}
+                {% for field in variant_form %}
+                    {% if 'attr' in field.id_for_label %}
+                        <div class="mt-6">
+                            <label class="text-sm font-medium text-slate-700 mb-2 block">{{ field.label }}</label>
+                            <div class="flex flex-wrap gap-2">
+                                {% for choice in field.field.choices %}
+                                    <label class="flex items-center gap-2 px-4 py-2 border border-slate-200 cursor-pointer hover:border-slate-400 transition-colors text-sm text-slate-700">
+                                        <input type="radio"
+                                               name="{{ field.html_name }}"
+                                               value="{{ choice.0 }}"
+                                               {% if forloop.first %}checked{% endif %}
+                                               class="accent-[var(--primary-color)]" />
+                                        {{ choice.1 }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {# Add to cart form #}
+                {% if session.availability.is_available_to_buy %}
+                    {% cart_form request product 'single' as cart_form %}
+                    <form id="add-to-cart" class="mt-8" action="{% url 'cart:add' pk=product.pk %}" method="post">
+                        {% csrf_token %}
+                        {% for field in cart_form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                <div class="flex items-center gap-4 mb-4">
+                                    <label for="{{ field.id_for_label }}" class="text-sm text-slate-600">{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <button type="submit"
+                                class="btn btn-primary w-full py-3 text-base"
+                                id="add-to-cart-btn"
+                                data-loading-text='{% t "store.catalogue.add_to_cart_loading" %}'
+                                data-disabled-text='{% t "store.catalogue.product_unavailable" %}'>
+                            {% t "store.catalogue.add_to_cart" %}
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="mt-8 text-slate-500">{% t "store.catalogue.out_of_stock" %}</div>
+                {% endif %}
+
+                {# Description #}
+                {% if product.get_description %}
+                    <div class="mt-8 pt-8 border-t border-slate-200">
+                        <div class="text-sm text-slate-600 leading-relaxed">
+                            {{ product.get_description|safe }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% app_hook 'product_info' %}
+            </div>
+        </div>
+    </div>
+
+    {% app_hook 'product_footer' %}
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{{ block.super }}
+
+{{ product.data|json_script:"product-data" }}
+
+<script>
+(function() {
+    var opts = {
+        add_to_cart_msg: '{% t "store.catalogue.add_to_cart" %}',
+        unavailable_msg: '{% t "store.catalogue.product_unavailable" %}'
+    };
+    if (typeof theme !== 'undefined' && theme.product && theme.product.init) {
+        theme.product.init(opts);
+    } else {
+        // Inline fallback: auto-select child product for parent products
+        var dataEl = document.getElementById('product-data');
+        if (dataEl) {
+            try {
+                var prod = JSON.parse(dataEl.textContent);
+                if (prod.structure === 'parent' && prod.children && prod.children.length) {
+                    var form = document.getElementById('add-to-cart');
+                    if (form) {
+                        var action = form.getAttribute('action');
+                        form.setAttribute('action', action.replace(/(cart\/add\/)\d+/, '$1' + prod.children[0].id));
+                    }
+                }
+            } catch(e) {}
+        }
+        // Variant attribute change handler
+        document.querySelectorAll('input[name^="attr_"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                var dataEl = document.getElementById('product-data');
+                if (!dataEl) return;
+                try {
+                    var prod = JSON.parse(dataEl.textContent);
+                    if (!prod.children) return;
+                    var selected = {};
+                    document.querySelectorAll('input[name^="attr_"]:checked').forEach(function(inp) {
+                        selected[inp.name] = parseInt(inp.value);
+                    });
+                    var match = prod.children.find(function(child) {
+                        if (!child.variant_attribute_values || !child.variant_attribute_values.length) return true;
+                        return child.variant_attribute_values.every(function(attr) {
+                            return selected['attr_' + attr.code] === attr.id;
+                        });
+                    });
+                    if (match) {
+                        var form = document.getElementById('add-to-cart');
+                        if (form) {
+                            form.setAttribute('action', form.getAttribute('action').replace(/(cart\/add\/)\d+/, '$1' + match.id));
+                        }
+                    }
+                } catch(e) {}
+            });
+        });
+    }
+})();
+</script>
+
+{% app_hook 'view_product' %}
+{% app_hook 'add_to_cart' %}
+{% endblock %}

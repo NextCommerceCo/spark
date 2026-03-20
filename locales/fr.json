@@ -1,0 +1,204 @@
+{
+    "global": {
+        "button": {
+            "more": "Plus",
+            "search": "Rechercher",
+            "close": "Fermer",
+            "save": "Économisez",
+            "save_loading": "Économiser...",
+            "go_back": "Retournez"
+        },
+        "error": {
+            "please_check_error": "<strong>Oups ! Nous avons trouvé quelques erreurs</strong> . Veuillez vérifier les messages d'erreur ci-dessous et réessayer",
+            "403": "Permission refusée !",
+            "403_message": "Nous sommes désolés, mais vous n'êtes pas autorisé à accéder à cette page.",
+            "404": "Page introuvable",
+            "404_message": "Nous sommes désolés, mais la page que vous recherchez est introuvable.",
+            "500": "Erreur 500 du serveur interne",
+            "500_heading": "Désolé, ce n'est pas vous, c'est nous.",
+            "500_message": "Nous avons été informés du problème, veuillez réessayer plus tard."
+        }
+    },
+    "navigation": {
+        "main": {
+            "home": "Accueil",
+            "shop": "Magasiner",
+            "blog": "Blogue",
+            "support": "Assistance",
+            "contact": "Contacter",
+            "cart": "Chariot"
+        },
+        "account": {
+            "account": "Compte",
+            "subscriptions": "Abonnements",
+            "orders": "Historique des commandes",
+            "profile": "Profil",
+            "addresses": "Adresses",
+            "support": "Assistance",
+            "dashboard": "Tableau de bord",
+            "logout": "Déconnexion",
+            "login_or_register": "Connectez-vous ou inscrivez-vous"
+        },
+        "footer": {
+            "about_us": "À propos de nous",
+            "contact_us": "Contactez-nous",
+            "account_info": "Compte et informations",
+            "support_terms": "Assistance et conditions",
+            "support": "FAQ",
+            "terms_conditions": "Conditions générales",
+            "privacy": "Politique de confidentialité",
+            "address": "Adresse",
+            "copyright": "Tous droits réservés"
+        },
+        "pagination": {
+            "next": "Suivant"
+        }
+    },
+    "tables": {
+        "heading": {
+            "product_name": "Nom du produit",
+            "product": "Produit",
+            "quantity": "Quantité",
+            "schedule": "Horaire",
+            "price": "Prix",
+            "discount": "Rabais",
+            "total": "Total",
+            "items_to_buy_now": "Articles à acheter maintenant"
+        },
+        "content": {
+            "price": "Prix",
+            "discount": "Rabais"
+        },
+        "actions": {
+            "remove": "Supprimer",
+            "add_coupon": "Ajouter un coupon",
+            "add_coupon_loading": "Ajout de...",
+            "reload": "Recharger",
+            "reload_loading": "Mise à jour..."
+        }
+    },
+    "order": {
+        "cart": {
+            "title": "Chariot",
+            "summary": "Résumé",
+            "cart_total": "Total du panier",
+            "cart_total_discount": "Total du panier (après remises)",
+            "applied_offer": "Offre appliquée",
+            "applied_coupons": "Coupons appliqués",
+            "shipping": "Expédition",
+            "order_total": "Total de la commande",
+            "proceed_to_checkout": "Procéder à la caisse",
+            "upsell_message_detail": "{{ message }} pour bénéficier de l'offre spéciale <b>{{ offer_name }}</b>",
+            "continue_shopping": "Continuer vos achats",
+            "cart_empty": "Votre panier est vide.",
+            "items_count": {
+                "one": "{{ count }} article",
+                "other": "{{ count }} articles"
+            },
+            "subscription_items": {
+                "one": "Abonnement ({{ count }} article)",
+                "other": "Abonnement ({{ count }} articles)"
+            },
+            "calculated_at_checkout": "Calculé au moment du paiement",
+            "subscription_details": "Détails de l'abonnement",
+            "product": "Produit",
+            "quantity": "Quantité",
+            "price": "Prix",
+            "subscription_total": "Total de l'abonnement",
+            "subscription_renewal_message": "Votre abonnement sera renouvelé chaque"
+        }
+    },
+    "store": {
+        "blog": {
+            "title": "Blogue",
+            "no_posts": "Aucun article n'a encore été créé.",
+            "search_not_found": "Trouvé <strong>0</strong> résultats."
+        },
+        "catalogue": {
+            "filters": "Filtres",
+            "filter_clear": "Transparent",
+            "free": "Gratuit",
+            "sale": "Vente",
+            "none_found": "Aucun produit n'a été trouvé.",
+            "edit_this_category": "Modifier cette catégorie",
+            "edit_this_product": "Modifier ce produit",
+            "buy_option": "Option d'achat",
+            "one_time": "Une fois",
+            "subscribe_save": "Économisez en vous abonnant",
+            "order_arrival_frequency": "À quelle fréquence souhaitez-vous que votre commande arrive ?",
+            "add_to_cart": "Ajouter au panier",
+            "add_to_cart_loading": "Ajout de...",
+            "product_unavailable": "Indisponible",
+            "out_of_stock": "En rupture de stock",
+            "about": "À propos",
+            "reviews": "Avis",
+            "no_reviews": "Ce produit n'a pas encore d'avis",
+            "no_reviews_add": "soyez le premier à en écrire un",
+            "customer_reviews": "Avis des clients",
+            "see_all_reviews": "Voir tous les avis",
+            "write_a_review": "Écrire un avis",
+            "recommended_products_header": "Les clients qui ont consulté cet article ont également acheté"
+        },
+        "review": {
+            "reviews": "Avis",
+            "customer_reviews": "Avis des clients",
+            "all_reviews": "Tous les avis",
+            "customer_reviews_count": {
+                "one": "{{ count }} avis client",
+                "other": "{{ count }} avis clients"
+            },
+            "reviewed_by_you": "Avis de votre part",
+            "reviewed_by_other": "Avis déposé par <b>{{ name }}</b>",
+            "no_reviews": "Ce produit n'a pas encore d'avis.",
+            "leave_review": "Laisser un avis produit",
+            "save_review": "Enregistrer un avis"
+        },
+        "search": {
+            "products_matching": "Produits assortis {{ q }}",
+            "search_not_found": "0 résultats trouvés."
+        },
+        "support": {
+            "title": "Assistance",
+            "heading": "Comment pouvons-nous vous aider ?",
+            "search_not_found": "0 résultats trouvés.",
+            "view": "Voir",
+            "create_support_request": "Vous avez encore besoin d'aide ? Créez <a href='{{ link }}'>une demande d'assistance</a> avec notre équipe de service client et nous serions heureux de vous aider.",
+            "no_categories": "Aucune catégorie n'a encore été créée.",
+            "articles": "Des articles",
+            "no_articles": "Aucun article n'a encore été créé.",
+            "edit_this_article": "Modifier cet article",
+            "last_updated": "Dernière mise à jour"
+        }
+    },
+    "side_cart": {
+        "default": {
+            "your_order": "Votre commande",
+            "your_cart_is_empty": "Votre panier est vide !",
+            "oops_You_have_nothing_here": "Oups ! Tu n'as rien ici.",
+            "quantity": "Quantité",
+            "qty": "Quantité",
+            "schedule": "Calendrier",
+            "price": "Prix",
+            "savings": "Des économies",
+            "regular": "Régulier",
+            "your_price": "Votre prix",
+            "cart_subtotal": "Sous-total du panier",
+            "discount": "Réduction",
+            "shipping": "Expédition",
+            "cart": "Chariot",
+            "total": "Total",
+            "product": "Produit",
+            "subscription_details": "Détails de l'abonnement",
+            "applied_coupons": "Coupons appliqués",
+            "subscription_items_one": "Abonnement ({{count}} article)",
+            "subscription_items_other": "Abonnement ({{count}} articles)",
+            "calculated_at_checkout": "Calculé au moment du paiement",
+            "subscription_total": "Total de l'abonnement",
+            "subscription_renewal_message": "Votre abonnement sera renouvelé chaque",
+            "proceed_to_checkout": "Procéder au paiement",
+            "have_a_coupon": "Vous avez un coupon ?",
+            "coupon_code": "Code de réduction",
+            "apply_coupon": "Appliquer le coupon"
+        }
+    }
+}

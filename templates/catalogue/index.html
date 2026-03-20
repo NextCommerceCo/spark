@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+{% if summary %}{{ summary }} | {% endif %}{{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="container py-3">
+    <nav aria-label="breadcrumb">
+        <ol class="flex items-center gap-2 text-xs text-slate-400">
+            <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
+            <li>/</li>
+            <li class="text-slate-600">{{ summary }}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-8 md:py-12">
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                {% include 'partials/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+
+        {% include 'partials/pagination.html' %}
+    {% else %}
+        <div class="py-16 text-center">
+            <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

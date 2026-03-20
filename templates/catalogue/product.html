@@ -89,9 +89,10 @@
                     {% endif %}
                 {% endfor %}
 
-                {# Add to cart form #}
+                {# Add to cart form — wrapped by <spark-add-to-cart> for GraphQL enhancement #}
                 {% if session.availability.is_available_to_buy %}
                     {% cart_form request product 'single' as cart_form %}
+                    <spark-add-to-cart product-id="{{ product.pk }}" graphql-url="{% url 'storefrontapi:graphql' %}">
                     <form id="add-to-cart" class="mt-8" action="{% url 'cart:add' pk=product.pk %}" method="post">
                         {% csrf_token %}
                         {% for field in cart_form %}
@@ -113,6 +114,7 @@
                             {% t "store.catalogue.add_to_cart" %}
                         </button>
                     </form>
+                    </spark-add-to-cart>
                 {% else %}
                     <div class="mt-8 text-slate-500">{% t "store.catalogue.out_of_stock" %}</div>
                 {% endif %}

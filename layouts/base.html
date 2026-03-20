@@ -153,6 +153,11 @@
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
     {% endblock %}
 
+    {# Spark Web Components — GraphQL cart client + custom elements #}
+    <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
+
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
 

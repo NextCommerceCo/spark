@@ -122,9 +122,36 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 - Every empty state has warmth, a primary action, and context
 - Header: full logo (responsive with icon on mobile). Footer: icon preferred (compact).
 
+## Web Components (Phase 2)
+
+### SparkCartClient (`assets/js/spark-cart.js`)
+Vanilla JS class for GraphQL cart operations. Auto-creates cart on first add, handles CSRF, timeouts, retries.
+- `new SparkCartClient(graphqlUrl)` - constructor
+- `.createCart()` - create empty cart, stores ID in sessionStorage + cookie
+- `.addToCart(productPk, quantity)` - add item (auto-creates cart if needed)
+- Dispatches `spark:cart:updated` CustomEvent on `document` with `{cart, count, action}`
+
+### `<spark-add-to-cart>` (`assets/js/components/spark-add-to-cart.js`)
+Shadow DOM Web Component wrapping the DTL add-to-cart form. Progressive enhancement.
+- Reads product ID from form action (`/cart/add/123/`) — updated by variant picker
+- States: idle -> loading (spinner) -> success (checkmark, 2s) -> idle
+- Error: shake animation + red error message below button
+- No-JS fallback: form submits normally via POST
+
+### `<spark-quantity>` (`assets/js/components/spark-quantity.js`)
+Shadow DOM quantity stepper: [-] | input | [+]
+- Attributes: `min`, `max`, `value`
+- Dispatches `change` event with `detail.value`
+- Inherits `--primary-color` via CSS custom properties
+
+### CRITICAL: JS Asset Files
+**NEVER use non-ASCII characters in JS asset files.** The platform processes JS through its template engine:
+- No `{{ }}` or `{% %}` in comments (treated as DTL tags -> 500 error)
+- No Unicode em dashes, arrows, box drawing characters (causes CDN 500)
+- Use ASCII-only: `-` instead of `—`, `->` instead of `→`, `\u2713` instead of `✓`
+
 ## What's Deferred
 - **Checkout template** (`checkout/checkout.html`) — requires deeper platform understanding
-- **Web Component side cart** — GraphQL + custom elements, replacing platform JS dependency
 - **Expanded settings** — cart, checkout, product listing, buttons
 - **Dark mode** — Tailwind makes it trivial, not needed for v1
 - **Remove jQuery** — blocked by platform's `{% core_js %}`

@@ -2,7 +2,7 @@
 {% load static %}
 
 <form id="side_cart_formset">
-    <div class="sidecart" id="cart-modal" tabindex="-1" role="dialog">
+    <div class="sidecart" id="cart-modal" tabindex="-1" role="dialog" aria-label="Shopping cart" aria-modal="true">
         <div class="sidecart-dialog" role="document">
             <div class="sidecart-content" id="cart-content"></div>
         </div>
@@ -53,4 +53,35 @@
         SIDECART_MSGS: SIDECART_MSGS
     };
     sidecart.init(sidecart_options);
+
+    // Spark integration: when Web Components add to cart via GraphQL,
+    // refresh the platform side cart and auto-open it.
+    document.addEventListener('spark:cart:updated', function(e) {
+        if (e.detail && e.detail.action === 'add') {
+            // Platform's sidecart.js exposes a refresh method via cart_load()
+            if (typeof sidecart !== 'undefined' && sidecart.cart_load) {
+                sidecart.cart_load();
+            }
+            // Open the side cart panel
+            var modal = document.getElementById('cart-modal');
+            if (modal) {
+                document.body.classList.add('sidecart-open');
+            }
+        }
+    });
+
+    // Listen for spark:cart:toggle event (from header cart icon or other sources)
+    document.addEventListener('spark:cart:toggle', function() {
+        var modal = document.getElementById('cart-modal');
+        if (modal) {
+            if (document.body.classList.contains('sidecart-open')) {
+                document.body.classList.remove('sidecart-open');
+            } else {
+                if (typeof sidecart !== 'undefined' && sidecart.cart_load) {
+                    sidecart.cart_load();
+                }
+                document.body.classList.add('sidecart-open');
+            }
+        }
+    });
 </script>

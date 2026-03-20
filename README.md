@@ -1,6 +1,6 @@
 # Spark
 
-A modern starter theme for NEXT Commerce. Tailwind CSS, vanilla JS, no dependencies.
+A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Components, no bundler required.
 
 ## Requirements
 
@@ -17,7 +17,8 @@ A modern starter theme for NEXT Commerce. Tailwind CSS, vanilla JS, no dependenc
 
 2. Compile CSS:
    ```bash
-   tailwindcss -i css/input.css -o assets/main.css
+   ./tailwindcss -i css/input.css -o assets/main.css --minify
+   python3 scripts/sass-compat.py assets/main.css
    ```
 
 3. Push to your store:
@@ -44,14 +45,27 @@ A modern starter theme for NEXT Commerce. Tailwind CSS, vanilla JS, no dependenc
 
 ```
 Spark/
-├── assets/          Compiled CSS + JS
+├── assets/
+│   ├── main.css                  Compiled Tailwind output
+│   └── js/
+│       ├── spark-cart.js         GraphQL cart client
+│       ├── theme.js              Core vanilla JS
+│       └── components/           Web Components (Shadow DOM)
+│           ├── spark-add-to-cart.js
+│           └── spark-quantity.js
 ├── css/             Tailwind input (source of truth for styles)
-├── configs/         Theme settings
+├── configs/         Theme settings schema + data
+├── docs/            Design documents
 ├── layouts/         Base template
 ├── locales/         Translation files (11 languages)
 ├── partials/        Reusable fragments + SVG icons
-└── templates/       Page templates
+├── scripts/         Build tools (sass-compat.py)
+└── templates/       Page templates (15 pages)
 ```
+
+## Design System
+
+All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, colors, spacing, motion, interaction states, and accessibility. Read it before making any UI change.
 
 ## License
 

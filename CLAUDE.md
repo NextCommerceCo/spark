@@ -9,10 +9,12 @@ Spark is a modern starter theme for NEXT Commerce storefronts. Tailwind CSS + va
 
 ## Stack
 - **CSS:** Tailwind CSS v4.2.2 (standalone CLI binary `./tailwindcss`, no Node dependency)
-- **JS:** Vanilla JS — self-contained script tags, no bundler
+- **JS:** Vanilla JS + Web Components (Shadow DOM). No bundler — self-contained `<script>` tags.
+- **Web Components:** `<spark-add-to-cart>`, `<spark-quantity>` — progressive enhancement via `SparkCartClient` GraphQL client
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
 - **jQuery:** Still loaded — platform's `{% core_js %}` requires it. Goal is to remove eventually.
+- **Design System:** See [DESIGN.md](DESIGN.md) for all visual decisions.
 
 ## CSS Pipeline
 ```
@@ -73,8 +75,8 @@ CSS custom properties set in `layouts/base.html` from `store.branding`:
 | File | Status |
 |------|--------|
 | `templates/index.html` | Homepage — hero, featured products/categories |
-| `templates/catalogue/product.html` | PDP — images, variants, add-to-cart, parent→child rewrite |
-| `templates/catalogue/category.html` | Category listing — product grid, filters, pagination |
+| `templates/catalogue/product.html` | PDP — images, variants, `<spark-add-to-cart>` Web Component wrapping DTL form |
+| `templates/catalogue/category.html` | Category listing — product grid, skeleton loading, pagination |
 | `templates/catalogue/index.html` | All products catalogue |
 | `templates/blog/index.html` | Blog listing — sidebar categories, search via `form.name` |
 | `templates/blog/post.html` | Blog post detail |
@@ -94,7 +96,7 @@ CSS custom properties set in `layouts/base.html` from `store.branding`:
 | `partials/header.html` | Responsive nav — mobile hamburger + desktop horizontal, logo, search/account/cart icons |
 | `partials/footer.html` | 4-column grid: icon+tagline, footer menu, support links, contact info. Payment icons, currency/language, copyright, disclaimer |
 | `partials/store_logo.html` | Shared logo partial — handles logo+icon, logo-only, icon-only, text fallback |
-| `partials/side_cart.html` | Platform side cart JS integration |
+| `partials/side_cart.html` | Platform side cart JS + spark:cart:updated event integration |
 | `partials/social_links.html` | Social media SVG icons (8 platforms) |
 | `partials/product_card.html` | Reusable product card for grids |
 | `partials/form_field.html` | Generic form field with label, errors, help text |
@@ -112,6 +114,15 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 5. **Payment icons** multi-select uses `"type": "select"` with `"multi-select": true` — NOT a `"multi_select"` type (which doesn't exist).
 6. **CDN caching**: CloudFront aggressively caches `assets/main.css` with a fixed `?v=` hash. Templates are server-rendered and not cached.
 7. **Parent products** can't be added to cart — `product.html` has inline JS to rewrite form action to first child product ID.
+
+## Delight Features (Phase 1)
+- **Skeleton loading:** CSS-only shimmer animation on product grid cards during page load (`category.html`)
+- **Contrast auto-detection:** JS in `<head>` measures `--primary-color` luminance, adds `data-light-primary` attribute for dark text on light backgrounds
+- **Cart badge animation:** Scale pulse (300ms) on count change via `spark:cart:updated` CustomEvent
+- **Keyboard navigation:** Tab through product grid cards (Enter to navigate), Escape closes mobile nav and side cart
+- **Focus visible:** `outline: 2px solid var(--primary-color); outline-offset: 2px;` on all interactive elements
+- **Print stylesheet:** `@media print` hides header/footer/sidecart/announcement bar
+- **Image optimization:** `loading="lazy"` on below-fold images, `fetchpriority="high"` on hero images
 
 ## Design Principles
 - Products are the design — generous whitespace, large photography

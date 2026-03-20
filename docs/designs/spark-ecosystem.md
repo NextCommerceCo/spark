@@ -29,13 +29,22 @@ A merchant opens their NEXT store for the first time. It already looks like it w
 | 8 | Spark DESIGN.md | S | ACCEPTED | Essential for AI skill and third-party devs — single source of truth |
 | 9 | Side Cart CSS Cleanup | S | ACCEPTED | Foundational for Web Component work — remove legacy Bootstrap CSS |
 
+## Implementation Status
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Spark v1 Polish (DESIGN.md, delight package, CSS isolation) | **SHIPPED** (2026-03-20) |
+| 2 | Web Component Library (GraphQL cart client, `<spark-add-to-cart>`, `<spark-quantity>`) | **SHIPPED** (2026-03-20) |
+| 3 | AI Theme Skill (Claude Code) | Planned |
+| 4 | ntk Tailwind Integration | Planned |
+
 ## Accepted Scope (added to this plan)
-- Web Component Library (GraphQL-powered side cart, quick-view, quantity stepper, newsletter)
+- ~~Web Component Library~~ **SHIPPED** — SparkCartClient, `<spark-add-to-cart>`, `<spark-quantity>`
 - AI Theme Skill for Claude Code (standalone skill, reference-based)
 - ntk Tailwind integration (auto-detect, auto-compile during watch)
-- Delight package (skeleton loading, image optimization, cart badge animation, keyboard nav, contrast auto-detect, print stylesheet)
-- Spark DESIGN.md (formal storefront design system document)
-- Side cart CSS cleanup (refactor legacy Bootstrap CSS in input.css)
+- ~~Delight package~~ **SHIPPED** — skeleton loading, image optimization, cart badge animation, keyboard nav, contrast auto-detect, print stylesheet
+- ~~Spark DESIGN.md~~ **SHIPPED** — formal storefront design system document
+- ~~Side cart CSS cleanup~~ **SHIPPED** — refactored legacy CSS in input.css
 
 ## Deferred to TODOS.md
 - Theme Marketplace Foundation — component API design for third-party extensibility

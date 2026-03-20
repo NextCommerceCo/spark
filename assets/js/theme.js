@@ -30,33 +30,54 @@
     /* ─── Search Overlay ─── */
 
     function initSearchOverlay() {
-        var toggleBtn = document.querySelector('[data-toggle="search-overlay"]');
-        if (!toggleBtn) return;
+        var overlay = document.getElementById('search-overlay');
+        var input = document.getElementById('search-input');
+        if (!overlay) return;
 
-        toggleBtn.addEventListener('click', function() {
-            // Placeholder: open search overlay or redirect to search page
-            window.location.href = '/search/';
+        function openSearch() {
+            overlay.classList.add('search-overlay-visible');
+            document.body.style.overflow = 'hidden';
+            if (input) {
+                setTimeout(function() { input.focus(); }, 150);
+            }
+        }
+
+        function closeSearch() {
+            overlay.classList.remove('search-overlay-visible');
+            document.body.style.overflow = '';
+        }
+
+        // Open button
+        document.querySelectorAll('[data-toggle="search-overlay"]').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openSearch();
+            });
+        });
+
+        // Close buttons and backdrop
+        overlay.querySelectorAll('[data-close="search-overlay"]').forEach(function(el) {
+            el.addEventListener('click', function() {
+                closeSearch();
+            });
+        });
+
+        // Escape key closes search
+        overlay.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSearch();
+            }
         });
     }
 
     /* ─── Side Cart ─── */
 
     function initSideCart() {
-        var cartModal = document.getElementById('cart-modal');
-        if (!cartModal) return;
-
+        // Cart icon click dispatches toggle event (handled in side_cart.html)
         document.querySelectorAll('[data-toggle="side-cart"]').forEach(function(el) {
             el.addEventListener('click', function(e) {
                 e.preventDefault();
-                cartModal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            });
-        });
-
-        cartModal.querySelectorAll('[data-close="side-cart"]').forEach(function(el) {
-            el.addEventListener('click', function() {
-                cartModal.classList.add('hidden');
-                document.body.style.overflow = '';
+                document.dispatchEvent(new CustomEvent('spark:cart:toggle'));
             });
         });
     }

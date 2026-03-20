@@ -172,6 +172,15 @@
                 // Check if cart has items (more reliable than success field)
                 if (result && result.cart && result.cart.numItems > 0) {
                     self._setState('success');
+                    // Open side cart after short delay for platform JS to finish
+                    setTimeout(function() {
+                        try {
+                            if (window.sparkSidecartOpenOnAdd !== false &&
+                                typeof window.sparkOpenSideCart === 'function') {
+                                window.sparkOpenSideCart();
+                            }
+                        } catch(e) { /* sidecart open failed - non-critical */ }
+                    }, 400);
                     setTimeout(function() {
                         if (self._state === 'success') {
                             self._setState('idle');

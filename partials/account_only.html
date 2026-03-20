@@ -1,11 +1,9 @@
 {# Spark Theme — Account Only Mode #}
 {# Shown when settings.account_only is enabled. Replaces all page content with a minimal login screen. #}
 <div class="flex flex-col items-center justify-center min-h-[80vh] p-8">
-    {% if store.branding.logo %}
-        <img src="{{ store.branding.logo.url }}" alt="{{ store.name }}" class="h-10 mb-8" />
-    {% else %}
-        <h1 class="text-2xl font-semibold text-slate-800 mb-8">{{ store.name }}</h1>
-    {% endif %}
+    <div class="mb-8">
+        {% include 'partials/store_logo.html' %}
+    </div>
 
     <h2 class="text-lg text-slate-600 mb-8">{% t "navigation.account.welcome" %}</h2>
 

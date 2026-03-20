@@ -54,34 +54,77 @@
     };
     sidecart.init(sidecart_options);
 
-    // Spark integration: when Web Components add to cart via GraphQL,
-    // refresh the platform side cart and auto-open it.
-    document.addEventListener('spark:cart:updated', function(e) {
-        if (e.detail && e.detail.action === 'add') {
-            // Platform's sidecart.js exposes a refresh method via cart_load()
-            if (typeof sidecart !== 'undefined' && sidecart.cart_load) {
-                sidecart.cart_load();
-            }
-            // Open the side cart panel
-            var modal = document.getElementById('cart-modal');
-            if (modal) {
-                document.body.classList.add('sidecart-open');
-            }
+    // Side cart open/close helpers
+    function sparkOpenSideCart() {
+        var modal = document.getElementById('cart-modal');
+        if (!modal) return;
+        if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
+            sidecart.basket.reloadBasketData();
         }
-    });
+        modal.classList.add('show');
+        document.body.classList.add('sidecart-open');
+    }
+
+    function sparkCloseSideCart() {
+        var modal = document.getElementById('cart-modal');
+        if (!modal) return;
+        modal.classList.remove('show');
+        document.body.classList.remove('sidecart-open');
+    }
+
+    function sparkIsSideCartOpen() {
+        var modal = document.getElementById('cart-modal');
+        return modal && modal.classList.contains('show');
+    }
+
+    // Spark integration: when Web Components add to cart via GraphQL,
+    // refresh the platform side cart and optionally open it.
+    var sparkSidecartOpenOnAdd = true;
+    window.sparkSidecartOpenOnAdd = sparkSidecartOpenOnAdd;
+
+    // Watch the add-to-cart button for success state change.
+    // This is more reliable than CustomEvents when third-party scripts
+    // modify addEventListener or fetch.
+    (function() {
+        var btn = document.getElementById('add-to-cart-btn');
+        if (!btn) return;
+
+        var _scTriggered = false;
+        var observer = new MutationObserver(function() {
+            // Detect success state by checking button text for "Added"
+            var text = btn.textContent || '';
+            if (!_scTriggered && text.indexOf('Added') !== -1) {
+                _scTriggered = true;
+                if (sparkSidecartOpenOnAdd) {
+                    sparkOpenSideCart();
+                } else if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
+                    sidecart.basket.reloadBasketData();
+                }
+                // Reset flag after success duration
+                setTimeout(function() { _scTriggered = false; }, 3000);
+            }
+        });
+
+        observer.observe(btn, { childList: true, subtree: true });
+    })();
+
+    // Keep body class in sync when platform JS closes the cart (X button)
+    (function() {
+        var modal = document.getElementById('cart-modal');
+        if (!modal) return;
+        new MutationObserver(function() {
+            if (!modal.classList.contains('show')) {
+                document.body.classList.remove('sidecart-open');
+            }
+        }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+    })();
 
     // Listen for spark:cart:toggle event (from header cart icon or other sources)
     document.addEventListener('spark:cart:toggle', function() {
-        var modal = document.getElementById('cart-modal');
-        if (modal) {
-            if (document.body.classList.contains('sidecart-open')) {
-                document.body.classList.remove('sidecart-open');
-            } else {
-                if (typeof sidecart !== 'undefined' && sidecart.cart_load) {
-                    sidecart.cart_load();
-                }
-                document.body.classList.add('sidecart-open');
-            }
+        if (sparkIsSideCartOpen()) {
+            sparkCloseSideCart();
+        } else {
+            sparkOpenSideCart();
         }
     });
 </script>

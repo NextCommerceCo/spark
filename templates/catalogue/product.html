@@ -39,45 +39,43 @@
                             {% image_thumbnail images.0.original "800x800" crop="center" as first_thumb %}
                             <img src="{{ first_thumb.url }}"
                                  alt="{{ product.get_title }}"
-                                 width="800"
-                                 height="800"
-                                 class="spark-gallery-hero w-full"
+                                 class="spark-gallery-hero"
                                  fetchpriority="high" />
 
                             {% if images|length > 1 %}
                                 <button type="button"
-                                        class="spark-gallery-prev absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white border border-slate-200 transition-colors"
+                                        class="spark-gallery-prev"
                                         aria-label="Previous image">
-                                    <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                                     </svg>
                                 </button>
                                 <button type="button"
-                                        class="spark-gallery-next absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white border border-slate-200 transition-colors"
+                                        class="spark-gallery-next"
                                         aria-label="Next image">
-                                    <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                                     </svg>
                                 </button>
-                                <span class="spark-gallery-counter absolute bottom-3 right-3 text-xs text-slate-500 bg-white/80 px-2 py-1">1 / {{ images|length }}</span>
                             {% endif %}
                         </div>
 
-                        {# Thumbnail strip #}
+                        {# Thumbnail strip — centered #}
                         {% if images|length > 1 %}
                             <div class="spark-gallery-thumbs">
                                 {% for image in images %}
                                     {% image_thumbnail image.original "800x800" crop="center" as full_thumb %}
-                                    {% image_thumbnail image.original "100x100" crop="center" as small_thumb %}
+                                    {% image_thumbnail image.original "120x120" crop="center" as small_thumb %}
                                     <button type="button"
                                             class="spark-gallery-thumb {% if forloop.first %}spark-gallery-thumb-active{% endif %}"
                                             {% if forloop.first %}aria-current="true"{% endif %}
                                             data-full="{{ full_thumb.url }}"
+                                            data-index="{{ forloop.counter0 }}"
                                             aria-label="View image {{ forloop.counter }}">
                                         <img src="{{ small_thumb.url }}"
                                              alt="{{ product.get_title }} - image {{ forloop.counter }}"
-                                             width="100"
-                                             height="100"
+                                             width="120"
+                                             height="120"
                                              class="w-full h-full object-cover"
                                              loading="lazy" />
                                     </button>

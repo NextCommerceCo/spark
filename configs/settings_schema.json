@@ -302,6 +302,17 @@
             }
         ]
     },
+    "Cart": {
+        "Side Cart": [
+            {
+                "name": "sidecart_open_on_add",
+                "label": "Open side cart on add to cart",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Automatically open the side cart when a product is added. If disabled, only the cart icon badge updates."
+            }
+        ]
+    },
     "Advanced": {
         "Advanced": [
             {

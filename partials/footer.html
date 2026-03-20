@@ -132,11 +132,33 @@
         {% if settings.pay_icons or currencies and currencies|length > 1 or languages_active_storefront %}
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 mt-8 pt-6">
             {% if settings.pay_icons %}
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-2">
                     {% for icon in settings.pay_icons %}
                         <span class="pay-icon pay-icon-{{ icon }}"></span>
                     {% endfor %}
                 </div>
+                <style>
+                    .pay-icon {
+                        display: inline-block;
+                        width: 2rem;
+                        height: 1.5rem;
+                        background-size: contain;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                    }
+                    .pay-icon-visa { background-image: url("{{ 'img/pay/visa.svg'|asset_url }}"); }
+                    .pay-icon-mc { background-image: url("{{ 'img/pay/mc.svg'|asset_url }}"); }
+                    .pay-icon-ppal { background-image: url("{{ 'img/pay/ppal.svg'|asset_url }}"); }
+                    .pay-icon-klarna { background-image: url("{{ 'img/pay/klarna.svg'|asset_url }}"); }
+                    .pay-icon-amex { background-image: url("{{ 'img/pay/amex.svg'|asset_url }}"); }
+                    .pay-icon-diners { background-image: url("{{ 'img/pay/diners.svg'|asset_url }}"); }
+                    .pay-icon-discover { background-image: url("{{ 'img/pay/discover.svg'|asset_url }}"); }
+                    .pay-icon-maestro { background-image: url("{{ 'img/pay/maestro.svg'|asset_url }}"); }
+                    .pay-icon-jcb { background-image: url("{{ 'img/pay/jcb.svg'|asset_url }}"); }
+                    .pay-icon-dankort { background-image: url("{{ 'img/pay/dankort.svg'|asset_url }}"); }
+                    .pay-icon-googlepay { background-image: url("{{ 'img/pay/googlepay.svg'|asset_url }}"); }
+                    .pay-icon-applepay { background-image: url("{{ 'img/pay/applepay.svg'|asset_url }}"); }
+                </style>
             {% endif %}
 
             <div class="flex items-center gap-4">

@@ -263,59 +263,104 @@
 
         .spark-gallery-left .spark-gallery-thumbs {
             flex-direction: column;
-            width: 80px;
-            max-height: 600px;
+            width: 72px;
+            max-height: 520px;
             overflow-y: auto;
             overflow-x: hidden;
+            justify-content: flex-start;
         }
 
         .spark-gallery-left .spark-gallery-thumb {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             flex-shrink: 0;
         }
     }
 
+    /* Main image container — square aspect, constrained */
     .spark-gallery-main {
         position: relative;
         overflow: hidden;
         background-color: #F8FAFC;
+        aspect-ratio: 1;
     }
 
+    /* Hero image — contained within the square, centered */
+    .spark-gallery-hero {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: opacity 200ms ease-out;
+    }
+
+    .spark-gallery-hero.spark-gallery-fading {
+        opacity: 0;
+    }
+
+    /* Thumbnail strip — centered */
     .spark-gallery-thumbs {
         display: flex;
+        justify-content: center;
         gap: 0.5rem;
         overflow-x: auto;
         overflow-y: hidden;
         scrollbar-width: thin;
         scrollbar-color: #CBD5E1 transparent;
+        padding: 0.25rem 0;
     }
 
     .spark-gallery-thumb {
         flex-shrink: 0;
-        width: 72px;
-        height: 72px;
-        border: 2px solid #E2E8F0;
+        width: 64px;
+        height: 64px;
+        border: 2px solid transparent;
         cursor: pointer;
         padding: 0;
-        background: none;
+        background: #F8FAFC;
         overflow: hidden;
-        transition: border-color 150ms ease-out;
+        transition: border-color 200ms ease-out, opacity 200ms ease-out;
+        opacity: 0.6;
     }
 
     .spark-gallery-thumb:hover {
-        border-color: #94A3B8;
+        opacity: 1;
+        border-color: #CBD5E1;
     }
 
     .spark-gallery-thumb-active {
+        opacity: 1 !important;
         border-color: var(--primary-color) !important;
     }
 
-    /* Hide gallery nav arrows until JS initializes */
+    /* Nav arrows — minimal pill, appear on hover */
     .spark-gallery-prev,
     .spark-gallery-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #475569;
         opacity: 0;
-        transition: opacity 150ms ease-out;
+        transition: opacity 200ms ease-out, background-color 150ms ease-out;
+        z-index: 2;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .spark-gallery-prev { left: 0.75rem; }
+    .spark-gallery-next { right: 0.75rem; }
+
+    .spark-gallery-prev:hover,
+    .spark-gallery-next:hover {
+        background: rgba(255, 255, 255, 1);
+        color: #1E293B;
     }
 
     .spark-gallery:hover .spark-gallery-prev,
@@ -323,6 +368,105 @@
     .spark-gallery:focus-within .spark-gallery-prev,
     .spark-gallery:focus-within .spark-gallery-next {
         opacity: 1;
+    }
+
+    /* ─── Search Overlay ─── */
+
+    .search-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 200ms ease-out, visibility 200ms ease-out;
+    }
+
+    .search-overlay-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .search-overlay-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .search-overlay-content {
+        position: relative;
+        width: 100%;
+        max-width: 640px;
+        margin-top: 5rem;
+        padding: 0 1rem;
+        z-index: 1;
+        transform: translateY(-12px);
+        transition: transform 200ms ease-out;
+    }
+
+    .search-overlay-visible .search-overlay-content {
+        transform: translateY(0);
+    }
+
+    .search-overlay-form {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .search-overlay-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        color: #1E293B;
+        background: transparent;
+    }
+
+    .search-overlay-input::placeholder {
+        color: #94A3B8;
+    }
+
+    .search-overlay-submit {
+        padding: 0.75rem;
+        color: #475569;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .search-overlay-submit:hover {
+        color: #1E293B;
+    }
+
+    .search-overlay-close {
+        padding: 0.75rem;
+        color: #94A3B8;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .search-overlay-close:hover {
+        color: #475569;
+    }
+
+    /* Screen reader only utility */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 
     /* ─── Focus Visible ─── */

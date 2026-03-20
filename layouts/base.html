@@ -147,26 +147,25 @@
     {# Modals #}
     {% block modals %}{% endblock modals %}
 
-    {# Theme + vendor JS #}
+    {# Theme JS — zero jQuery, zero Bootstrap, pure vanilla #}
     {% block scripts %}
-        <script type="text/javascript" src="{{ 'js/jquery-3.6.0.min.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
     {% endblock %}
 
-    {# Platform core JS (validation, cart helpers — depends on jQuery above) #}
-    {% core_js %}
-
-    {# Spark gallery + Web Components #}
+    {# Spark components #}
     <script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
 
+    {# Side cart (platform's side_cart.js is vanilla JS + GraphQL, no jQuery) #}
+    {% include 'partials/side_cart.html' %}
+
+    {# Platform compatibility — replaces jQuery-dependent core_js with vanilla JS #}
+    <script type="text/javascript" src="{{ 'js/spark-platform.js'|asset_url }}"></script>
+
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
-
-    {# Side cart (depends on platform's cart.js + side_cart.js from core_js) #}
-    {% include 'partials/side_cart.html' %}
 
     {% app_hook 'global_footer' %}
 

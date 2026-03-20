@@ -9,8 +9,9 @@
     </div>
 </form>
 
+{# jscookie.js is vanilla JS (no jQuery) — used by side_cart.js for cart ID cookie #}
 <script src="{% static 'shop/js/jscookie.js' %}"></script>
-<script src="{% static 'shop/js/cart.js' %}"></script>
+{# cart.js REMOVED — was jQuery plugin ($.fn.cart). SparkSideCart handles open/close/toggle. #}
 
 <script>
     const SIDECART_MSGS = {
@@ -95,7 +96,7 @@
         return { open: open, close: close, toggle: toggle, isOpen: isOpen };
     })();
 
-    // Handle data-dismiss="side-cart" clicks (platform renders this, expects Bootstrap JS)
+    // Handle data-dismiss="side-cart" clicks (platform renders this in cart HTML)
     document.addEventListener('click', function(e) {
         var btn = e.target.closest('[data-dismiss="side-cart"]');
         if (btn) SparkSideCart.close();

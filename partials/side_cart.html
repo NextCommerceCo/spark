@@ -77,6 +77,25 @@
         return modal && modal.classList.contains('show');
     }
 
+    // Handle data-dismiss="side-cart" clicks (platform renders this, expects Bootstrap JS)
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-dismiss="side-cart"]');
+        if (btn) sparkCloseSideCart();
+    });
+
+    // Also close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sparkIsSideCartOpen()) sparkCloseSideCart();
+    });
+
+    // Also close on backdrop click (click on .sidecart outside .sidecart-dialog)
+    var cartModal = document.getElementById('cart-modal');
+    if (cartModal) {
+        cartModal.addEventListener('click', function(e) {
+            if (e.target === cartModal) sparkCloseSideCart();
+        });
+    }
+
     // Spark integration: when Web Components add to cart via GraphQL,
     // refresh the platform side cart and optionally open it.
     var sparkSidecartOpenOnAdd = true;
@@ -106,17 +125,6 @@
         });
 
         observer.observe(btn, { childList: true, subtree: true });
-    })();
-
-    // Keep body class in sync when platform JS closes the cart (X button)
-    (function() {
-        var modal = document.getElementById('cart-modal');
-        if (!modal) return;
-        new MutationObserver(function() {
-            if (!modal.classList.contains('show')) {
-                document.body.classList.remove('sidecart-open');
-            }
-        }).observe(modal, { attributes: true, attributeFilter: ['class'] });
     })();
 
     // Listen for spark:cart:toggle event (from header cart icon or other sources)

@@ -4,5 +4,6 @@
     "homepage_hero_cta": "Shop now",
     "ab_link_text": "Learn more",
     "enable_social": false,
+    "product_gallery_layout": "bottom",
     "product_reviews": true
 }

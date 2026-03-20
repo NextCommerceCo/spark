@@ -241,6 +241,90 @@
         100% { transform: scale(1); }
     }
 
+    /* ─── Product Gallery ─── */
+
+    .spark-gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Left layout: thumbnails on the left (desktop only) */
+    @media (min-width: 768px) {
+        .spark-gallery-left {
+            flex-direction: row-reverse;
+            gap: 0.75rem;
+        }
+
+        .spark-gallery-left .spark-gallery-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .spark-gallery-left .spark-gallery-thumbs {
+            flex-direction: column;
+            width: 80px;
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .spark-gallery-left .spark-gallery-thumb {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+    }
+
+    .spark-gallery-main {
+        position: relative;
+        overflow: hidden;
+        background-color: #F8FAFC;
+    }
+
+    .spark-gallery-thumbs {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: #CBD5E1 transparent;
+    }
+
+    .spark-gallery-thumb {
+        flex-shrink: 0;
+        width: 72px;
+        height: 72px;
+        border: 2px solid #E2E8F0;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+        overflow: hidden;
+        transition: border-color 150ms ease-out;
+    }
+
+    .spark-gallery-thumb:hover {
+        border-color: #94A3B8;
+    }
+
+    .spark-gallery-thumb-active {
+        border-color: var(--primary-color) !important;
+    }
+
+    /* Hide gallery nav arrows until JS initializes */
+    .spark-gallery-prev,
+    .spark-gallery-next {
+        opacity: 0;
+        transition: opacity 150ms ease-out;
+    }
+
+    .spark-gallery:hover .spark-gallery-prev,
+    .spark-gallery:hover .spark-gallery-next,
+    .spark-gallery:focus-within .spark-gallery-prev,
+    .spark-gallery:focus-within .spark-gallery-next {
+        opacity: 1;
+    }
+
     /* ─── Focus Visible ─── */
 
     :focus-visible {

@@ -280,6 +280,19 @@
         ]
     },
     "Product": {
+        "Product Images": [
+            {
+                "name": "product_gallery_layout",
+                "label": "Image Gallery Layout",
+                "type": "radio",
+                "options": [
+                    {"name": "Thumbnails below image", "value": "bottom"},
+                    {"name": "Thumbnails to the left", "value": "left"}
+                ],
+                "default": "bottom",
+                "help_text": "Position of thumbnail navigation on product pages."
+            }
+        ],
         "Product Reviews": [
             {
                 "name": "product_reviews",

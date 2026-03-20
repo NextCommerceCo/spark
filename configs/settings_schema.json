@@ -279,6 +279,16 @@
             }
         ]
     },
+    "Product": {
+        "Product Reviews": [
+            {
+                "name": "product_reviews",
+                "label": "Enable Product Reviews",
+                "type": "checkbox",
+                "help_text": "Show customer reviews on product pages."
+            }
+        ]
+    },
     "Advanced": {
         "Advanced": [
             {

@@ -55,6 +55,22 @@
                     {{ product.get_title }}
                 </h1>
 
+                {# Star rating summary #}
+                {% if settings.product_reviews and product.rating %}
+                    <a href="#reviews" class="flex items-center gap-2 mt-2 group">
+                        <div class="flex text-amber-400 text-sm">
+                            {% for i in '12345' %}
+                                {% if forloop.counter <= product.rating %}
+                                    <span>&#9733;</span>
+                                {% else %}
+                                    <span class="text-slate-200">&#9733;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-xs text-slate-400 group-hover:text-slate-600">({{ product.num_approved_reviews }})</span>
+                    </a>
+                {% endif %}
+
                 {# Price #}
                 {% purchase_info_for_product request product as session %}
                 <div class="mt-4">
@@ -135,6 +151,98 @@
 
     {% app_hook 'product_footer' %}
 </div>
+
+{# Recommended products #}
+{% if product.sorted_recommended_products %}
+<section class="border-t border-slate-200">
+    <div class="container py-12 md:py-16">
+        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t "store.catalogue.recommended_products_header" %}</h2>
+        <div class="product-grid">
+            {% for rec in product.sorted_recommended_products %}
+                {% include 'partials/product_card.html' with product=rec %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{# Reviews section #}
+{% if settings.product_reviews %}
+<section id="reviews" class="border-t border-slate-200">
+    <div class="container py-12 md:py-16">
+        {% if product.num_approved_reviews == 0 %}
+            <div class="text-center py-8">
+                <p class="text-slate-500 mb-4">{% t "store.catalogue.no_reviews" %}</p>
+                {% if product|is_review_permitted:user %}
+                    <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview"
+                       class="btn btn-secondary">
+                        {% t "store.catalogue.write_a_review" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <h2 class="text-2xl font-semibold text-slate-800 mb-2 sm:mb-0">{% t "store.catalogue.customer_reviews" %}</h2>
+                <div class="flex items-center gap-2">
+                    <div class="flex text-amber-400">
+                        {% for i in '12345' %}
+                            {% if forloop.counter <= product.rating %}
+                                <span>&#9733;</span>
+                            {% else %}
+                                <span class="text-slate-200">&#9733;</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="text-sm text-slate-500">({{ product.num_approved_reviews }})</span>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                {% for review in product.reviews.approved.all|slice:":3" %}
+                    <div class="border border-slate-200 p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+                            <h3 class="font-medium text-slate-800">{{ review.title }}</h3>
+                            <div class="flex text-amber-400 text-sm">
+                                {% for i in '12345' %}
+                                    {% if forloop.counter <= review.score %}
+                                        <span>&#9733;</span>
+                                    {% else %}
+                                        <span class="text-slate-200">&#9733;</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3">{{ review.body|striptags }}</p>
+                        <p class="text-xs text-slate-400">
+                            {% if review.user == user %}
+                                {% t "store.review.reviewed_by_you" with review_date=review.date_created %}
+                            {% else %}
+                                {% t "store.review.reviewed_by_other" with name=review.reviewer_name review_date=review.date_created %}
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-8">
+                {% if product.num_approved_reviews > 3 %}
+                    <a href="{% url 'catalogue:reviews-list' product_slug=product.slug product_pk=product.id %}"
+                       class="btn btn-primary">
+                        {% t "store.catalogue.see_all_reviews" %}
+                    </a>
+                {% endif %}
+                {% if product|is_review_permitted:user %}
+                    <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview"
+                       class="btn btn-secondary">
+                        {% t "store.catalogue.write_a_review" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
 {% endblock %}
 
 {% block extrascripts %}

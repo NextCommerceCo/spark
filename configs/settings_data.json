@@ -3,5 +3,6 @@
     "footer_menu": "footer_menu",
     "homepage_hero_cta": "Shop now",
     "ab_link_text": "Learn more",
-    "enable_social": false
+    "enable_social": false,
+    "product_reviews": true
 }

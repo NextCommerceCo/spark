@@ -1,11 +1,11 @@
 # Spark
 
-A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Components, no bundler required.
+A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Components, zero jQuery, zero Bootstrap, no bundler required.
 
 ## Requirements
 
 - [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`)
-- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli)
+- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) (binary at `./tailwindcss`)
 
 ## Quick Start
 
@@ -15,57 +15,63 @@ A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Comp
    ntk init
    ```
 
-2. Compile CSS:
+2. Compile CSS and push:
    ```bash
-   ./tailwindcss -i css/input.css -o assets/main.css --minify
-   python3 scripts/sass-compat.py assets/main.css
+   ntk tailwind --minify
    ```
 
-3. Push to your store:
+3. Start development:
    ```bash
-   ntk push assets/main.css layouts/base.html
-   ```
-
-4. Start development:
-   ```bash
-   make dev
+   ntk watch
    ```
 
 ## Development
 
-`make dev` runs both the Tailwind CSS watcher and ntk watcher in parallel. Edit templates, partials, or CSS — changes push to your store automatically.
+`ntk watch` watches files, auto-compiles Tailwind (with sass-compat post-processing), and pushes changes to your store. Edit templates, partials, or CSS — changes go live automatically.
 
 | Command | Description |
 |---------|-------------|
-| `make dev` | Watch mode (Tailwind + ntk) |
-| `make css` | Compile Tailwind once |
-| `make build` | Compile + minify for production |
+| `ntk watch` | Watch mode — auto-compile Tailwind + push changes |
+| `ntk tailwind` | One-shot: compile Tailwind + sass-compat + push CSS |
+| `ntk tailwind --minify` | Production build: compile minified + push |
+| `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
 
 ## Structure
 
 ```
-Spark/
+spark/
 ├── assets/
 │   ├── main.css                  Compiled Tailwind output
 │   └── js/
 │       ├── spark-cart.js         GraphQL cart client
-│       ├── theme.js              Core vanilla JS
+│       ├── spark-gallery.js      PDP image gallery
+│       ├── spark-platform.js     Core platform JS (replaces jQuery)
+│       ├── theme.js              Theme utilities
 │       └── components/           Web Components (Shadow DOM)
 │           ├── spark-add-to-cart.js
 │           └── spark-quantity.js
-├── css/             Tailwind input (source of truth for styles)
+├── css/             Tailwind v4 input (source of truth for styles)
 ├── configs/         Theme settings schema + data
-├── docs/            Design documents
+├── docs/            Design documents + ecosystem roadmap
 ├── layouts/         Base template
 ├── locales/         Translation files (11 languages)
 ├── partials/        Reusable fragments + SVG icons
 ├── scripts/         Build tools (sass-compat.py)
-└── templates/       Page templates (15 pages)
+└── templates/       Page templates (18 pages)
 ```
+
+## Features
+
+- **Zero legacy dependencies** — no jQuery, no Bootstrap. Pure vanilla JS + Web Components.
+- **Web Components** — `<spark-add-to-cart>` and `<spark-quantity>` with Shadow DOM, progressive enhancement, and no-JS fallbacks.
+- **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.
+- **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
+- **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
+- **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
 ## Design System
 
-All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, colors, spacing, motion, interaction states, and accessibility. Read it before making any UI change.
+All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, colors, spacing, motion, interaction states, accessibility, and anti-slop rules. Read it before making any UI change.
 
 ## License
 

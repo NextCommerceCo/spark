@@ -99,6 +99,10 @@
     </script>
 
     {% block extrastyles %}{% endblock extrastyles %}
+
+    {% if settings.custom_css %}
+        <style>{{ settings.custom_css|safe }}</style>
+    {% endif %}
     {% block extrahead %}{% endblock extrahead %}
     {% block tracking %}{% endblock tracking %}
 
@@ -110,9 +114,9 @@
     {% block layout %}
         {% if not settings.account_only %}
 
-            {# Announcement bar #}
+            {# Announcement bar — respects ab_placement setting #}
             {% block announcement_bar %}
-                {% if settings.ab_text %}
+                {% if settings.ab_text and settings.ab_placement != 'none' and settings.ab_placement != 'home' %}
                     {% include "partials/announcement_bar.html" %}
                 {% endif %}
             {% endblock announcement_bar %}

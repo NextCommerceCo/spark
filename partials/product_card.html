@@ -5,11 +5,16 @@
 <a href="{{ product.get_absolute_url }}" class="product-card group">
     {% with image=product.primary_image %}
         {% if image.original %}
-            {% image_thumbnail image.original "400x400" crop="center" as thumb %}
+            {% if settings.product_media_fit == 'cover' %}
+                {% image_thumbnail image.original "400x400" crop="center" as thumb %}
+            {% else %}
+                {% image_thumbnail image.original "400x" as thumb %}
+            {% endif %}
             <img src="{{ thumb.url }}"
                  alt="{{ product.get_title }}"
                  width="400"
-                 height="400"
+                 {% if settings.product_media_fit == 'cover' %}height="400"{% endif %}
+                 class="{% if settings.product_media_fit == 'cover' %}object-cover aspect-square{% endif %}"
                  loading="lazy" />
         {% else %}
             <div class="aspect-square bg-slate-100 flex items-center justify-center">

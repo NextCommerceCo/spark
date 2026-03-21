@@ -178,7 +178,7 @@
                     </form>
                 {% endif %}
 
-                {% if languages_active_storefront %}
+                {% if languages_active_storefront and languages_active_storefront|length > 1 %}
                     <form action="{% url 'set_language' %}" method="post" class="inline">
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ language_neutral_url_path }}">

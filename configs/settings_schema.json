@@ -1,75 +1,342 @@
 {
-    "Typography": {
-        "Fonts": [
+    "Homepage": {
+        "Sections": [
             {
-                "name": "font_script",
-                "label": "Custom Font Embed Code",
-                "type": "html",
-                "help_text": "Paste a font embed code (e.g. Google Fonts link tag) to load custom fonts."
+                "name": "show_hero",
+                "label": "Show Hero",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display the hero banner on the homepage."
             },
             {
-                "name": "font_body",
-                "label": "Body Font Family",
-                "type": "text",
-                "help_text": "CSS font-family for body text. Leave blank for system font stack.",
-                "max_length": 500
+                "name": "show_featured_product",
+                "label": "Show Featured Product",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a single featured product spotlight on the homepage."
             },
             {
-                "name": "font_header",
-                "label": "Heading Font Family",
-                "type": "text",
-                "help_text": "CSS font-family for headings. Leave blank to inherit body font.",
-                "max_length": 500
+                "name": "show_featured_products",
+                "label": "Show Featured Products",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display the featured products grid on the homepage."
+            },
+            {
+                "name": "show_featured_categories",
+                "label": "Show Featured Categories",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display the featured categories section on the homepage."
             }
         ],
-        "Colors": [
+        "Hero": [
             {
-                "name": "body_text_color",
-                "label": "Body Text Color",
-                "type": "color",
-                "help_text": "Default color for body text."
+                "name": "homepage_hero_image",
+                "label": "Hero Image",
+                "type": "image_picker",
+                "help_text": "Full-width hero image. Use a high-quality product or lifestyle photo."
             },
             {
-                "name": "body_header_color",
-                "label": "Heading Color",
-                "type": "color",
-                "help_text": "Default color for headings."
+                "name": "homepage_hero_image_mobile",
+                "label": "Hero Image (Mobile)",
+                "type": "image_picker",
+                "help_text": "Optional mobile-optimized hero image. Falls back to desktop image if not set."
             },
             {
-                "name": "body_link_color",
-                "label": "Link Color",
+                "name": "homepage_hero_heading",
+                "label": "Hero Heading",
+                "type": "text",
+                "help_text": "Large heading text overlaid on the hero image.",
+                "max_length": 100
+            },
+            {
+                "name": "homepage_hero_subheading",
+                "label": "Hero Subheading",
+                "type": "text",
+                "help_text": "Smaller text below the heading.",
+                "max_length": 200
+            },
+            {
+                "name": "homepage_hero_text_color",
+                "label": "Hero Text Color",
                 "type": "color",
-                "help_text": "Default color for links."
+                "help_text": "Color for text on the hero image. Leave blank for white."
+            },
+            {
+                "name": "homepage_hero_text_align",
+                "label": "Hero Text Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of heading and subheading text on the hero."
+            },
+            {
+                "name": "homepage_hero_height",
+                "label": "Hero Height",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    },
+                    {
+                        "name": "Full Screen",
+                        "value": "full"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Minimum height of the hero section."
+            },
+            {
+                "name": "homepage_hero_overlay_color",
+                "label": "Hero Overlay Color",
+                "type": "color",
+                "help_text": "Color overlay on the hero image for text readability. Leave blank for no overlay."
+            },
+            {
+                "name": "homepage_hero_overlay_opacity",
+                "label": "Hero Overlay Opacity",
+                "type": "range",
+                "min": 0,
+                "max": 100,
+                "step": 5,
+                "unit": "%",
+                "default": 30,
+                "help_text": "Opacity of the hero overlay (0 = transparent, 100 = solid)."
+            },
+            {
+                "name": "homepage_hero_alt",
+                "label": "Hero Image Alt Text",
+                "type": "text",
+                "help_text": "Accessible description of the hero image.",
+                "max_length": 250
+            },
+            {
+                "name": "homepage_hero_link",
+                "label": "Hero Link URL",
+                "type": "url",
+                "help_text": "Where the hero button links to (e.g. /catalogue/).",
+                "max_length": 500
+            },
+            {
+                "name": "homepage_hero_cta",
+                "label": "Hero Button Text",
+                "type": "text",
+                "help_text": "Call-to-action button text.",
+                "max_length": 50,
+                "default": "Shop now"
+            }
+        ],
+        "Featured Product": [
+            {
+                "name": "featured_product",
+                "label": "Product",
+                "type": "product",
+                "help_text": "Select a single product to spotlight on the homepage."
+            },
+            {
+                "name": "featured_product_header",
+                "label": "Section Heading",
+                "type": "text",
+                "help_text": "Heading above the featured product. Leave blank to hide.",
+                "max_length": 250
+            },
+            {
+                "name": "featured_product_description",
+                "label": "Custom Description",
+                "type": "richtext",
+                "help_text": "Override the product description with custom text.",
+                "max_length": 1000
+            },
+            {
+                "name": "featured_product_cta_text",
+                "label": "Button Text",
+                "type": "text",
+                "help_text": "Call-to-action button text.",
+                "max_length": 100,
+                "default": "View Product"
+            },
+            {
+                "name": "featured_product_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for white."
+            }
+        ],
+        "Featured Products": [
+            {
+                "name": "featured_products",
+                "label": "Products",
+                "type": "products",
+                "help_text": "Products to feature on the homepage."
+            },
+            {
+                "name": "featured_products_header",
+                "label": "Section Heading",
+                "type": "text",
+                "help_text": "Heading above the featured products grid. Leave blank to hide.",
+                "max_length": 250,
+                "default": "Featured Products"
+            },
+            {
+                "name": "featured_products_columns",
+                "label": "Columns (Desktop)",
+                "type": "range",
+                "min": 2,
+                "max": 4,
+                "step": 1,
+                "unit": "",
+                "default": 3,
+                "help_text": "Number of product columns on desktop."
+            },
+            {
+                "name": "featured_products_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for white."
+            }
+        ],
+        "Featured Categories": [
+            {
+                "name": "featured_categories",
+                "label": "Categories",
+                "type": "product_categories",
+                "help_text": "Categories to feature on the homepage."
+            },
+            {
+                "name": "featured_categories_header",
+                "label": "Section Heading",
+                "type": "text",
+                "help_text": "Heading above the featured categories. Leave blank to hide.",
+                "max_length": 250,
+                "default": "Shop by Category"
+            },
+            {
+                "name": "featured_categories_columns",
+                "label": "Columns (Desktop)",
+                "type": "range",
+                "min": 2,
+                "max": 4,
+                "step": 1,
+                "unit": "",
+                "default": 2,
+                "help_text": "Number of category columns on desktop."
+            },
+            {
+                "name": "featured_categories_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for white."
             }
         ]
     },
-    "Navigation": {
-        "Main Navigation": [
+    "Product Pages": {
+        "Product Images": [
             {
-                "name": "main_menu",
-                "label": "Main Menu",
-                "type": "menu",
-                "help_text": "Primary site navigation menu.",
-                "default": "main_menu"
-            }
-        ],
-        "Navbar Style": [
-            {
-                "name": "navbar_bg_color",
-                "label": "Navbar Background Color",
-                "type": "color",
-                "help_text": "Background color for the header navigation bar. Leave blank for white."
+                "name": "product_gallery_layout",
+                "label": "Image Gallery Layout",
+                "type": "radio",
+                "options": [
+                    {
+                        "name": "Thumbnails below image",
+                        "value": "bottom"
+                    },
+                    {
+                        "name": "Thumbnails to the left",
+                        "value": "left"
+                    }
+                ],
+                "default": "bottom",
+                "help_text": "Position of thumbnail navigation on product pages."
             },
             {
-                "name": "navbar_link_color",
-                "label": "Navbar Link Color",
-                "type": "color",
-                "help_text": "Text/icon color for the header navigation. Leave blank for default."
+                "name": "product_media_fit",
+                "label": "Image Display",
+                "type": "radio",
+                "options": [
+                    {
+                        "name": "Original (fit)",
+                        "value": "fit"
+                    },
+                    {
+                        "name": "Cover (crop to fill)",
+                        "value": "cover"
+                    }
+                ],
+                "default": "fit",
+                "help_text": "How product images are displayed in cards and galleries."
+            }
+        ],
+        "Product Information": [
+            {
+                "name": "variant_picker",
+                "label": "Variant Picker Style",
+                "type": "radio",
+                "options": [
+                    {
+                        "name": "Dropdown",
+                        "value": "select"
+                    },
+                    {
+                        "name": "Buttons",
+                        "value": "radio"
+                    }
+                ],
+                "default": "select",
+                "help_text": "How product variants (size, color, etc.) are displayed."
+            },
+            {
+                "name": "product_description_placement",
+                "label": "Description Layout",
+                "type": "radio",
+                "options": [
+                    {
+                        "name": "Beside images (column)",
+                        "value": "column"
+                    },
+                    {
+                        "name": "Below images (stacked)",
+                        "value": "stacked"
+                    }
+                ],
+                "default": "column",
+                "help_text": "Where the product description appears relative to the image gallery."
+            }
+        ],
+        "Product Reviews": [
+            {
+                "name": "product_reviews",
+                "label": "Enable Product Reviews",
+                "type": "checkbox",
+                "help_text": "Show customer reviews on product pages."
+            }
+        ],
+        "Recommended Products": [
+            {
+                "name": "show_recommended",
+                "label": "Show Recommended Products",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display recommended products section on product pages."
             }
         ]
     },
     "Footer": {
-        "Footer": [
+        "Footer Navigation": [
             {
                 "name": "footer_menu",
                 "label": "Footer Menu",
@@ -80,21 +347,21 @@
         "Footer Style": [
             {
                 "name": "footer_bg_color",
-                "label": "Footer Background Color",
+                "label": "Background Color",
                 "type": "color",
-                "help_text": "Background color for the footer. Leave blank for light gray."
+                "help_text": "Footer background color. Leave blank for light gray."
             },
             {
                 "name": "footer_text_color",
-                "label": "Footer Text Color",
+                "label": "Text Color",
                 "type": "color",
-                "help_text": "Text color for the footer. Leave blank for default."
+                "help_text": "Footer text color. Leave blank for default."
             },
             {
                 "name": "footer_link_color",
-                "label": "Footer Link Color",
+                "label": "Link Color",
                 "type": "color",
-                "help_text": "Link color in the footer. Leave blank for default."
+                "help_text": "Footer link color. Leave blank for default."
             }
         ],
         "Social Media": [
@@ -169,18 +436,54 @@
                 "multi-select": true,
                 "help_text": "Select payment method icons to display in the footer.",
                 "options": [
-                    {"name": "Visa", "value": "visa"},
-                    {"name": "Mastercard", "value": "mc"},
-                    {"name": "PayPal", "value": "ppal"},
-                    {"name": "Klarna", "value": "klarna"},
-                    {"name": "Amex", "value": "amex"},
-                    {"name": "Diners", "value": "diners"},
-                    {"name": "Discover", "value": "discover"},
-                    {"name": "Maestro", "value": "maestro"},
-                    {"name": "JCB", "value": "jcb"},
-                    {"name": "Dankort", "value": "dankort"},
-                    {"name": "Google Pay", "value": "googlepay"},
-                    {"name": "Apple Pay", "value": "applepay"}
+                    {
+                        "name": "Visa",
+                        "value": "visa"
+                    },
+                    {
+                        "name": "Mastercard",
+                        "value": "mc"
+                    },
+                    {
+                        "name": "PayPal",
+                        "value": "ppal"
+                    },
+                    {
+                        "name": "Klarna",
+                        "value": "klarna"
+                    },
+                    {
+                        "name": "Amex",
+                        "value": "amex"
+                    },
+                    {
+                        "name": "Diners",
+                        "value": "diners"
+                    },
+                    {
+                        "name": "Discover",
+                        "value": "discover"
+                    },
+                    {
+                        "name": "Maestro",
+                        "value": "maestro"
+                    },
+                    {
+                        "name": "JCB",
+                        "value": "jcb"
+                    },
+                    {
+                        "name": "Dankort",
+                        "value": "dankort"
+                    },
+                    {
+                        "name": "Google Pay",
+                        "value": "googlepay"
+                    },
+                    {
+                        "name": "Apple Pay",
+                        "value": "applepay"
+                    }
                 ]
             }
         ],
@@ -193,104 +496,120 @@
             }
         ]
     },
-    "Homepage": {
-        "Sections": [
+    "Style": {
+        "Fonts": [
             {
-                "name": "show_hero",
-                "label": "Show Hero",
-                "type": "checkbox",
-                "default": false,
-                "help_text": "Display the hero banner on the homepage. Enable once you have uploaded a hero image."
+                "name": "font_script",
+                "label": "Custom Font Embed Code",
+                "type": "html",
+                "help_text": "Paste a font embed code (e.g. Google Fonts link tag) to load custom fonts."
             },
             {
-                "name": "show_featured_products",
-                "label": "Show Featured Products",
-                "type": "checkbox",
-                "default": true,
-                "help_text": "Display the featured products section on the homepage."
-            },
-            {
-                "name": "show_featured_categories",
-                "label": "Show Featured Categories",
-                "type": "checkbox",
-                "default": true,
-                "help_text": "Display the featured categories section on the homepage."
-            }
-        ],
-        "Hero": [
-            {
-                "name": "homepage_hero_image",
-                "label": "Hero Image",
-                "type": "image_picker",
-                "help_text": "Full-width hero image. Use a high-quality product or lifestyle photo."
-            },
-            {
-                "name": "homepage_hero_heading",
-                "label": "Hero Heading",
+                "name": "font_body",
+                "label": "Body Font Family",
                 "type": "text",
-                "help_text": "Large heading text overlaid on the hero image.",
-                "max_length": 100
-            },
-            {
-                "name": "homepage_hero_subheading",
-                "label": "Hero Subheading",
-                "type": "text",
-                "help_text": "Smaller text below the heading on the hero image.",
-                "max_length": 200
-            },
-            {
-                "name": "homepage_hero_text_color",
-                "label": "Hero Text Color",
-                "type": "color",
-                "help_text": "Color for heading and subheading text on the hero. Leave blank for white."
-            },
-            {
-                "name": "homepage_hero_alt",
-                "label": "Hero Image Alt Text",
-                "type": "text",
-                "help_text": "Accessible description of the hero image.",
-                "max_length": 250
-            },
-            {
-                "name": "homepage_hero_link",
-                "label": "Hero Link URL",
-                "type": "url",
-                "help_text": "Where the hero image links to (e.g. /catalogue/category/new-arrivals/).",
+                "help_text": "CSS font-family for body text. Leave blank for system font stack.",
                 "max_length": 500
             },
             {
-                "name": "homepage_hero_cta",
-                "label": "Hero Button Text",
+                "name": "font_header",
+                "label": "Heading Font Family",
                 "type": "text",
-                "help_text": "Call-to-action button text on the hero.",
-                "max_length": 50,
-                "default": "Shop now"
+                "help_text": "CSS font-family for headings. Leave blank to inherit body font.",
+                "max_length": 500
             }
         ],
-        "Featured Products": [
+        "Colors": [
             {
-                "name": "featured_products",
-                "label": "Featured Products",
-                "type": "products",
-                "help_text": "Products to feature on the homepage."
-            }
-        ],
-        "Featured Categories": [
+                "name": "body_text_color",
+                "label": "Body Text Color",
+                "type": "color",
+                "help_text": "Default color for body text."
+            },
             {
-                "name": "featured_categories",
-                "label": "Featured Categories",
-                "type": "product_categories",
-                "help_text": "Categories to feature on the homepage."
+                "name": "body_header_color",
+                "label": "Heading Color",
+                "type": "color",
+                "help_text": "Default color for headings."
+            },
+            {
+                "name": "body_link_color",
+                "label": "Link Color",
+                "type": "color",
+                "help_text": "Default color for links."
             }
         ]
     },
-    "Announcement Bar": {
+    "Advanced": {
+        "Cart": [
+            {
+                "name": "sidecart_open_on_add",
+                "label": "Open side cart on add to cart",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Automatically open the side cart when a product is added."
+            }
+        ],
+        "Site Settings": [
+            {
+                "name": "site_index",
+                "label": "Disable Search Indexing",
+                "type": "checkbox",
+                "help_text": "Add noindex, nofollow meta tag to prevent search engines from indexing."
+            },
+            {
+                "name": "account_only",
+                "label": "Account Only Mode",
+                "type": "checkbox",
+                "help_text": "Hide navigation and storefront content. Shows only account login."
+            },
+            {
+                "name": "account_only_show_footer",
+                "label": "Show Footer in Account Only",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display the footer (contact info, links, payment icons) on the account only screen. Disable for a minimal login-only view."
+            }
+        ],
+        "Custom Code": [
+            {
+                "name": "custom_css",
+                "label": "Custom CSS",
+                "type": "css",
+                "help_text": "Add custom CSS styles. Warning: custom styles may need updating when the theme is updated."
+            }
+        ]
+    },
+    "Navigation": {
+        "Main Navigation": [
+            {
+                "name": "main_menu",
+                "label": "Main Menu",
+                "type": "menu",
+                "help_text": "Primary site navigation menu.",
+                "default": "main_menu"
+            }
+        ],
+        "Navbar Style": [
+            {
+                "name": "navbar_bg_color",
+                "label": "Navbar Background Color",
+                "type": "color",
+                "help_text": "Background color for the header. Leave blank for white."
+            },
+            {
+                "name": "navbar_link_color",
+                "label": "Navbar Link Color",
+                "type": "color",
+                "help_text": "Text and icon color for the header. Leave blank for default."
+            }
+        ],
         "Announcement Bar": [
             {
                 "name": "ab_text",
                 "label": "Announcement Text",
                 "type": "text",
-                "help_text": "Short announcement displayed at the top of every page. Leave blank to hide.",
+                "help_text": "Short announcement displayed at the top of the page. Leave blank to hide.",
                 "max_length": 250
             },
             {
@@ -307,77 +626,39 @@
             },
             {
                 "name": "ab_link",
-                "label": "Announcement Link",
+                "label": "Link URL",
                 "type": "text",
                 "help_text": "Optional link URL for the announcement.",
                 "max_length": 500
             },
             {
                 "name": "ab_link_text",
-                "label": "Announcement Link Text",
+                "label": "Link Text",
                 "type": "text",
                 "help_text": "Text for the announcement link.",
                 "max_length": 100,
                 "default": "Learn more"
-            }
-        ]
-    },
-    "Product": {
-        "Product Images": [
-            {
-                "name": "product_gallery_layout",
-                "label": "Image Gallery Layout",
-                "type": "radio",
-                "options": [
-                    {"name": "Thumbnails below image", "value": "bottom"},
-                    {"name": "Thumbnails to the left", "value": "left"}
-                ],
-                "default": "bottom",
-                "help_text": "Position of thumbnail navigation on product pages."
-            }
-        ],
-        "Product Reviews": [
-            {
-                "name": "product_reviews",
-                "label": "Enable Product Reviews",
-                "type": "checkbox",
-                "help_text": "Show customer reviews on product pages."
-            }
-        ],
-        "Recommended Products": [
-            {
-                "name": "show_recommended",
-                "label": "Show Recommended Products",
-                "type": "checkbox",
-                "default": true,
-                "help_text": "Display recommended products section on product pages."
-            }
-        ]
-    },
-    "Cart": {
-        "Side Cart": [
-            {
-                "name": "sidecart_open_on_add",
-                "label": "Open side cart on add to cart",
-                "type": "checkbox",
-                "default": true,
-                "help_text": "Automatically open the side cart when a product is added. If disabled, only the cart icon badge updates."
-            }
-        ]
-    },
-    "Advanced": {
-        "Advanced": [
-            {
-                "name": "site_index",
-                "label": "Disable Search Indexing",
-                "type": "checkbox",
-                "help_text": "Add noindex, nofollow meta tag to prevent search engines from indexing this store."
             },
             {
-                "name": "account_only",
-                "label": "Account Only Mode",
-                "type": "checkbox",
-                "help_text": "Hide navigation, footer, and announcement bar. Useful for account-only storefronts."
+                "name": "ab_placement",
+                "label": "Show On",
+                "type": "radio",
+                "options": [
+                    {
+                        "name": "All Pages",
+                        "value": "all"
+                    },
+                    {
+                        "name": "Home Page Only",
+                        "value": "home"
+                    },
+                    {
+                        "name": "None",
+                        "value": "none"
+                    }
+                ],
+                "default": "all",
+                "help_text": "Where the announcement bar is displayed."
             }
         ]
     }

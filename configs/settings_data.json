@@ -1,10 +1,14 @@
 {
     "main_menu": "main_menu",
     "footer_menu": "footer_menu",
+    "show_hero": false,
+    "show_featured_products": true,
+    "show_featured_categories": true,
     "homepage_hero_cta": "Shop now",
     "ab_link_text": "Learn more",
     "enable_social": false,
     "product_gallery_layout": "bottom",
     "sidecart_open_on_add": true,
-    "product_reviews": true
+    "product_reviews": true,
+    "show_recommended": true
 }

@@ -10,22 +10,29 @@
 {# Homepage — Product-led, no generic hero banners #}
 <main>
 
-{# Featured image / hero — full-bleed product or category image #}
-{% if settings.homepage_hero_image %}
+{# Hero section — controlled by show_hero toggle #}
+{% if settings.show_hero %}
+    {% if settings.homepage_hero_image %}
     <section class="relative overflow-hidden">
         <img src="{{ settings.homepage_hero_image }}"
              alt="{{ settings.homepage_hero_alt|default:store.name }}"
              class="w-full h-[50vh] md:h-[70vh] object-cover"
              fetchpriority="high" />
-        {% if settings.homepage_hero_link %}
-            <a href="{{ settings.homepage_hero_link }}"
-               class="absolute left-0 bottom-0 right-0 flex items-end p-8 md:p-12" style="top: 0;">
-                <span class="btn btn-primary">{{ settings.homepage_hero_cta|default:"Shop now" }}</span>
-            </a>
-        {% endif %}
+        <div class="absolute inset-0 flex flex-col items-start justify-end p-8 md:p-12"
+             style="color: {{ settings.homepage_hero_text_color|default:'#ffffff' }};">
+            {% if settings.homepage_hero_heading %}
+                <h1 class="text-3xl md:text-5xl font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
+            {% endif %}
+            {% if settings.homepage_hero_subheading %}
+                <p class="text-base md:text-lg mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ settings.homepage_hero_subheading }}</p>
+            {% endif %}
+            {% if settings.homepage_hero_link %}
+                <a href="{{ settings.homepage_hero_link }}" class="btn btn-primary">{{ settings.homepage_hero_cta|default:"Shop now" }}</a>
+            {% endif %}
+        </div>
     </section>
-{% else %}
-    {# Hero placeholder — visible until merchant adds a hero image #}
+    {% else %}
+    {# Hero placeholder — visible in dashboard preview until merchant adds an image #}
     <section class="border-2 border-dashed border-slate-200 mx-4 md:mx-8 mt-6">
         <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center">
             <svg class="w-10 h-10 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -35,19 +42,21 @@
             <p class="text-xs text-slate-300">Settings &rarr; Homepage &rarr; Hero Image</p>
         </div>
     </section>
+    {% endif %}
 {% endif %}
 
-{# Featured products #}
-{% if settings.featured_products|length > 0 %}
-<section class="container py-12 md:py-16">
-    <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.featured_products' %}</h2>
-    <div class="product-grid">
-        {% for product in settings.featured_products %}
-            {% include 'partials/product_card.html' with product=product %}
-        {% endfor %}
-    </div>
-</section>
-{% else %}
+{# Featured products — controlled by show_featured_products toggle #}
+{% if settings.show_featured_products %}
+    {% if settings.featured_products|length > 0 %}
+    <section class="container py-12 md:py-16">
+        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.featured_products' %}</h2>
+        <div class="product-grid">
+            {% for product in settings.featured_products %}
+                {% include 'partials/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
     {# Featured products placeholder #}
     <section class="container py-12 md:py-16">
         <div class="flex items-center justify-between mb-8">
@@ -78,31 +87,33 @@
         </div>
         <p class="text-center text-xs text-slate-300 mt-6">Featured Products &middot; Settings &rarr; Homepage &rarr; Featured Products</p>
     </section>
+    {% endif %}
 {% endif %}
 
-{# Categories #}
-{% if settings.featured_categories|length > 0 %}
-<section class="container py-12 md:py-16">
-    <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.categories' %}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% for category in settings.featured_categories %}
-            <a href="{{ category.get_absolute_url }}" class="relative group overflow-hidden">
-                {% if category.image %}
-                    <img src="{{ category.image.url }}"
-                         alt="{{ category.name }}"
-                         class="w-full h-48 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                         loading="lazy" />
-                {% else %}
-                    <div class="w-full h-48 md:h-64 bg-slate-100"></div>
-                {% endif %}
-                <div class="absolute inset-0 bg-black/20 flex items-end p-6">
-                    <h3 class="text-lg font-semibold text-white">{{ category.name }}</h3>
-                </div>
-            </a>
-        {% endfor %}
-    </div>
-</section>
-{% else %}
+{# Featured categories — controlled by show_featured_categories toggle #}
+{% if settings.show_featured_categories %}
+    {% if settings.featured_categories|length > 0 %}
+    <section class="container py-12 md:py-16">
+        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.categories' %}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for category in settings.featured_categories %}
+                <a href="{{ category.get_absolute_url }}" class="relative group overflow-hidden">
+                    {% if category.image %}
+                        <img src="{{ category.image.url }}"
+                             alt="{{ category.name }}"
+                             class="w-full h-48 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                             loading="lazy" />
+                    {% else %}
+                        <div class="w-full h-48 md:h-64 bg-slate-100"></div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-black/20 flex items-end p-6">
+                        <h3 class="text-lg font-semibold text-white">{{ category.name }}</h3>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
     {# Featured categories placeholder #}
     <section class="container py-12 md:py-16">
         <div class="flex items-center justify-between mb-8">
@@ -118,6 +129,7 @@
         </div>
         <p class="text-center text-xs text-slate-300 mt-6">Featured Categories &middot; Settings &rarr; Homepage &rarr; Featured Categories</p>
     </section>
+    {% endif %}
 {% endif %}
 
 </main>

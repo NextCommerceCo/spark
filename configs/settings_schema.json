@@ -194,20 +194,27 @@
         ]
     },
     "Homepage": {
-        "Featured Products": [
+        "Sections": [
             {
-                "name": "featured_products",
-                "label": "Featured Products",
-                "type": "products",
-                "help_text": "Products to feature on the homepage."
-            }
-        ],
-        "Featured Categories": [
+                "name": "show_hero",
+                "label": "Show Hero",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display the hero banner on the homepage. Enable once you have uploaded a hero image."
+            },
             {
-                "name": "featured_categories",
-                "label": "Featured Categories",
-                "type": "product_categories",
-                "help_text": "Categories to feature on the homepage."
+                "name": "show_featured_products",
+                "label": "Show Featured Products",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display the featured products section on the homepage."
+            },
+            {
+                "name": "show_featured_categories",
+                "label": "Show Featured Categories",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display the featured categories section on the homepage."
             }
         ],
         "Hero": [
@@ -216,6 +223,26 @@
                 "label": "Hero Image",
                 "type": "image_picker",
                 "help_text": "Full-width hero image. Use a high-quality product or lifestyle photo."
+            },
+            {
+                "name": "homepage_hero_heading",
+                "label": "Hero Heading",
+                "type": "text",
+                "help_text": "Large heading text overlaid on the hero image.",
+                "max_length": 100
+            },
+            {
+                "name": "homepage_hero_subheading",
+                "label": "Hero Subheading",
+                "type": "text",
+                "help_text": "Smaller text below the heading on the hero image.",
+                "max_length": 200
+            },
+            {
+                "name": "homepage_hero_text_color",
+                "label": "Hero Text Color",
+                "type": "color",
+                "help_text": "Color for heading and subheading text on the hero. Leave blank for white."
             },
             {
                 "name": "homepage_hero_alt",
@@ -238,6 +265,22 @@
                 "help_text": "Call-to-action button text on the hero.",
                 "max_length": 50,
                 "default": "Shop now"
+            }
+        ],
+        "Featured Products": [
+            {
+                "name": "featured_products",
+                "label": "Featured Products",
+                "type": "products",
+                "help_text": "Products to feature on the homepage."
+            }
+        ],
+        "Featured Categories": [
+            {
+                "name": "featured_categories",
+                "label": "Featured Categories",
+                "type": "product_categories",
+                "help_text": "Categories to feature on the homepage."
             }
         ]
     },
@@ -299,6 +342,15 @@
                 "label": "Enable Product Reviews",
                 "type": "checkbox",
                 "help_text": "Show customer reviews on product pages."
+            }
+        ],
+        "Recommended Products": [
+            {
+                "name": "show_recommended",
+                "label": "Show Recommended Products",
+                "type": "checkbox",
+                "default": true,
+                "help_text": "Display recommended products section on product pages."
             }
         ]
     },

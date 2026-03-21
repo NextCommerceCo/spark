@@ -2,135 +2,551 @@
 
 {% block title %}{{ store.name }} - {{ store.tagline }}{% endblock %}
 
+{% block extrastyles %}
+<style>
+    @font-face {
+        font-family: 'Modern Times';
+        src: url("{{ 'fonts/ModernTimesRegular.woff2'|asset_url }}") format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+    .font-display { font-family: 'Modern Times', Georgia, serif; }
+    .bg-cream { background-color: #fefdf7; }
+    .bg-warm { background-color: #F7F1EA; }
+    .bg-wine { background-color: #3F0E0A; }
+    .text-wine { color: #3F0E0A; }
+    .btn-gold {
+        background-color: #FFC131;
+        color: #3F0E0A;
+        font-weight: 700;
+        border-radius: 9999px;
+        padding: 12px 32px;
+        font-size: 1.25rem;
+        display: inline-block;
+        text-align: center;
+        transition: opacity 150ms;
+    }
+    .btn-gold:hover { opacity: 0.9; }
+
+    /* AiryPour text scale — matches Intro Bootstrap 18px base */
+    main { font-size: 18px; line-height: 1.5; letter-spacing: -0.36px; }
+    main h1, main h2 { font-family: 'Modern Times', Georgia, serif; letter-spacing: -1.26px; }
+    main h1 { font-size: 2.625rem; line-height: 1.1; }
+    main h2 { font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.72px; }
+    @media (min-width: 768px) {
+        main h1 { font-size: 2.625rem; }
+        main h2 { font-size: 1.875rem; }
+    }
+</style>
+{% endblock extrastyles %}
+
+{% block announcement_bar %}
+    {% if settings.ab_text and settings.ab_placement != 'none' %}
+        {% if settings.ab_placement == 'all' or settings.ab_placement == 'home' %}
+            {% include "partials/announcement_bar.html" %}
+        {% endif %}
+    {% endif %}
+{% endblock announcement_bar %}
+
 {% block content_wrapper %}
 {% if settings.account_only %}
     {% include "partials/account_only.html" %}
 {% else %}
 
-{# Homepage — Product-led, no generic hero banners #}
 <main>
 
-{# Hero section — controlled by show_hero toggle #}
-{% if settings.show_hero %}
-    {% if settings.homepage_hero_image %}
-    <section class="relative overflow-hidden">
-        <img src="{{ settings.homepage_hero_image }}"
-             alt="{{ settings.homepage_hero_alt|default:store.name }}"
-             class="w-full h-[50vh] md:h-[70vh] object-cover"
-             fetchpriority="high" />
-        <div class="absolute inset-0 flex flex-col items-start justify-end p-8 md:p-12"
-             style="color: {{ settings.homepage_hero_text_color|default:'#ffffff' }};">
-            {% if settings.homepage_hero_heading %}
-                <h1 class="text-3xl md:text-5xl font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
-            {% endif %}
-            {% if settings.homepage_hero_subheading %}
-                <p class="text-base md:text-lg mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ settings.homepage_hero_subheading }}</p>
-            {% endif %}
-            {% if settings.homepage_hero_link %}
-                <a href="{{ settings.homepage_hero_link }}" class="btn btn-primary">{{ settings.homepage_hero_cta|default:"Shop now" }}</a>
-            {% endif %}
-        </div>
-    </section>
-    {% else %}
-    {# Hero placeholder — visible in dashboard preview until merchant adds an image #}
-    <section class="border-2 border-dashed border-slate-200 mx-4 md:mx-8 mt-6">
-        <div class="flex flex-col items-center justify-center py-20 md:py-32 text-center">
-            <svg class="w-10 h-10 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-            </svg>
-            <p class="text-sm font-medium text-slate-400 mb-1">Hero Image</p>
-            <p class="text-xs text-slate-300">Settings &rarr; Homepage &rarr; Hero Image</p>
-        </div>
-    </section>
-    {% endif %}
-{% endif %}
+{# HERO SECTION #}
+<section class="relative overflow-hidden min-h-[500px] md:min-h-[620px] bg-wine">
+    <img src="{{ 'img/hero-bg.webp'|asset_url }}"
+         alt="{{ store.name }}"
+         class="absolute inset-0 w-full h-full object-cover opacity-60"
+         fetchpriority="high" />
+    <div class="relative z-10 container flex items-center min-h-[500px] md:min-h-[620px] py-8">
+        <div class="max-w-xl">
+            {# Social proof #}
+            <div class="flex items-center gap-3 mb-6">
+                <img src="{{ 'img/rating-clients.webp'|asset_url }}" alt="Happy customers" class="w-16 h-auto" />
+                <span class="text-sm text-white/80">Loved by 10,000+ Happy Sippers</span>
+            </div>
 
-{# Featured products — controlled by show_featured_products toggle #}
-{% if settings.show_featured_products %}
-    {% if settings.featured_products|length > 0 %}
-    <section class="container py-12 md:py-16">
-        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.featured_products' %}</h2>
-        <div class="product-grid">
-            {% for product in settings.featured_products %}
-                {% include 'partials/product_card.html' with product=product %}
-            {% endfor %}
-        </div>
-    </section>
-    {% else %}
-    {# Featured products placeholder #}
-    <section class="container py-12 md:py-16">
-        <div class="flex items-center justify-between mb-8">
-            <div class="h-6 w-48 bg-slate-100 rounded"></div>
-        </div>
-        <div class="product-grid">
-            <div class="border-2 border-dashed border-slate-200">
-                <div class="aspect-square bg-slate-50"></div>
-                <div class="p-4 space-y-2">
-                    <div class="h-3 w-3/4 bg-slate-100 rounded"></div>
-                    <div class="h-3 w-1/3 bg-slate-100 rounded"></div>
-                </div>
-            </div>
-            <div class="border-2 border-dashed border-slate-200">
-                <div class="aspect-square bg-slate-50"></div>
-                <div class="p-4 space-y-2">
-                    <div class="h-3 w-3/4 bg-slate-100 rounded"></div>
-                    <div class="h-3 w-1/3 bg-slate-100 rounded"></div>
-                </div>
-            </div>
-            <div class="border-2 border-dashed border-slate-200">
-                <div class="aspect-square bg-slate-50"></div>
-                <div class="p-4 space-y-2">
-                    <div class="h-3 w-3/4 bg-slate-100 rounded"></div>
-                    <div class="h-3 w-1/3 bg-slate-100 rounded"></div>
-                </div>
-            </div>
-        </div>
-        <p class="text-center text-xs text-slate-300 mt-6">Featured Products &middot; Settings &rarr; Homepage &rarr; Featured Products</p>
-    </section>
-    {% endif %}
-{% endif %}
+            <h1 class="font-display text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+                Unlock the New Experience of Your Wine in Second
+            </h1>
+            <p class="text-base text-white/80 mb-6 leading-relaxed">
+                AiryPour instantly infuses oxygen into your wine as you pour, unlocking the full flavor profile of a 1-hour decant in just 1 second. No spills. No waiting. Just perfect wine.
+            </p>
 
-{# Featured categories — controlled by show_featured_categories toggle #}
-{% if settings.show_featured_categories %}
-    {% if settings.featured_categories|length > 0 %}
-    <section class="container py-12 md:py-16">
-        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t 'homepage.categories' %}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% for category in settings.featured_categories %}
-                <a href="{{ category.get_absolute_url }}" class="relative group overflow-hidden">
-                    {% if category.image %}
-                        <img src="{{ category.image.url }}"
-                             alt="{{ category.name }}"
-                             class="w-full h-48 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                             loading="lazy" />
-                    {% else %}
-                        <div class="w-full h-48 md:h-64 bg-slate-100"></div>
-                    {% endif %}
-                    <div class="absolute inset-0 bg-black/20 flex items-end p-6">
-                        <h3 class="text-lg font-semibold text-white">{{ category.name }}</h3>
-                    </div>
+            {# Feature pills #}
+            <ul class="flex flex-wrap gap-2 mb-8">
+                <li class="flex items-center gap-1.5 text-sm text-white bg-white/10 px-3 py-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    Instant Aeration
+                </li>
+                <li class="flex items-center gap-1.5 text-sm text-white bg-white/10 px-3 py-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    Zero-Drip Spout
+                </li>
+                <li class="flex items-center gap-1.5 text-sm text-white bg-white/10 px-3 py-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    Seal & Preserve
+                </li>
+                <li class="flex items-center gap-1.5 text-sm text-white bg-white/10 px-3 py-1.5 rounded-full">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    Easy Clean-up
+                </li>
+            </ul>
+
+            {# CTA #}
+            <div>
+                <a href="{% url 'catalogue:index' %}" class="btn-gold">
+                    Get 50% Off Today
                 </a>
-            {% endfor %}
-        </div>
-    </section>
-    {% else %}
-    {# Featured categories placeholder #}
-    <section class="container py-12 md:py-16">
-        <div class="flex items-center justify-between mb-8">
-            <div class="h-6 w-52 bg-slate-100 rounded"></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border-2 border-dashed border-slate-200 h-48 md:h-64 flex items-end p-6">
-                <div class="h-4 w-32 bg-slate-100 rounded"></div>
-            </div>
-            <div class="border-2 border-dashed border-slate-200 h-48 md:h-64 flex items-end p-6">
-                <div class="h-4 w-28 bg-slate-100 rounded"></div>
+                <div class="flex items-center gap-2 mt-3">
+                    <img src="{{ 'img/icons/icon-checkmark-shield.svg'|asset_url }}" alt="" class="w-5 h-5" />
+                    <span class="text-xs text-white/60">30-Day "Perfect Pour" Guarantee</span>
+                </div>
             </div>
         </div>
-        <p class="text-center text-xs text-slate-300 mt-6">Featured Categories &middot; Settings &rarr; Homepage &rarr; Featured Categories</p>
-    </section>
-    {% endif %}
+    </div>
+</section>
+
+{# TRUST BAR #}
+<section class="bg-warm border-b border-slate-200">
+    <div class="container py-4">
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
+            <div class="flex items-center gap-2 text-sm text-slate-600">
+                <img src="{{ 'img/icons/attribute-1-icon.svg'|asset_url }}" alt="" class="w-6 h-6" />
+                <span>30-Day "Perfect Pour" Guarantee</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-600">
+                <img src="{{ 'img/icons/attribute-2-icon.svg'|asset_url }}" alt="" class="w-6 h-6" />
+                <span>Fast & Free U.S Shipping</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-600">
+                <img src="{{ 'img/icons/attribute-3-icon.svg'|asset_url }}" alt="" class="w-6 h-6" />
+                <span>24/7 Customer Support</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# FEATURES #}
+<section class="bg-cream">
+    <div class="container py-16">
+        <h2 class="font-display text-2xl md:text-3xl font-bold text-center text-wine mb-12">
+            Experience Wine As<br>the Winemaker Intended
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            {# Center image #}
+            <div class="hidden md:flex justify-center md:order-2">
+                <img src="{{ 'img/features-image.webp'|asset_url }}" alt="AiryPour features" class="max-w-[300px]" />
+            </div>
+            {# Left features #}
+            <div class="space-y-8 md:order-1">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-slate-800 mb-1">Built-in Aeration System</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">AiryPour softens harsh tannins and enhances subtle notes of fruit and oak instantly.</p>
+                    </div>
+                    <img src="{{ 'img/feature-image-1.webp'|asset_url }}" alt="" class="w-20 h-20 rounded object-cover shrink-0" />
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-slate-800 mb-1">Pour With Confidence</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">AiryPour dispenses a precise stream directly into your glass -- no drips, no stains, no stress.</p>
+                    </div>
+                    <img src="{{ 'img/feature-image-2.webp'|asset_url }}" alt="" class="w-20 h-20 rounded object-cover shrink-0" />
+                </div>
+            </div>
+            {# Right features #}
+            <div class="space-y-8 md:order-3">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-slate-800 mb-1">Host Like a Pro</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">Impress your guests with a sophisticated, modern touch. It's a dinner party conversation starter.</p>
+                    </div>
+                    <img src="{{ 'img/feature-image-3.webp'|asset_url }}" alt="" class="w-20 h-20 rounded object-cover shrink-0" />
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-slate-800 mb-1">Savor a Single Glass</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">Unlike open decanters that spoil wine quickly, AiryPour keeps the rest of the bottle sealed and fresh.</p>
+                    </div>
+                    <img src="{{ 'img/feature-image-4.webp'|asset_url }}" alt="" class="w-20 h-20 rounded object-cover shrink-0" />
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center mt-12">
+            <div>
+                <a href="{% url 'catalogue:index' %}" class="btn-gold">
+                    Get 50% Off Today
+                </a>
+                <div class="flex items-center gap-2 mt-3 justify-center">
+                    <img src="{{ 'img/icons/icon-checkmark-shield.svg'|asset_url }}" alt="" class="w-5 h-5" />
+                    <span class="text-xs text-slate-400">30-Day "Perfect Pour" Guarantee</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# STEPS #}
+<section class="bg-warm">
+    <div class="container py-16">
+        <h2 class="font-display text-2xl md:text-3xl font-bold text-wine mb-12">
+            Why AiryPour Belongs on Your Bar Cart
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+                <div class="relative mb-4">
+                    <span class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full">01</span>
+                    <img src="{{ 'img/step-image-1.webp'|asset_url }}" alt="Instant Aeration" class="w-full aspect-square object-cover rounded" />
+                </div>
+                <h3 class="text-base font-semibold text-slate-800 mb-1">Instant Aeration</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">Wine needs 45-60 minutes to breathe. AiryPour delivers full flavor immediately.</p>
+            </div>
+            <div>
+                <div class="relative mb-4">
+                    <span class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full">02</span>
+                    <img src="{{ 'img/step-image-2.webp'|asset_url }}" alt="Zero Drips" class="w-full aspect-square object-cover rounded" />
+                </div>
+                <h3 class="text-base font-semibold text-slate-800 mb-1">Zero Drips, Zero Stains</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">Our precision spout eliminates drip anxiety, saving your tablecloths and carpets.</p>
+            </div>
+            <div>
+                <div class="relative mb-4">
+                    <span class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full">03</span>
+                    <img src="{{ 'img/step-image-3.webp'|asset_url }}" alt="Sip on Your Terms" class="w-full aspect-square object-cover rounded" />
+                </div>
+                <h3 class="text-base font-semibold text-slate-800 mb-1">Sip on Your Terms</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">AiryPour aerates glass-by-glass, keeping the bottle sealed and fresh.</p>
+            </div>
+            <div>
+                <div class="relative mb-4">
+                    <span class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full">04</span>
+                    <img src="{{ 'img/step-image-4.webp'|asset_url }}" alt="The Wow Gift" class="w-full aspect-square object-cover rounded" />
+                </div>
+                <h3 class="text-base font-semibold text-slate-800 mb-1">The "Wow" Gift</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">AiryPour is a fail-safe choice for housewarmings or hard-to-buy-for parents.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# FEATURED PRODUCT - Full PDP section on homepage #}
+{% if settings.featured_product %}
+<section class="bg-white">
+    <div class="container py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            {# Product images #}
+            <div>
+                {% with images=settings.featured_product.get_all_images %}
+                    {% if images %}
+                        {% image_thumbnail images.0.original "590x590" crop="center" upscale=True as thumb %}
+                        <img src="{{ thumb.url }}" alt="{{ settings.featured_product.get_title }}" class="w-full rounded" />
+                    {% endif %}
+                {% endwith %}
+                {# Inline review #}
+                <div class="flex gap-4 mt-6 p-4 bg-slate-50 rounded">
+                    <img src="{{ 'img/featured-product-review-user.png'|asset_url }}" alt="" class="w-14 h-14 rounded-full shrink-0" />
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-semibold text-slate-800">Best Choice Ever</span>
+                            <span class="text-amber-400 text-sm">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                        </div>
+                        <p class="text-sm text-slate-500 leading-relaxed">I've used aerators before, but this one's different. It actually makes the wine taste better, smoother, richer, and more balanced.</p>
+                        <p class="text-xs text-slate-400 mt-1">Marvin R. <span class="text-green-600">Verified Buyer</span></p>
+                    </div>
+                </div>
+            </div>
+
+            {# Product info #}
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-amber-400">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                    <span class="text-sm text-slate-500">Rated 4.9/5 Stars | Over 10,000+ Happy Sippers</span>
+                </div>
+
+                <h2 class="font-display text-2xl md:text-3xl font-bold text-wine mb-2">
+                    <span style="color: #FFC131;">Limited time offer</span><br>
+                    50% OFF Today Only!
+                </h2>
+
+                {% purchase_info_for_product request settings.featured_product as session %}
+                {% if session.price.exists %}
+                <div class="flex items-center gap-3 mb-4">
+                    {% if session.price.price_retail and session.price.price_retail > session.price.price %}
+                        <span class="text-lg text-slate-400 line-through">{{ session.price.price_retail|currency:session.price.currency }}</span>
+                    {% endif %}
+                    <span class="text-2xl font-bold text-slate-800">{{ session.price.price|currency:session.price.currency }}</span>
+                    {% if session.price.price_retail and session.price.price_retail > session.price.price %}
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Save ${{ session.price.price_retail|floatformat:0 }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="flex items-center gap-3 p-4 bg-amber-50 rounded mb-6">
+                    <img src="{{ 'img/icons/icon-gift.svg'|asset_url }}" alt="" class="w-10 h-10 shrink-0" />
+                    <span class="text-sm text-slate-600">Perfect for gifting to your family, friends, and loved ones, or keeping a spare at home or in your wine bar.</span>
+                </div>
+
+                {# Feature pills #}
+                <ul class="flex flex-wrap gap-2 mb-6">
+                    <li class="flex items-center gap-1.5 text-sm text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Instant Aeration
+                    </li>
+                    <li class="flex items-center gap-1.5 text-sm text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Zero-Drip Spout
+                    </li>
+                    <li class="flex items-center gap-1.5 text-sm text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Seal & Preserve
+                    </li>
+                    <li class="flex items-center gap-1.5 text-sm text-slate-700 bg-slate-100 px-3 py-1.5 rounded-full">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Easy Clean-up
+                    </li>
+                </ul>
+
+                {# Add to cart #}
+                {% cart_form request settings.featured_product 'single' as cart_form %}
+                <form action="{% url 'cart:add' pk=settings.featured_product.pk %}" method="post" class="flex items-center gap-3 mb-6" id="add-to-cart-home">
+                    {% csrf_token %}
+                    <div class="flex items-center border border-slate-200">
+                        <button type="button" class="px-3 py-2 text-slate-600 hover:bg-slate-50" onclick="var i=this.nextElementSibling;i.value=Math.max(1,parseInt(i.value)-1)">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="15" class="w-12 text-center border-x border-slate-200 py-2 text-sm" />
+                        <button type="button" class="px-3 py-2 text-slate-600 hover:bg-slate-50" onclick="var i=this.previousElementSibling;i.value=Math.min(15,parseInt(i.value)+1)">+</button>
+                    </div>
+                    <button type="submit" class="flex-1 btn-gold">
+                        Get 50% Off Today
+                    </button>
+                </form>
+
+                {# Trust badges #}
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="flex flex-col items-center text-center gap-1">
+                        <img src="{{ 'img/icons/attribute-1-icon.svg'|asset_url }}" alt="" class="w-8 h-8" />
+                        <span class="text-xs text-slate-500">30-Day Guarantee</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-1">
+                        <img src="{{ 'img/icons/attribute-2-icon.svg'|asset_url }}" alt="" class="w-8 h-8" />
+                        <span class="text-xs text-slate-500">Free U.S Shipping</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-1">
+                        <img src="{{ 'img/icons/attribute-3-icon.svg'|asset_url }}" alt="" class="w-8 h-8" />
+                        <span class="text-xs text-slate-500">24/7 Support</span>
+                    </div>
+                </div>
+
+                {# Description accordion #}
+                <div class="border-t border-slate-200">
+                    {% if settings.featured_product.get_description %}
+                    <details class="border-b border-slate-200">
+                        <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                            Description
+                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="pb-4 text-sm text-slate-500 leading-relaxed">{{ settings.featured_product.get_description|safe }}</div>
+                    </details>
+                    {% endif %}
+                    <details class="border-b border-slate-200">
+                        <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                            How To Use
+                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="pb-4 text-sm text-slate-500 leading-relaxed">
+                            <ol class="list-decimal pl-4 space-y-1">
+                                <li>Insert Batteries</li>
+                                <li>Install Tube</li>
+                                <li>Press Button</li>
+                            </ol>
+                        </div>
+                    </details>
+                    <details class="border-b border-slate-200">
+                        <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                            Shipping & Guarantee
+                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="pb-4 text-sm text-slate-500 leading-relaxed">Fast Shipping and 30 Day Money-Back Guarantee</div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{ settings.featured_product.data|json_script:"fp-data" }}
+<script>
+(function(){
+    try {
+        var el = document.getElementById('fp-data');
+        if (el) {
+            var prod = JSON.parse(el.textContent);
+            if (prod.structure === 'parent' && prod.children && prod.children.length) {
+                var form = document.getElementById('add-to-cart-home');
+                if (form) {
+                    var action = form.getAttribute('action');
+                    form.setAttribute('action', action.replace(/(cart\/add\/)\d+/, '$1' + prod.children[0].id));
+                }
+            }
+        }
+    } catch(e) {}
+})();
+</script>
 {% endif %}
+
+{# BANNER #}
+<section class="relative overflow-hidden bg-wine">
+    <img src="{{ 'img/banner-bg.webp'|asset_url }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30" />
+    <div class="relative z-10 container py-16 flex flex-col md:flex-row items-center gap-8">
+        <div class="flex-1">
+            <h2 class="font-display text-2xl md:text-3xl font-bold text-white mb-4">
+                <span style="color: #FFC131;">Don't Take The Risk,</span><br>
+                Make The Switch Today
+            </h2>
+            <p class="text-base text-white/80 mb-6 leading-relaxed">
+                We want you to feel completely confident with your purchase. That's why the AiryPour Wine Dispenser is backed by our 30-Day Money-Back Guarantee. <strong class="text-white">No hassle. No risk. Just reliable support you can trust.</strong>
+            </p>
+            <div>
+                <a href="{% url 'catalogue:index' %}" class="btn-gold">
+                    Get 50% Off Today
+                </a>
+                <div class="flex items-center gap-2 mt-3">
+                    <img src="{{ 'img/icons/icon-checkmark-shield.svg'|asset_url }}" alt="" class="w-5 h-5" />
+                    <span class="text-xs text-white/60">30-Day "Perfect Pour" Guarantee</span>
+                </div>
+            </div>
+        </div>
+        <div class="shrink-0">
+            <img src="{{ 'img/30-days-guarantee-badge.png'|asset_url }}" alt="30 Day Guarantee" class="w-40 md:w-48" />
+        </div>
+    </div>
+</section>
+
+{# REVIEWS #}
+<section class="bg-cream">
+    <div class="container py-16">
+        <h2 class="font-display text-2xl md:text-3xl font-bold text-center text-wine mb-12">
+            Here's What Customers Say
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="border border-slate-200 rounded overflow-hidden">
+                <img src="{{ 'img/review-image-1.jpg'|asset_url }}" alt="" class="w-full h-48 object-cover" />
+                <div class="p-5">
+                    <div class="text-amber-400 mb-2">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <h3 class="text-base font-semibold text-slate-800 mb-2">Surprisingly Handy</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-3">I wasn't sure if I'd actually use it much, but it's become part of my nightly routine. The pour is super smooth, no drips, and it feels kind of fancy every time.</p>
+                    <p class="text-xs text-slate-400"><strong class="text-slate-600">Diana L.</strong> <span class="text-green-600">Verified Buyer</span></p>
+                </div>
+            </div>
+            <div class="border border-slate-200 rounded overflow-hidden">
+                <img src="{{ 'img/review-image-2.jpg'|asset_url }}" alt="" class="w-full h-48 object-cover" />
+                <div class="p-5">
+                    <div class="text-amber-400 mb-2">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <h3 class="text-base font-semibold text-slate-800 mb-2">Really Brings Out the Flavor</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-3">I've used aerators before, but this one's different. It actually makes the wine taste better -- smoother, richer, and more balanced.</p>
+                    <p class="text-xs text-slate-400"><strong class="text-slate-600">Chloe S.</strong> <span class="text-green-600">Verified Buyer</span></p>
+                </div>
+            </div>
+            <div class="border border-slate-200 rounded overflow-hidden">
+                <img src="{{ 'img/review-image-3.jpg'|asset_url }}" alt="" class="w-full h-48 object-cover" />
+                <div class="p-5">
+                    <div class="text-amber-400 mb-2">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <h3 class="text-base font-semibold text-slate-800 mb-2">Perfect for Hosting</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-3">We brought it out for a small dinner party and everyone loved it. It makes serving wine effortless and clean -- no mess, no fuss.</p>
+                    <p class="text-xs text-slate-400"><strong class="text-slate-600">Matthew R.</strong> <span class="text-green-600">Verified Buyer</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# FAQ #}
+<section class="bg-white">
+    <div class="container py-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div class="md:col-span-1">
+            <h2 class="font-display text-2xl md:text-3xl font-bold text-wine md:sticky md:top-24">
+                Frequently Asked<br>Questions
+            </h2>
+        </div>
+        <div class="md:col-span-2 space-y-0">
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    How does AiryPour Electric Aerator & Dispenser rapid aeration work?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">AiryPour utilizes innovative technology to aerate wine within 6 seconds, ensuring a swift and effective enhancement of flavors without the need for traditional decanting.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    Is AiryPour suitable for all types of wine bottles?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">Yes, AiryPour is designed to fit most wine bottles. Its adjustable tube ensures versatility, accommodating various bottle sizes.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    How do I clean AiryPour after use?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">Simply insert the dispenser tube into clean water, press the button, and once the water runs clear, the cleaning is done.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    What makes AiryPour an ideal gift for wine lovers?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">Its combination of elegance, functionality, and portability makes it a perfect gift for birthdays, anniversaries, or any occasion.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    Can I use AiryPour for outdoor events?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">Absolutely! Its portable design makes it an excellent companion for outdoor activities.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    Where does the product ship from?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">AiryPour products are stored and shipped from our warehouse in Ohio, USA.</div>
+            </details>
+            <details class="border-b border-slate-200 group">
+                <summary class="py-4 font-medium text-slate-800 cursor-pointer flex items-center justify-between">
+                    How can I track my order?
+                    <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="pb-4 text-sm text-slate-500 leading-relaxed">Once shipped, you will receive an email with a tracking number and link to monitor your shipment.</div>
+            </details>
+        </div>
+        </div>
+    </div>
+</section>
+
+{# TRUST FOOTER BAR #}
+<section class="bg-white border-t border-slate-200">
+    <div class="container py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div class="flex flex-col items-center gap-2">
+                <img src="{{ 'img/icons/attribute-1-icon.svg'|asset_url }}" alt="" class="w-12 h-12" />
+                <span class="text-sm font-medium text-slate-700">30-Day "Perfect Pour" Guarantee</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <img src="{{ 'img/icons/attribute-2-icon.svg'|asset_url }}" alt="" class="w-12 h-12" />
+                <span class="text-sm font-medium text-slate-700">Fast & Free U.S Shipping</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <img src="{{ 'img/icons/attribute-3-icon.svg'|asset_url }}" alt="" class="w-12 h-12" />
+                <span class="text-sm font-medium text-slate-700">24/7 Customer Support</span>
+            </div>
+        </div>
+    </div>
+</section>
 
 </main>
 {% endif %}

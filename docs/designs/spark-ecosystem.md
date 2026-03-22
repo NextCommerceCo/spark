@@ -18,6 +18,7 @@ Spark becomes the **storefront operating system for NEXT Commerce** — not just
 |-------|-------------|--------|
 | 1 | Spark v1 Polish — DESIGN.md, delight package, CSS isolation | **SHIPPED** (2026-03-20) |
 | 2 | Web Component Library — GraphQL cart client, `<spark-add-to-cart>`, `<spark-quantity>` | **SHIPPED** (2026-03-20) |
+| 1.1 | 22 settings, 5 partials, sass-compat upgrades, AiryPour design exercise | **SHIPPED** (2026-03-22) |
 
 ### What shipped in Phase 1-2
 - **SparkCartClient** — Vanilla JS GraphQL cart client with auto-create, CSRF, retries
@@ -26,6 +27,26 @@ Spark becomes the **storefront operating system for NEXT Commerce** — not just
 - **DESIGN.md** — Comprehensive storefront design system (typography, color, spacing, motion, interaction states, accessibility, anti-slop rules)
 - **Delight package** — Skeleton loading, image optimization, cart badge animation, keyboard nav, contrast auto-detection, print stylesheet
 - **Zero jQuery/Bootstrap** — Complete removal of legacy dependencies
+
+### What shipped in v1.1 (2026-03-22)
+- **22 Theme Settings** in storytelling order: Homepage → Product Pages → Navigation → Footer → Style → Advanced
+- **Homepage settings:** Hero (image, overlay, text, alignment, height, mobile), Featured Product, section bg colors, grid columns
+- **Product Pages:** Media fit, variant picker (dropdown/buttons), description layout
+- **Navigation:** Announcement bar placement (all/home/none)
+- **Advanced:** Global custom CSS, Account Only footer toggle
+- **5 new partials:** catalogue_filters, recommended_products, product_carousel, cart_content, cart_summary
+- **sass-compat.py upgrades:** oklch→hex, color-mix→rgba, @layer unwrap, logical properties→physical, :is()/:where(), media range syntax
+- **Language picker:** Hidden when store has only one language
+- **Account Only:** Footer toggle for clean login-only experience
+
+### AiryPour Design Exercise (2026-03-22)
+Full Figma → Spark implementation using airypour.29next.store. Key findings:
+- Template structure ports cleanly (all 15 templates, DTL tags, partials)
+- **Design assets are the real bottleneck** (images, fonts, icons — all merchant-specific)
+- Section backgrounds and typography need per-merchant settings
+- Server SCSS compiler rejects modern CSS → sass-compat.py is critical infrastructure
+- Settings group ordering = first-seen, not JSON order (fresh `ntk init` fixes it)
+- `manifest.json` controls version display but ntk can't push it (not in GLOB_PATTERN)
 
 ---
 

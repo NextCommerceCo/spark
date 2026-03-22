@@ -7,6 +7,9 @@ tailwindcss
 # ntk config (contains API keys and store-specific settings)
 config.yml
 
+# Project planning docs (internal, not for public repo)
+docs/
+
 # Tool/session state
 .gstack/
 .claude/

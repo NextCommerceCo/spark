@@ -169,8 +169,7 @@
             this._clearError();
 
             this._client.addToCart(productId, quantity).then(function(result) {
-                // Check if cart has items (more reliable than success field)
-                if (result && result.cart && result.cart.numItems > 0) {
+                if (result && result.success && result.cart) {
                     self._setState('success');
                     // Dispatch spark:cart:added event for side cart integration
                     document.dispatchEvent(new CustomEvent('spark:cart:added', {
@@ -189,7 +188,11 @@
                     }, SUCCESS_DURATION);
                 } else {
                     self._setState('error');
-                    self._showError('Could not add to cart');
+                    var errorMsg = 'Could not add to cart';
+                    if (result && result.errors && result.errors.length) {
+                        errorMsg = result.errors.join('. ');
+                    }
+                    self._showError(errorMsg);
                 }
             }).catch(function(err) {
                 self._setState('error');

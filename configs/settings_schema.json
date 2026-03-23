@@ -540,16 +540,114 @@
             }
         ]
     },
-    "Advanced": {
-        "Cart": [
+    "Side Cart": {
+        "General": [
+            {
+                "name": "cart_header_title",
+                "label": "Header Title",
+                "type": "text",
+                "default": "Your Cart",
+                "help_text": "Title displayed at the top of the side cart.",
+                "max_length": 50
+            },
             {
                 "name": "sidecart_open_on_add",
-                "label": "Open side cart on add to cart",
+                "label": "Open on Add to Cart",
                 "type": "checkbox",
                 "default": true,
                 "help_text": "Automatically open the side cart when a product is added."
             }
         ],
+        "Progress Bar": [
+            {
+                "name": "enable_progress_bar",
+                "label": "Enable Progress Bar",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Show a milestone progress bar in the side cart with free shipping and free gift goals."
+            },
+            {
+                "name": "usd_goal_1",
+                "label": "Shipping Threshold (USD)",
+                "type": "number",
+                "default": 50,
+                "help_text": "Cart total for free shipping milestone. To add thresholds for other currencies, duplicate this setting with the currency prefix (e.g. eur_goal_1)."
+            },
+            {
+                "name": "usd_goal_2",
+                "label": "Gift Threshold (USD)",
+                "type": "number",
+                "default": 100,
+                "help_text": "Cart total for free gift milestone. Must be higher than the shipping threshold."
+            },
+            {
+                "name": "step_1_message",
+                "label": "Shipping Message",
+                "type": "text",
+                "default": "You are {amount} away from FREE shipping",
+                "help_text": "Message shown when cart is below the shipping threshold. Use {amount} for the remaining amount.",
+                "max_length": 200
+            },
+            {
+                "name": "step_2_message",
+                "label": "Gift Message",
+                "type": "text",
+                "default": "You are {amount} away from a FREE gift!",
+                "help_text": "Message shown when cart is between shipping and gift thresholds. Use {amount} for the remaining amount.",
+                "max_length": 200
+            },
+            {
+                "name": "final_step_message",
+                "label": "All Goals Reached",
+                "type": "text",
+                "default": "You have unlocked all rewards!",
+                "help_text": "Celebration message shown when the cart total exceeds all milestones.",
+                "max_length": 200
+            },
+            {
+                "name": "gift_product",
+                "label": "Free Gift Product",
+                "type": "product",
+                "help_text": "Select a parent product for the free gift. Its first variant will be automatically added to the cart when the gift threshold is reached."
+            }
+        ],
+        "Suggested Products": [
+            {
+                "name": "enable_upsells",
+                "label": "Enable Suggested Products",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Show product suggestions in the side cart to encourage additional purchases."
+            },
+            {
+                "name": "upsell_section_title",
+                "label": "Section Title",
+                "type": "text",
+                "default": "You May Also Like",
+                "help_text": "Heading displayed above suggested products in the side cart.",
+                "max_length": 100
+            },
+            {
+                "name": "upsell_product_1",
+                "label": "Suggested Product 1",
+                "type": "product",
+                "help_text": "First product suggestion. Hidden if already in the cart."
+            },
+            {
+                "name": "upsell_product_2",
+                "label": "Suggested Product 2",
+                "type": "product",
+                "help_text": "Second product suggestion. Hidden if already in the cart."
+            },
+            {
+                "name": "upsell_product_3",
+                "label": "Suggested Product 3",
+                "type": "product",
+                "help_text": "Third product suggestion. Hidden if already in the cart."
+            }
+        ]
+    },
+    "Advanced": {
         "Site Settings": [
             {
                 "name": "site_index",

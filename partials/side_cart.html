@@ -1,137 +1,37 @@
-{# Spark Theme — Side Cart (uses platform-provided side cart JS) #}
-{% load static %}
+{# Spark Theme - Custom Side Cart (GraphQL-first, Web Component) #}
+{# Replaces platform's side_cart.js with <spark-cart-drawer> Web Component #}
 
-<form id="side_cart_formset">
-    <div class="sidecart" id="cart-modal" tabindex="-1" role="dialog" aria-label="Shopping cart" aria-modal="true">
-        <div class="sidecart-dialog" role="document">
-            <div class="sidecart-content" id="cart-content"></div>
-        </div>
+<spark-cart-drawer
+    role="dialog"
+    aria-label="{% t 'side_cart.default.cart' %}"
+    aria-modal="true"
+    aria-expanded="false"
+    data-open="false"
+    data-checkout-url="{% url 'checkout:index' %}"
+    data-header-title="{{ settings.cart_header_title|default:"Your Cart" }}"
+    data-empty-title="{% t 'side_cart.default.your_cart_is_empty' %}"
+    data-empty-sub="{% t 'side_cart.default.oops_You_have_nothing_here' %}"
+    data-continue-text="{% t 'catalogue.continue_shopping' %}"
+    data-continue-url="/"
+    data-checkout-text="{% t 'side_cart.default.proceed_to_checkout' %}"
+    data-subtotal-text="{% t 'side_cart.default.cart_subtotal' %}"
+    data-discount-text="{% t 'side_cart.default.discount' %}"
+    data-shipping-text="{% t 'side_cart.default.calculated_at_checkout' %}"
+    data-coupon-placeholder="{% t 'side_cart.default.coupon_code' %}"
+    data-coupon-btn="{% t 'side_cart.default.apply_coupon' %}"
+    data-currency="{{ request.CURRENCY_CODE|default:'USD' }}"
+    data-open-on-add="{% if settings.sidecart_open_on_add == False %}false{% else %}true{% endif %}"
+    {% if settings.gift_product %}data-gift-product-id="{{ settings.gift_product.pk }}"{% endif %}
+>
+    {# Progress bar (slotted into drawer panel between header and body) #}
+    <div slot="progress">
+        {% include "partials/block_cart_progress_wrapper.html" %}
     </div>
-</form>
 
-{# jscookie.js is vanilla JS (no jQuery) — used by side_cart.js for cart ID cookie #}
-<script src="{% static 'shop/js/jscookie.js' %}"></script>
-{# cart.js REMOVED — was jQuery plugin ($.fn.cart). SparkSideCart handles open/close/toggle. #}
-
-<script>
-    const SIDECART_MSGS = {
-        'your_order': "{% t 'side_cart.default.your_order' %}",
-        'your_cart_is_empty': "{% t 'side_cart.default.your_cart_is_empty' %}",
-        'oops_You_have_nothing_here': "{% t 'side_cart.default.oops_You_have_nothing_here' %}",
-        'quantity': "{% t 'side_cart.default.quantity' %}",
-        'qty': "{% t 'side_cart.default.qty' %}",
-        'schedule': "{% t 'side_cart.default.schedule' %}",
-        'price': "{% t 'side_cart.default.price' %}",
-        'savings': "{% t 'side_cart.default.savings' %}",
-        'regular': "{% t 'side_cart.default.regular' %}",
-        'your_price': "{% t 'side_cart.default.your_price' %}",
-        'cart_subtotal': "{% t 'side_cart.default.cart_subtotal' %}",
-        'discount': "{% t 'side_cart.default.discount' %}",
-        'shipping': "{% t 'side_cart.default.shipping' %}",
-        'cart': "{% t 'side_cart.default.cart' %}",
-        'total': "{% t 'side_cart.default.total' %}",
-        'product': "{% t 'side_cart.default.product' %}",
-        'subscription_details': "{% t 'side_cart.default.subscription_details' %}",
-        'applied_coupons': "{% t 'side_cart.default.applied_coupons' %}",
-        'subscription_items_one': "{% t 'side_cart.default.subscription_items_one' with count=1 %}",
-        'subscription_items_other': "{% t 'side_cart.default.subscription_items_other' with count=2 %}",
-        'calculated_at_checkout': "{% t 'side_cart.default.calculated_at_checkout' %}",
-        'subscription_total': "{% t 'side_cart.default.subscription_total' %}",
-        'subscription_renewal_message': "{% t 'side_cart.default.subscription_renewal_message' %}",
-        'proceed_to_checkout': "{% t 'side_cart.default.proceed_to_checkout' %}",
-        'have_a_coupon': "{% t 'side_cart.default.have_a_coupon' %}",
-        'coupon_code': "{% t 'side_cart.default.coupon_code' %}",
-        'apply_coupon': "{% t 'side_cart.default.apply_coupon' %}"
-    };
-</script>
-<script src="{% static 'shop/js/side_cart.js' %}"></script>
-
-<script>
-    var sidecart_options = {
-        modal_open: {% if modal_open %} true {% else %} false {% endif %},
-        graphql_url: "{% url 'storefrontapi:graphql' %}",
-        max_cart_quantity_per_line: {{ max_cart_quantity_per_line|default:"15" }},
-        SIDECART_MSGS: SIDECART_MSGS
-    };
-    sidecart.init(sidecart_options);
-
-    // Namespaced side cart API
-    // Usage: SparkSideCart.open(), .close(), .toggle(), .isOpen
-    window.SparkSideCart = (function() {
-        var modal = document.getElementById('cart-modal');
-
-        function refreshCart() {
-            if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
-                sidecart.basket.reloadBasketData();
-            }
-        }
-
-        function open() {
-            if (!modal) return;
-            refreshCart();
-            modal.classList.add('show');
-            document.body.classList.add('sidecart-open');
-            // Trap focus inside cart
-            var closeBtn = modal.querySelector('[data-dismiss="side-cart"]');
-            if (closeBtn) closeBtn.focus();
-        }
-
-        function close() {
-            if (!modal) return;
-            modal.classList.remove('show');
-            document.body.classList.remove('sidecart-open');
-            // Return focus to cart icon
-            var cartIcon = document.getElementById('cart-icon');
-            if (cartIcon) cartIcon.focus();
-        }
-
-        function isOpen() {
-            return modal && modal.classList.contains('show');
-        }
-
-        function toggle() {
-            if (isOpen()) { close(); } else { open(); }
-        }
-
-        return { open: open, close: close, toggle: toggle, isOpen: isOpen };
-    })();
-
-    // Handle data-dismiss="side-cart" clicks (platform renders this in cart HTML)
-    document.addEventListener('click', function(e) {
-        var btn = e.target.closest('[data-dismiss="side-cart"]');
-        if (btn) SparkSideCart.close();
-    });
-
-    // Close on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && SparkSideCart.isOpen()) SparkSideCart.close();
-    });
-
-    // Close on backdrop click (click on .sidecart outside .sidecart-dialog)
-    (function() {
-        var cartModal = document.getElementById('cart-modal');
-        if (cartModal) {
-            cartModal.addEventListener('click', function(e) {
-                if (e.target === cartModal) SparkSideCart.close();
-            });
-        }
-    })();
-
-    // Listen for spark:cart:added event (from <spark-add-to-cart> Web Component)
-    document.addEventListener('spark:cart:added', function(e) {
-        var detail = e.detail || {};
-        // Always refresh cart data
-        if (typeof sidecart !== 'undefined' && sidecart.basket && sidecart.basket.reloadBasketData) {
-            sidecart.basket.reloadBasketData();
-        }
-        // Open side cart unless explicitly disabled
-        if (detail.openSideCart !== false) {
-            SparkSideCart.open();
-        }
-    });
-
-    // Listen for spark:cart:toggle event (from header cart icon)
-    document.addEventListener('spark:cart:toggle', function() {
-        SparkSideCart.toggle();
-    });
-</script>
+    {# Upsell slots (slotted into drawer panel between body and footer) #}
+    {% if settings.enable_upsells %}
+    <div slot="upsells" style="padding: 0 20px;">
+        {% include "partials/block_cart_upsell.html" %}
+    </div>
+    {% endif %}
+</spark-cart-drawer>

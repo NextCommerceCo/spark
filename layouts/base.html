@@ -161,8 +161,11 @@
     <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/components/spark-cart-drawer.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/components/spark-progress-bar.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/components/spark-upsell-item.js'|asset_url }}"></script>
 
-    {# Side cart (platform's side_cart.js is vanilla JS + GraphQL, no jQuery) #}
+    {# Side cart (custom Web Component replacing platform's side_cart.js) #}
     {% include 'partials/side_cart.html' %}
 
     {# Platform compatibility — replaces jQuery-dependent core_js with vanilla JS #}
@@ -232,6 +235,24 @@
         document.addEventListener('spark:cart:added', function(e) {
             updateCartBadge(e.detail && e.detail.count);
         });
+
+        // Page-load: fetch cart to populate badge for returning visitors
+        if (window.SparkCartClient) {
+            var client = new SparkCartClient();
+            if (client.getCartId()) {
+                client.getCart().then(function(cart) {
+                    if (cart && cart.numItems) {
+                        updateCartBadge(cart.numItems);
+                        // Pre-populate drawer data so it opens instantly
+                        var drawer = document.querySelector('spark-cart-drawer');
+                        if (drawer && !drawer._cart) {
+                            drawer._cart = cart;
+                            drawer._currencyCode = cart.currency || drawer._currencyCode;
+                        }
+                    }
+                }).catch(function() {});
+            }
+        }
     })();
     </script>
 

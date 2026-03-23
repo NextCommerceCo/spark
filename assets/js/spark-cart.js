@@ -1,5 +1,5 @@
 /**
- * Spark Theme -GraphQL Cart Client
+ * Spark Theme - GraphQL Cart Client
  *
  * Shared module for cart operations via the Storefront GraphQL API.
  * Dispatches CustomEvents so Web Components and UI can react.
@@ -7,6 +7,12 @@
  * Usage:
  *   var cart = new SparkCartClient('/api/graphql/');
  *   cart.addToCart(productPk, quantity).then(function(result) { ... });
+ *   cart.getCart().then(function(cart) { ... });
+ *   cart.updateCartLines(cartId, [{lineId: 'x', quantity: 2}]).then(...);
+ *   cart.removeCartLines(cartId, ['lineId1']).then(...);
+ *   cart.addVoucher(cartId, 'CODE').then(...);
+ *   cart.removeVoucher(cartId, 'voucherId').then(...);
+ *   SparkCartClient.formatMoney(29.99, 'USD') // "$29.99"
  */
 
 (function() {
@@ -16,8 +22,9 @@
     var CSRF_COOKIE = 'csrftoken';
     var FETCH_TIMEOUT = 5000;
     var RETRY_DELAY = 2000;
+    var MAX_QTY_PER_LINE = 15;
 
-    /* ---Cookie helpers ---*/
+    /* --- Cookie helpers --- */
 
     function getCookie(name) {
         var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -34,7 +41,7 @@
         document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
     }
 
-    /* ---Cart ID persistence (sessionStorage + cookie) ---*/
+    /* --- Cart ID persistence (sessionStorage + cookie) --- */
 
     function getCartId() {
         try {
@@ -51,7 +58,21 @@
         setCookie(CART_ID_KEY, id, 30);
     }
 
-    /* ---Fetch with timeout ---*/
+    /* --- Currency formatting --- */
+
+    function formatMoney(amount, currency) {
+        currency = currency || 'USD';
+        try {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: currency
+            }).format(amount);
+        } catch (e) {
+            return currency + ' ' + Number(amount).toFixed(2);
+        }
+    }
+
+    /* --- Fetch with timeout --- */
 
     function fetchWithTimeout(url, options, timeout) {
         return new Promise(function(resolve, reject) {
@@ -71,13 +92,41 @@
         });
     }
 
-    /* ---GraphQL queries ---*/
+    /* --- GraphQL field fragment --- */
 
-    var CREATE_CART = 'mutation CreateCart($input: CreateCartInput!) { createCart(input: $input) { cart { id numItems totalInclTax currency } } }';
+    var CART_FIELDS = [
+        'id pk currency totalExclTax totalExclTaxExclDiscounts totalDiscount numItems numLines',
+        'voucherDiscounts { name amount voucher { name code } }',
+        'lines {',
+        '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell',
+        '  attributes { value option }',
+        '  product {',
+        '    pk title url metadata',
+        '    primaryImage { thumbnail: url(transform: { maxWidth: 150, maxHeight: 150, format: webp, crop: center }) }',
+        '    subscriptionInfo { interval intervalCount }',
+        '    parent { pk title metadata }',
+        '    purchaseInfo { priceRetail { value format currency } availableForSale availability }',
+        '  }',
+        '}'
+    ].join(' ');
 
-    var ADD_CART_LINES = 'mutation AddCartLines($input: AddCartLinesInput!) { addCartLines(input: $input) { success cart { id numItems totalInclTax currency lines { pk quantity product { title } linePriceInclTax } } } }';
+    /* --- GraphQL queries --- */
 
-    /* ---SparkCartClient ---*/
+    var CREATE_CART = 'mutation CreateCart($input: CreateCartInput!) { createCart(input: $input) { cart { ' + CART_FIELDS + ' } } }';
+
+    var GET_CART = 'query GetCart($id: ID!) { cart(id: $id) { ' + CART_FIELDS + ' } }';
+
+    var ADD_CART_LINES = 'mutation AddCartLines($input: AddCartLinesInput!) { addCartLines(input: $input) { success errors cart { ' + CART_FIELDS + ' } } }';
+
+    var UPDATE_CART_LINES = 'mutation UpdateCartLines($input: UpdateCartLinesInput!) { updateCartLines(input: $input) { success errors cart { ' + CART_FIELDS + ' } } }';
+
+    var REMOVE_CART_LINES = 'mutation RemoveCartLines($input: RemoveCartLinesInput!) { removeCartLines(input: $input) { success errors cart { ' + CART_FIELDS + ' } } }';
+
+    var ADD_VOUCHER = 'mutation AddVoucher($input: AddVoucherInput!) { addVoucher(input: $input) { success errors cart { ' + CART_FIELDS + ' } } }';
+
+    var REMOVE_VOUCHER = 'mutation RemoveVoucher($input: RemoveVoucherInput!) { removeVoucher(input: $input) { success errors cart { ' + CART_FIELDS + ' } } }';
+
+    /* --- SparkCartClient --- */
 
     function SparkCartClient(graphqlUrl) {
         this.graphqlUrl = graphqlUrl || '/api/graphql/';
@@ -107,7 +156,7 @@
             credentials: 'same-origin'
         }, FETCH_TIMEOUT).then(function(response) {
             if (response.status === 403) {
-                // CSRF token may have expired -refresh and retry once
+                // CSRF token may have expired - refresh and retry once
                 var freshToken = getCookie(CSRF_COOKIE);
                 if (freshToken && freshToken !== csrfToken) {
                     headers['X-CSRFToken'] = freshToken;
@@ -121,7 +170,7 @@
                 throw new Error('CSRF validation failed');
             }
             if (response.status === 429) {
-                // Rate limited -wait and retry once
+                // Rate limited - wait and retry once
                 return new Promise(function(resolve) {
                     setTimeout(resolve, RETRY_DELAY);
                 }).then(function() {
@@ -145,8 +194,19 @@
     };
 
     /**
+     * Helper: check if error indicates an expired/invalid cart.
+     */
+    function isCartExpiredError(err) {
+        if (!err || !err.message) return false;
+        var msg = err.message.toLowerCase();
+        return msg.indexOf('not found') !== -1 ||
+               msg.indexOf('does not exist') !== -1 ||
+               msg.indexOf('invalid') !== -1;
+    }
+
+    /**
      * Create a new empty cart. Stores the cart ID for future requests.
-     * @returns {Promise<{id, numItems, totalInclTax, currency}>}
+     * @returns {Promise<Object>} Full cart object
      */
     SparkCartClient.prototype.createCart = function() {
         return this._request(CREATE_CART, { input: {} }).then(function(data) {
@@ -159,19 +219,38 @@
     };
 
     /**
+     * Fetch the current cart contents.
+     * @param {string} [cartId] - Cart ID (uses stored ID if omitted)
+     * @returns {Promise<Object|null>} Full cart object or null if no cart
+     */
+    SparkCartClient.prototype.getCart = function(cartId) {
+        var id = cartId || getCartId();
+        if (!id) return Promise.resolve(null);
+        return this._request(GET_CART, { id: id }).then(function(data) {
+            return data.cart || null;
+        }).catch(function(err) {
+            if (isCartExpiredError(err)) return null;
+            throw err;
+        });
+    };
+
+    /**
      * Add a product to the cart. Auto-creates cart if none exists.
      * @param {number} productPk - The product ID to add
      * @param {number} [quantity=1] - Quantity to add
+     * @param {boolean} [isUpsell=false] - Mark as upsell line
      * @returns {Promise<{success, cart}>}
      */
-    SparkCartClient.prototype.addToCart = function(productPk, quantity) {
+    SparkCartClient.prototype.addToCart = function(productPk, quantity, isUpsell) {
         var self = this;
         quantity = quantity || 1;
 
         function doAdd(cartId) {
+            var lineInput = { productPk: productPk, quantity: quantity };
+            if (isUpsell) lineInput.isUpsell = true;
             var input = {
                 cartId: cartId,
-                lines: [{ productPk: productPk, quantity: quantity }]
+                lines: [lineInput]
             };
             return self._request(ADD_CART_LINES, { input: input }).then(function(data) {
                 var result = data.addCartLines;
@@ -190,12 +269,7 @@
         var cartId = getCartId();
         if (cartId) {
             return doAdd(cartId).catch(function(err) {
-                // Cart may have expired -create a new one and retry
-                if (err.message && (
-                    err.message.toLowerCase().indexOf('not found') !== -1 ||
-                    err.message.toLowerCase().indexOf('does not exist') !== -1 ||
-                    err.message.toLowerCase().indexOf('invalid') !== -1
-                )) {
+                if (isCartExpiredError(err)) {
                     return self.createCart().then(function(cart) {
                         return doAdd(cart.id);
                     });
@@ -204,9 +278,98 @@
             });
         }
 
-        // No cart yet - create one first, then add lines
         return this.createCart().then(function(cart) {
             return doAdd(cart.id);
+        });
+    };
+
+    /**
+     * Update quantities on existing cart lines.
+     * @param {string} cartId - Cart ID
+     * @param {Array<{lineId: string, quantity: number}>} lines - Lines to update
+     * @returns {Promise<{success, cart}>}
+     */
+    SparkCartClient.prototype.updateCartLines = function(cartId, lines) {
+        var self = this;
+        var input = { cartId: cartId, lines: lines };
+        return this._request(UPDATE_CART_LINES, { input: input }).then(function(data) {
+            var result = data.updateCartLines;
+            if (result && result.cart) {
+                setCartId(result.cart.id);
+                self._dispatch('spark:cart:updated', {
+                    cart: result.cart,
+                    count: result.cart.numItems,
+                    action: 'update'
+                });
+            }
+            return result;
+        });
+    };
+
+    /**
+     * Remove lines from the cart.
+     * @param {string} cartId - Cart ID
+     * @param {Array<string>} lineIds - Line PKs to remove
+     * @returns {Promise<{success, cart}>}
+     */
+    SparkCartClient.prototype.removeCartLines = function(cartId, lineIds) {
+        var self = this;
+        var input = { cartId: cartId, lineIds: lineIds };
+        return this._request(REMOVE_CART_LINES, { input: input }).then(function(data) {
+            var result = data.removeCartLines;
+            if (result && result.cart) {
+                setCartId(result.cart.id);
+                self._dispatch('spark:cart:updated', {
+                    cart: result.cart,
+                    count: result.cart.numItems,
+                    action: 'remove'
+                });
+            }
+            return result;
+        });
+    };
+
+    /**
+     * Apply a voucher code to the cart.
+     * @param {string} cartId - Cart ID
+     * @param {string} code - Voucher code
+     * @returns {Promise<{success, errors, cart}>}
+     */
+    SparkCartClient.prototype.addVoucher = function(cartId, code) {
+        var self = this;
+        var input = { cartId: cartId, vouchers: [code] };
+        return this._request(ADD_VOUCHER, { input: input }).then(function(data) {
+            var result = data.addVoucher;
+            if (result && result.cart) {
+                self._dispatch('spark:cart:updated', {
+                    cart: result.cart,
+                    count: result.cart.numItems,
+                    action: 'voucher_add'
+                });
+            }
+            return result;
+        });
+    };
+
+    /**
+     * Remove a voucher from the cart.
+     * @param {string} cartId - Cart ID
+     * @param {string} voucherCode - Voucher code to remove
+     * @returns {Promise<{success, errors, cart}>}
+     */
+    SparkCartClient.prototype.removeVoucher = function(cartId, voucherCode) {
+        var self = this;
+        var input = { cartId: cartId, vouchers: [voucherCode] };
+        return this._request(REMOVE_VOUCHER, { input: input }).then(function(data) {
+            var result = data.removeVoucher;
+            if (result && result.cart) {
+                self._dispatch('spark:cart:updated', {
+                    cart: result.cart,
+                    count: result.cart.numItems,
+                    action: 'voucher_remove'
+                });
+            }
+            return result;
         });
     };
 
@@ -218,7 +381,23 @@
         return getCartId();
     };
 
-    /* ---Export ---*/
+    /* --- Static utilities --- */
+
+    /**
+     * Format a monetary value with currency symbol.
+     * @param {number} amount
+     * @param {string} [currency='USD']
+     * @returns {string}
+     */
+    SparkCartClient.formatMoney = formatMoney;
+
+    /**
+     * Maximum allowed quantity per cart line.
+     * @type {number}
+     */
+    SparkCartClient.MAX_QTY_PER_LINE = MAX_QTY_PER_LINE;
+
+    /* --- Export --- */
 
     window.SparkCartClient = SparkCartClient;
 

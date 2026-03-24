@@ -581,7 +581,10 @@
         this._footer.innerHTML = footerHtml;
         this._footer.style.display = '';
 
-        // Update progress bar value
+        // Update progress bar value (lazy query - children may not be ready in connectedCallback)
+        if (!this._progressBar) {
+            this._progressBar = this.querySelector('spark-progress-bar');
+        }
         if (this._progressBar) {
             this._progressBar.setAttribute('data-value', String(total));
         }
@@ -622,6 +625,9 @@
         var upsells = this.querySelectorAll('spark-upsell-item');
         for (var i = 0; i < upsells.length; i++) {
             upsells[i].style.display = 'none';
+        }
+        if (!this._progressBar) {
+            this._progressBar = this.querySelector('spark-progress-bar');
         }
         if (this._progressBar) {
             this._progressBar.setAttribute('data-value', '0');

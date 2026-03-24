@@ -14,39 +14,49 @@
 (function() {
     'use strict';
 
-    var PROGRESS_STYLES = [
-        ':host { display: block; }',
+    /* --- Light DOM styles (injected once for slotted elements) --- */
+    var LIGHT_STYLES_INJECTED = false;
+    function injectMsgStyles() {
+        if (LIGHT_STYLES_INJECTED) return;
+        LIGHT_STYLES_INJECTED = true;
+        var s = document.createElement('style');
+        s.textContent = [
+            '.spark-progress-msg {',
+            '  display: none; font-size: 13px; font-weight: 500; color: #475569;',
+            '  font-family: var(--font-body, system-ui, -apple-system, sans-serif);',
+            '  text-align: center; justify-content: center;',
+            '}',
+            '.spark-progress-msg.active { display: flex; align-items: center; gap: 6px; }',
+            '.spark-progress-step {',
+            '  width: 28px; height: 28px; border-radius: 50%;',
+            '  background: #E2E8F0; border: 2px solid #fff;',
+            '  display: flex; align-items: center; justify-content: center;',
+            '  transition: background-color 300ms ease-out; z-index: 1;',
+            '  color: #94A3B8;',
+            '}',
+            '.spark-progress-step[aria-checked="true"] {',
+            '  background: var(--primary-color, #1E293B); color: #fff;',
+            '}',
+            '[data-light-primary] .spark-progress-step[aria-checked="true"] { color: #1E293B; }',
+            '.spark-progress-step svg { width: 14px; height: 14px; }'
+        ].join('\n');
+        document.head.appendChild(s);
+    }
 
-        '.spark-progress-messages { margin-bottom: 8px; min-height: 20px; }',
-        '.spark-progress-msg {' +
-        '  display: none; font-size: 13px; font-weight: 500; color: #1E293B;' +
-        '  font-family: var(--font-body, system-ui, -apple-system, sans-serif);' +
-        '}',
-        '.spark-progress-msg.active { display: flex; align-items: center; gap: 6px; }',
+    var PROGRESS_STYLES = [
+        ':host { display: block; padding: 0 20px; }',
+
+        '.spark-progress-messages { margin-bottom: 10px; min-height: 20px; }',
 
         '.spark-progress-track {' +
         '  position: relative; height: 6px; background: #E2E8F0; border-radius: 3px;' +
-        '  overflow: visible;' +
-        '}',
+        '  overflow: visible; margin: 0 14px;' +
+        '}'  /* margin accounts for step marker radius */,
         '.spark-progress-fill {' +
         '  position: absolute; top: 0; left: 0; height: 100%;' +
         '  background: var(--primary-color, #1E293B); border-radius: 3px;' +
         '  width: var(--position, 0%); transition: width 400ms ease-out;' +
-        '}',
-
-        '.spark-progress-step {' +
-        '  position: absolute; top: 50%; transform: translate(-50%, -50%);' +
-        '  width: 28px; height: 28px; border-radius: 50%;' +
-        '  background: #E2E8F0; border: 2px solid #fff;' +
-        '  display: flex; align-items: center; justify-content: center;' +
-        '  transition: background-color 300ms ease-out; z-index: 1;' +
-        '  color: #94A3B8;' +
-        '}',
-        '.spark-progress-step[aria-checked="true"] {' +
-        '  background: var(--primary-color, #1E293B); color: #fff;' +
-        '}',
-        '[data-light-primary] .spark-progress-step[aria-checked="true"] { color: #1E293B; }',
-        '.spark-progress-step svg { width: 14px; height: 14px; }'
+        '}'
     ].join('\n');
 
     /* --- Template --- */
@@ -63,6 +73,7 @@
     static get observedAttributes() { return ['data-value']; }
 
     connectedCallback() {
+        injectMsgStyles();
         var shadow = this.attachShadow({ mode: 'open' });
         shadow.appendChild(tpl.content.cloneNode(true));
 
@@ -71,19 +82,20 @@
         this._prevShippingReached = null;
         this._prevGiftReached = null;
 
-        // Cache message elements (in light DOM, slotted)
-        this._shippingMsg = this.querySelector('[data-shipping]');
-        this._giftMsg = this.querySelector('[data-gift]');
-        this._finalMsg = this.querySelector('[data-final-goal]');
+        // Message/step refs are lazily queried in _ensureRefs
+        // because children may not be parsed yet in connectedCallback
+        this._shippingMsg = null;
+        this._giftMsg = null;
+        this._finalMsg = null;
+        this._steps = [];
+        this._refsReady = false;
 
-        // Cache step elements (in light DOM, slotted)
-        this._steps = this.querySelectorAll('[data-step]');
-
-        // Initial update
+        // Initial update (deferred to allow children to parse)
         var self = this;
-        setTimeout(function() {
+        requestAnimationFrame(function() {
+            self._ensureRefs();
             self._update(self._getValue());
-        }, 50);
+        });
     };
 
     attributeChangedCallback(name, oldVal, newVal) {
@@ -104,7 +116,17 @@
         return parseFloat(this.getAttribute('data-max')) || 100;
     };
 
+    _ensureRefs() {
+        if (this._refsReady) return;
+        this._shippingMsg = this.querySelector('[data-shipping]');
+        this._giftMsg = this.querySelector('[data-gift]');
+        this._finalMsg = this.querySelector('[data-final-goal]');
+        this._steps = this.querySelectorAll('[data-step]');
+        if (this._shippingMsg || this._finalMsg) this._refsReady = true;
+    };
+
     _update(currentValue) {
+        this._ensureRefs();
         var min = this._getMin();
         var max = this._getMax();
         var range = max - min;

@@ -21,7 +21,7 @@
     data-coupon-btn="{% t 'side_cart.default.apply_coupon' %}"
     data-currency="{{ request.CURRENCY_CODE|default:'USD' }}"
     data-open-on-add="{% if settings.sidecart_open_on_add == False %}false{% else %}true{% endif %}"
-    {% if settings.gift_product %}data-gift-product-id="{{ settings.gift_product.pk }}"{% endif %}
+    {% if settings.gift_product %}data-gift-product-id="{{ settings.gift_product.children.first.pk|default:settings.gift_product.pk }}"{% endif %}
 >
     {# Progress bar (slotted into drawer panel between header and body) #}
     <div slot="progress">

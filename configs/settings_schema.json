@@ -28,6 +28,20 @@
                 "type": "checkbox",
                 "default": true,
                 "help_text": "Display the featured categories section on the homepage."
+            },
+            {
+                "name": "show_on_sale",
+                "label": "Show On Sale",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a curated on-sale products section with sale badges and discount pricing."
+            },
+            {
+                "name": "show_promo_banner",
+                "label": "Show Promo Banner",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a full-width promotional banner with a heading and call-to-action button."
             }
         ],
         "Hero": [
@@ -208,6 +222,83 @@
                 "label": "Background Color",
                 "type": "color",
                 "help_text": "Section background color. Leave blank for white."
+            }
+        ],
+        "On Sale": [
+            {
+                "name": "on_sale_header",
+                "label": "Section Heading",
+                "type": "text",
+                "default": "On Sale",
+                "help_text": "Heading above the on-sale products grid.",
+                "max_length": 250
+            },
+            {
+                "name": "on_sale_products",
+                "label": "Products",
+                "type": "products",
+                "help_text": "Select products to feature in the On Sale section. Add your discounted products here."
+            },
+            {
+                "name": "on_sale_columns",
+                "label": "Columns (Desktop)",
+                "type": "range",
+                "min": 2,
+                "max": 4,
+                "step": 1,
+                "unit": "",
+                "default": 3,
+                "help_text": "Number of product columns on desktop."
+            },
+            {
+                "name": "on_sale_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for white."
+            }
+        ],
+        "Promo Banner": [
+            {
+                "name": "promo_banner_heading",
+                "label": "Heading",
+                "type": "text",
+                "default": "Limited Time Offer",
+                "help_text": "Large heading text on the promo banner.",
+                "max_length": 100
+            },
+            {
+                "name": "promo_banner_subheading",
+                "label": "Subheading",
+                "type": "text",
+                "help_text": "Smaller supporting text below the heading.",
+                "max_length": 200
+            },
+            {
+                "name": "promo_banner_cta_text",
+                "label": "Button Text",
+                "type": "text",
+                "default": "Shop Now",
+                "help_text": "Call-to-action button label.",
+                "max_length": 50
+            },
+            {
+                "name": "promo_banner_cta_url",
+                "label": "Button URL",
+                "type": "url",
+                "help_text": "Where the button links to (e.g. /catalogue/).",
+                "max_length": 500
+            },
+            {
+                "name": "promo_banner_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Banner background color. Leave blank to use your store's primary color."
+            },
+            {
+                "name": "promo_banner_text_color",
+                "label": "Text Color",
+                "type": "color",
+                "help_text": "Banner text and button color. Leave blank for white."
             }
         ],
         "Featured Categories": [

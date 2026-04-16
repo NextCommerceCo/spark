@@ -49,6 +49,9 @@
                         {% endif %}
                     {% endwith %}
                     <div class="product-title text-slate-800 group-hover:text-slate-600">{{ result.object.get_title }}</div>
+                    {% with product=result.object %}
+                        {% app_hook 'product_card_rating_summary' %}
+                    {% endwith %}
                     <div class="product-price">
                         {% if session.price.exists %}
                             {{ session.price.price|currency:session.price.currency }}

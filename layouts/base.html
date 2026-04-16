@@ -174,6 +174,7 @@
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
 
+    {% app_hook 'global_social_proof' %}
     {% app_hook 'global_footer' %}
 
     {# Delight: skeleton dismiss + keyboard nav + cart badge #}

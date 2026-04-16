@@ -99,6 +99,8 @@
                     {{ product.get_title }}
                 </h1>
 
+                {% app_hook 'product_rating_summary' %}
+
                 {# Star rating summary #}
                 {% if settings.product_reviews and product.rating %}
                     <a href="#reviews" class="flex items-center gap-2 mt-2 group">
@@ -225,6 +227,9 @@
 {% endif %}
 
 {# Reviews section #}
+{% app_hook 'product_reviews' %}
+{% app_hook 'product_review_cta' %}
+
 {% if settings.product_reviews %}
 <section id="reviews" class="border-t border-slate-200">
     <div class="container py-12 md:py-16">

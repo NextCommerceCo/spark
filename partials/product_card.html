@@ -28,6 +28,7 @@
         </div>
     {% endif %}
     <div class="product-title text-slate-800 group-hover:text-slate-600">{{ product.get_title }}</div>
+    {% app_hook 'product_card_rating_summary' %}
     <div class="product-price">
         {% if session.price.exists %}
             {{ session.price.price|currency:session.price.currency }}

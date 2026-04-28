@@ -25,26 +25,41 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 
 ## CSS Pipeline
 ```
-css/input.css → [tailwindcss CLI] → assets/main.css → [sass-compat.py] → [ntk push] → store
+css/input.css → [tailwindcss CLI] → assets/main.css → [sass-compat.py] → [git commit] → [ntk push] → store
 ```
 
 - Tailwind v4 uses CSS-based config. All theme tokens, custom colors, and component styles live in `css/input.css` using `@theme`, `@layer base`, and `@layer components`.
-- `scripts/sass-compat.py` post-processes the output to strip `@property` declarations, convert `oklch()` to hex, and replace `color-mix()` — necessary because ntk's CSS parser doesn't support these modern CSS features.
-- After any change to `css/input.css`, you must: compile → sass-compat → push:
+- `scripts/sass-compat.py` post-processes the output to strip `@property` declarations, convert `oklch()` to hex, and replace `color-mix()` — necessary because the platform's Sass parser doesn't support these modern CSS features.
+- After any change to `css/input.css`, you must: compile → sass-compat → commit → push:
+  ```bash
+  make release           # compiles, runs sass-compat, stages assets/main.css
+  git commit             # main.css change goes in the same commit as the source change
+  ntk push assets/main.css
+  ```
+  Or the manual sequence:
   ```bash
   ./tailwindcss -i css/input.css -o assets/main.css --minify
   python3 scripts/sass-compat.py assets/main.css
+  git add assets/main.css && git commit
   ntk push assets/main.css
   ```
 
+### Why `assets/main.css` is committed
+
+The platform doesn't compile CSS server-side, and ntk doesn't preserve binaries on push, so the **compiled minified `assets/main.css` must be in the repo** for the theme to be installable. Anyone pulling Spark via `ntk pull` or cloning from GitHub gets a working, styled storefront immediately — no Tailwind toolchain required.
+
+Treat `main.css` as a versioned artifact: every CSS source change recompiles + recommits it. Drift between `css/input.css` and the committed output is a bug. The `tailwindcss` binary stays gitignored (76MB, platform-specific) — devs fetch it themselves with `make install-tailwind`.
+
 ## Development
 ```bash
-ntk watch       # Watches files + auto-compiles Tailwind + runs sass-compat + pushes
-ntk tailwind    # One-shot: compile Tailwind + sass-compat + push CSS
+make install-tailwind  # First-time setup: download the standalone CLI binary
+ntk watch              # Watches files + auto-compiles Tailwind + runs sass-compat + pushes
+ntk tailwind           # One-shot: compile Tailwind + sass-compat + push CSS
 ntk tailwind --minify  # Production build: compile minified + push
-make dev        # Legacy: Run Tailwind watcher + ntk watcher in parallel
-make css        # Legacy: Compile Tailwind once
-make build      # Legacy: Compile + minify for production
+make release           # Rebuild minified main.css and stage it for commit
+make dev               # Legacy: Run Tailwind watcher + ntk watcher in parallel
+make css               # Legacy: Compile Tailwind once
+make build             # Legacy: Compile + minify for production
 ```
 
 ## CRITICAL: Tailwind + DTL

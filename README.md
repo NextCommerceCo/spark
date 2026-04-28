@@ -7,9 +7,11 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 ## Requirements
 
 - [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`)
-- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) (binary at `./tailwindcss`)
+- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) — fetched via `make install-tailwind`
 
 ## Quick Start
+
+The compiled `assets/main.css` is committed to the repo, so you can install Spark on a store immediately without a local toolchain — clone, point ntk at your store, push.
 
 1. Install ntk and configure your store:
    ```bash
@@ -17,15 +19,19 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
    ntk init
    ```
 
-2. Compile CSS and push:
+2. Push the theme to your store:
    ```bash
-   ntk tailwind --minify
+   ntk push
    ```
 
-3. Start development:
-   ```bash
-   ntk watch
-   ```
+For day-to-day development (editing CSS sources), set up Tailwind locally:
+
+```bash
+make install-tailwind   # downloads the right standalone binary for your OS
+ntk watch               # watches files, compiles Tailwind, pushes changes
+```
+
+When you change `css/input.css` (or any source that affects the build), run `make release` to rebuild `assets/main.css` and stage it for commit. The committed `main.css` is the canonical artifact that ships to merchants — keep it in sync.
 
 ## Development
 

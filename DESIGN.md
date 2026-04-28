@@ -1,6 +1,6 @@
 # Spark Design System
 
-Spark is a storefront theme for NEXT Commerce. This document is the single source of truth for all visual decisions. Read this before making any UI change.
+Spark is a storefront theme for Next Commerce. This document is the single source of truth for all visual decisions. Read this before making any UI change.
 
 **Aesthetic:** Everlane / Aesop / Apple Store — clean commerce, products-are-the-design.
 

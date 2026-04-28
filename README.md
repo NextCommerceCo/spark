@@ -1,6 +1,8 @@
 # Spark
 
-A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Components, zero jQuery, zero Bootstrap, no bundler required.
+A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Components, zero jQuery, zero Bootstrap, no bundler required.
+
+**Current version:** 1.1.1
 
 ## Requirements
 
@@ -41,31 +43,40 @@ A modern starter theme for NEXT Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 ```
 spark/
 ├── assets/
-│   ├── main.css                  Compiled Tailwind output
+│   ├── main.css                       Compiled Tailwind output
 │   └── js/
-│       ├── spark-cart.js         GraphQL cart client
-│       ├── spark-gallery.js      PDP image gallery
-│       ├── spark-platform.js     Core platform JS (replaces jQuery)
-│       ├── theme.js              Theme utilities
-│       └── components/           Web Components (Shadow DOM)
-│           ├── spark-add-to-cart.js
-│           └── spark-quantity.js
+│       ├── spark-cart.js              GraphQL cart client
+│       ├── spark-gallery.js           PDP image gallery
+│       ├── spark-platform.js          Core platform JS (replaces jQuery)
+│       ├── theme.js                   Theme utilities
+│       └── components/                Web Components
+│           ├── spark-add-to-cart.js   ATC button (Shadow DOM)
+│           ├── spark-cart-drawer.js   Custom GraphQL-first side cart
+│           ├── spark-progress-bar.js  Free-shipping / free-gift progress
+│           ├── spark-quantity.js      Quantity stepper (Shadow DOM)
+│           └── spark-upsell-item.js   Side-cart upsell slot
 ├── css/             Tailwind v4 input (source of truth for styles)
 ├── configs/         Theme settings schema + data
-├── docs/            Design documents + ecosystem roadmap
 ├── layouts/         Base template
 ├── locales/         Translation files (11 languages)
 ├── partials/        Reusable fragments + SVG icons
 ├── scripts/         Build tools (sass-compat.py)
-└── templates/       Page templates (18 pages)
+└── templates/       Page templates (18 files including error pages)
 ```
+
+Project planning and session knowledge live in the separate `learn/` repo (Next Mind), not in this theme.
 
 ## Features
 
 - **Zero legacy dependencies** — no jQuery, no Bootstrap. Pure vanilla JS + Web Components.
-- **Web Components** — `<spark-add-to-cart>` and `<spark-quantity>` with Shadow DOM, progressive enhancement, and no-JS fallbacks.
+- **Web Components (5)** — `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`. Shadow DOM where appropriate, progressive enhancement, no-JS fallbacks.
+- **Custom GraphQL-first side cart** — `<spark-cart-drawer>` replaces the platform's side cart black box. Event-driven `SparkSideCart` API, no platform CSS bleed.
 - **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.
+- **Cart milestones** — multi-step progress bar with currency-aware thresholds for free shipping and free gifts; auto-add/remove driven by progress events.
 - **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
+- **Homepage sections (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section has its own toggle in Theme Settings.
+- **Sale badges** — automatic on product cards when `compare_at_price > price`.
+- **Review app hooks** — template surfaces (`{% app_hook %}`) for product cards, PDP rating summary, full reviews module, home/collection review feeds, and global social proof. Apps render into Spark without theme edits.
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
@@ -75,4 +86,4 @@ All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, co
 
 ## License
 
-Proprietary — NEXT Commerce.
+Proprietary — Next Commerce.

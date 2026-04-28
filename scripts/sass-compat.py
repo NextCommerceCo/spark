@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Post-process Tailwind CSS v4 output to be compatible with
-the NEXT Commerce server-side Sass compiler.
+the Next Commerce server-side Sass compiler.
 
 Strips:
 - @property declarations (CSS Houdini — progressive enhancement only)

@@ -19,6 +19,13 @@
 ### Developer Docs Integration
 **Priority:** P3
 **Effort:** M
-**What:** Interactive "Try it in Spark" examples in NEXT Commerce developer documentation.
+**What:** Interactive "Try it in Spark" examples in Next Commerce developer documentation.
 **Why:** Reduces friction for third-party developers building on the Spark architecture.
 **Depends on:** Spark sections architecture being stable.
+
+### App Hook Surface — Document & Stabilize
+**Priority:** P2
+**Effort:** S
+**What:** Promote the `{% app_hook %}` slot list (currently shipped for the Reviews app) to a documented public contract for App developers. Decide on naming conventions for new hooks, versioning policy, and whether to expose a "list all hooks" surface for the App Store.
+**Why:** Apps targeting Spark hooks instead of forking the theme is the cleanest extension story. Locking the contract early avoids painful renames once more Apps integrate.
+**Depends on:** First non-Reviews App to need a hook (forces the second data point).

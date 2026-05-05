@@ -232,8 +232,10 @@ Single upsell slot rendered into the side cart. DTL renders product data (image,
 - No Unicode em dashes, arrows, box drawing characters (causes CDN 500)
 - Use ASCII-only: `-` instead of `—`, `->` instead of `→`, `\u2713` instead of `✓`
 
+## Out of Scope (platform owns this, not the theme)
+- **Checkout** — platform-managed in NEXT (same model as Shopify). The cart hands off via a CTA and the platform renders the entire checkout flow. Themes do **not** ship a checkout template.
+
 ## What's Deferred
-- **Checkout template** (`checkout/checkout.html`) — requires deeper platform understanding
 - **Theme Marketplace / sections API** — packaging Spark sections as installable units. Tracked in `TODOS.md`.
 - **Preview-mode placeholder suppression** — needs a platform-side context variable to distinguish editor from live render. Tracked in `TODOS.md`.
 - **Dark mode** — Tailwind makes it trivial, not needed for v1

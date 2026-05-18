@@ -129,7 +129,13 @@
         }
 
         function basename(url) {
-            return (url || '').split('/').pop();
+            // Strip query string + fragment first -- thumbnail data-full and
+            // variant.primary_image.original can carry different CDN cache
+            // keys (?v=...) or sizing params (?w=400) even when they point
+            // at the same underlying file. Comparing pre-strip would miss
+            // the match silently.
+            var path = (url || '').split('?')[0].split('#')[0];
+            return path.split('/').pop();
         }
 
         inputs.forEach(function(input) {

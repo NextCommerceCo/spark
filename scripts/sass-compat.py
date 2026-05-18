@@ -244,6 +244,18 @@ def replace_is_where_selectors(css):
     return css
 
 
+def fix_scientific_notation(css):
+    """Replace scientific-notation lengths the platform's Sass parser rejects.
+
+    Tailwind v4 emits ``border-radius:3.40282e38px`` (i.e. ``Number.MAX_VALUE``)
+    for utilities like ``rounded-full``. The platform's Sass compiler errors
+    out on the ``e38`` exponent. Cap any e-notation length at 9999px, which
+    behaves identically for border-radius purposes (any value > half the
+    element's diagonal renders as a full pill).
+    """
+    return re.sub(r'(\d+(?:\.\d+)?)e\d+px', '9999px', css)
+
+
 def replace_media_range_syntax(css):
     """Replace CSS Media Query Range Syntax with traditional syntax.
     (width>=768px)  -> (min-width:768px)
@@ -284,6 +296,7 @@ def main():
     css = replace_logical_properties(css)
     css = replace_is_where_selectors(css)
     css = replace_media_range_syntax(css)
+    css = fix_scientific_notation(css)
 
     # Clean up empty lines
     css = re.sub(r'\n{3,}', '\n\n', css)

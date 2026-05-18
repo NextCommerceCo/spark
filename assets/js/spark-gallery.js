@@ -106,12 +106,31 @@
 
     /**
      * Variant picker integration: when a variant radio changes,
-     * find which child index was selected and advance gallery to match.
+     * find the selected child's primary image and advance the gallery to it.
+     *
+     * Previously this called goTo(childIndex), which assumed the gallery's
+     * thumbnails were 1:1 with prod.children -- almost never true (the
+     * gallery shows the parent's image set; children carry their own
+     * primary_image). Now we look up the variant's actual image URL,
+     * match it to a thumbnail by data-full, and goTo that thumb's index.
+     * If no thumb matches (e.g. the variant has a unique image not in the
+     * parent set), we swap the hero src directly as a fallback.
      */
     SparkGallery.prototype._bindVariantPicker = function() {
         var self = this;
         var inputs = document.querySelectorAll('input[name^="attr_"]');
         if (!inputs.length) return;
+
+        function pickVariantImageUrl(variant) {
+            if (!variant) return null;
+            if (variant.primary_image && variant.primary_image.original) return variant.primary_image.original;
+            if (variant.images && variant.images.length && variant.images[0].original) return variant.images[0].original;
+            return null;
+        }
+
+        function basename(url) {
+            return (url || '').split('/').pop();
+        }
 
         inputs.forEach(function(input) {
             input.addEventListener('change', function() {
@@ -127,17 +146,33 @@
                         selected[inp.name] = parseInt(inp.value);
                     });
 
-                    // Find matching child index
+                    // Find the matching child variant
+                    var matched = null;
                     for (var i = 0; i < prod.children.length; i++) {
                         var child = prod.children[i];
                         if (!child.variant_attribute_values) continue;
-                        var match = child.variant_attribute_values.every(function(attr) {
+                        var ok = child.variant_attribute_values.every(function(attr) {
                             return selected['attr_' + attr.code] === attr.id;
                         });
-                        if (match) {
-                            self.goTo(i);
-                            break;
-                        }
+                        if (ok) { matched = child; break; }
+                    }
+                    if (!matched) return;
+
+                    var url = pickVariantImageUrl(matched);
+                    if (!url) return;
+
+                    // Prefer advancing the gallery to the matching thumb so the
+                    // existing fade animation + active-thumb state apply.
+                    var targetIdx = -1;
+                    for (var j = 0; j < self.thumbs.length; j++) {
+                        var full = self.thumbs[j].getAttribute('data-full') || '';
+                        if (full === url || basename(full) === basename(url)) { targetIdx = j; break; }
+                    }
+                    if (targetIdx !== -1) {
+                        self.goTo(targetIdx);
+                    } else if (self.mainImg) {
+                        // No matching thumb -- swap the hero src directly.
+                        self.mainImg.src = url;
                     }
                 } catch(e) {}
             });

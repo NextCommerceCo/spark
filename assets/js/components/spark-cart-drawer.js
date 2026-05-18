@@ -99,6 +99,11 @@
 
     var DRAWER_STYLES = [
         ':host { display: block; }',
+        /* Shadow DOM does not inherit document box-sizing. Without this reset,  */
+        /* width:100% + padding on .spark-drawer-checkout (and the voucher form) */
+        /* renders wider than the footer content area and overflows past the     */
+        /* panel's right edge.                                                   */
+        '*, *::before, *::after { box-sizing: border-box; }',
         ':host([data-open="false"]) .spark-drawer-backdrop { opacity: 0; pointer-events: none; }',
         ':host([data-open="false"]) .spark-drawer-panel { transform: translateX(100%); }',
         ':host([data-open="true"]) .spark-drawer-backdrop { opacity: 1; }',
@@ -136,7 +141,9 @@
         '  color: #475569; transition: color 150ms ease-out; line-height: 0;' +
         '}',
         '.spark-drawer-close:hover { color: #1E293B; }',
-        '.spark-drawer-close:focus-visible { outline: 2px solid var(--primary-color, #1E293B); outline-offset: 2px; }',
+        /* Inset focus outline so the focus ring never extends past the panel's */
+        /* right edge (the close button auto-focuses on drawer open).            */
+        '.spark-drawer-close:focus-visible { outline: 2px solid var(--primary-color, #1E293B); outline-offset: -2px; }',
 
         /* Body */
         '.spark-drawer-body {' +
@@ -181,10 +188,13 @@
         '.spark-drawer-item[data-loading="true"] { opacity: 0.5; pointer-events: none; }',
         '.spark-drawer-item-image { flex-shrink: 0; width: 80px; height: 80px; }',
         '.spark-drawer-item-image img { width: 80px; height: 80px; object-fit: cover; border-radius: 2px; }',
-        '.spark-drawer-item-details { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }',
+        /* Reserve 28px on the right so the absolute-positioned remove X never  */
+        /* overlaps the title/variant text (long variant-suffixed titles can be */
+        /* much longer than a single line).                                     */
+        '.spark-drawer-item-details { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-right: 28px; }',
         '.spark-drawer-item-title {' +
         '  font-size: 14px; font-weight: 500; color: #1E293B; text-decoration: none;' +
-        '  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' +
+        '  line-height: 1.35; word-break: break-word; overflow-wrap: anywhere;' +
         '}',
         '.spark-drawer-item-title:hover { color: #475569; }',
         '.spark-drawer-item-variant { font-size: 12px; color: #94A3B8; }',
@@ -213,7 +223,9 @@
         '  transition: color 150ms ease-out; line-height: 0;' +
         '}',
         '.spark-drawer-item-remove:hover { color: #EF4444; }',
-        '.spark-drawer-item-remove:focus-visible { outline: 2px solid var(--primary-color, #1E293B); outline-offset: 2px; }',
+        /* Inset focus outline so the focus ring stays inside the panel even */
+        /* when the remove button is flush with the body's right edge.       */
+        '.spark-drawer-item-remove:focus-visible { outline: 2px solid var(--primary-color, #1E293B); outline-offset: -2px; }',
 
         /* Voucher */
         '.spark-drawer-voucher { padding: 12px 0; border-top: 1px solid #E2E8F0; }',

@@ -1,6 +1,12 @@
 # Spark Theme Settings Partials
 
-This catalog lists the Spark partials and homepage sections that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions.
+This catalog lists the Spark partials, homepage sections, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions.
+
+## Mechanical Scope
+
+- Spark has 18 partial files that reference `settings.*` directly.
+- Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
+- Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
 ## Homepage Sections
 
@@ -36,6 +42,16 @@ These are the primary design blocks for quick storefront builds. They are includ
 | `partials/block_cart_progress_bar.html` | Side Cart > Progress Bar | Milestone progress UI and messages. | `enable_progress_bar`, `step_1_message`, `step_2_message`, `final_step_message`, `gift_product` |
 | `partials/block_cart_upsell.html` | Side Cart > Suggested Products | Suggested product block inside the cart drawer. | `enable_upsells`, `upsell_section_title`, `upsell_product_1`, `upsell_product_2`, `upsell_product_3` |
 | `partials/block_cart_upsell_item.html` | Side Cart > Suggested Products | Single suggested product row. | `upsell_fallback_slots` |
+
+## Template And Layout Surfaces
+
+These files are not partials, but they are important setting-backed surfaces designers will see while composing storefronts.
+
+| File | Setting Group | Purpose | Key Settings |
+| --- | --- | --- | --- |
+| `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
+| `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
+| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
 
 ## Utility Partials
 

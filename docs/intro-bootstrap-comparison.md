@@ -4,12 +4,12 @@ This comparison captures the useful Theme Settings surface from `intro-bootstrap
 
 ## Current Counts
 
-| Theme | Settings Schema Entries | Partial Files |
-| --- | ---: | ---: |
-| Spark | 140 | 35 |
-| Intro Bootstrap | 91 | 19 |
+| Theme | Settings Schema Entries | Partial Files | Setting-Backed Partials | Setting-Backed Templates/Layouts |
+| --- | ---: | ---: | ---: | ---: |
+| Spark | 140 | 35 | 18 | 3 |
+| Intro Bootstrap | 91 | 19 | 4 | 5 |
 
-Spark has more partial files because it now includes homepage section partials, cart web-component slot partials, and inline icon partials. The important change is not the raw count; it is that homepage design blocks now have named, reusable partials.
+Spark has more partial files because it now includes homepage section partials, cart web-component slot partials, and inline icon partials. The important change is not the raw count; it is that Spark now moves homepage design blocks into named, reusable partials instead of concentrating most design settings in `templates/index.html`.
 
 ## Homepage Blocks
 

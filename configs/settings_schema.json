@@ -268,6 +268,48 @@
                 "max_length": 250
             },
             {
+                "name": "featured_product_header_size",
+                "label": "Heading Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Size of the featured product section heading."
+            },
+            {
+                "name": "featured_product_header_align",
+                "label": "Heading Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of the featured product section heading."
+            },
+            {
                 "name": "featured_product_description",
                 "label": "Custom Description",
                 "type": "richtext",
@@ -329,6 +371,48 @@
                 "default": "Featured Products"
             },
             {
+                "name": "featured_products_header_size",
+                "label": "Heading Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Size of the featured products heading."
+            },
+            {
+                "name": "featured_products_header_align",
+                "label": "Heading Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of the featured products heading."
+            },
+            {
                 "name": "featured_products_columns",
                 "label": "Columns (Desktop)",
                 "type": "range",
@@ -344,6 +428,12 @@
                 "label": "Background Color",
                 "type": "color",
                 "help_text": "Section background color. Leave blank for white."
+            },
+            {
+                "name": "featured_products_card_bg",
+                "label": "Card Background Color",
+                "type": "color",
+                "help_text": "Optional background color for product cards in this section."
             },
             {
                 "name": "featured_products_cta_text",
@@ -395,6 +485,48 @@
                 "max_length": 250
             },
             {
+                "name": "on_sale_header_size",
+                "label": "Heading Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Size of the on-sale section heading."
+            },
+            {
+                "name": "on_sale_header_align",
+                "label": "Heading Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of the on-sale section heading."
+            },
+            {
                 "name": "on_sale_products",
                 "label": "Products",
                 "type": "products",
@@ -416,6 +548,12 @@
                 "label": "Background Color",
                 "type": "color",
                 "help_text": "Section background color. Leave blank for white."
+            },
+            {
+                "name": "on_sale_card_bg",
+                "label": "Card Background Color",
+                "type": "color",
+                "help_text": "Optional background color for product cards in this section."
             }
         ],
         "Promo Banner": [
@@ -500,6 +638,48 @@
                 "help_text": "Heading above the featured categories. Leave blank to hide.",
                 "max_length": 250,
                 "default": "Shop by Category"
+            },
+            {
+                "name": "featured_categories_header_size",
+                "label": "Heading Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Size of the featured categories heading."
+            },
+            {
+                "name": "featured_categories_header_align",
+                "label": "Heading Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of the featured categories heading."
             },
             {
                 "name": "featured_categories_columns",
@@ -656,6 +836,27 @@
                 "default": "Recommended Products",
                 "help_text": "Heading above the recommended products grid. Leave blank to use the default translation.",
                 "max_length": 250
+            },
+            {
+                "name": "recommended_products_header_size",
+                "label": "Heading Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Size of the recommended products heading."
             },
             {
                 "name": "recommended_products_header_align",

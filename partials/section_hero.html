@@ -1,5 +1,4 @@
 {# Spark homepage hero section. Controlled by Homepage > Sections + Hero settings. #}
-{% load theme_tags %}
 {% if settings.show_hero %}
     {% if settings.homepage_hero_image %}
     <section class="relative overflow-hidden">
@@ -14,7 +13,7 @@
         </picture>
         {% if settings.homepage_hero_overlay_color %}
             <div class="absolute inset-0"
-                 style="background-color: {{ settings.homepage_hero_overlay_color }}; opacity: {{ settings.homepage_hero_overlay_opacity|default:'30'|times:0.01 }};"></div>
+                 style="background-color: {{ settings.homepage_hero_overlay_color }}; opacity: {{ settings.homepage_hero_overlay_opacity|default:'30' }}%;"></div>
         {% endif %}
         <div class="absolute inset-0 flex p-8 md:p-12 {% if settings.homepage_hero_content_position == 'top-left' %}items-start justify-start{% elif settings.homepage_hero_content_position == 'top-center' %}items-start justify-center{% elif settings.homepage_hero_content_position == 'top-right' %}items-start justify-end{% elif settings.homepage_hero_content_position == 'middle-left' %}items-center justify-start{% elif settings.homepage_hero_content_position == 'middle-center' %}items-center justify-center{% elif settings.homepage_hero_content_position == 'middle-right' %}items-center justify-end{% elif settings.homepage_hero_content_position == 'bottom-center' %}items-end justify-center{% elif settings.homepage_hero_content_position == 'bottom-right' %}items-end justify-end{% else %}items-end justify-start{% endif %}"
              style="color: {{ settings.homepage_hero_text_color|default:'#ffffff' }};">

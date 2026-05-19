@@ -2,7 +2,9 @@
 {# Usage: {% include 'partials/product_card.html' with product=product %} #}
 {% purchase_info_for_product request product as session %}
 {% if session.availability.is_available_to_buy %}
-<a href="{{ product.get_absolute_url }}" class="product-card group relative">
+<a href="{{ product.get_absolute_url }}"
+   class="product-card group relative {% if settings.product_card_border %}product-card-bordered{% endif %}"
+   {% if card_bg %}style="background-color: {{ card_bg }};"{% endif %}>
     {% with image=product.primary_image %}
         {% if image.original %}
             {% if settings.product_media_fit == 'cover' %}

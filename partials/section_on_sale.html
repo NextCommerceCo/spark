@@ -1,0 +1,31 @@
+{# Spark homepage on-sale product grid. #}
+{% if settings.show_on_sale %}
+    {% if settings.on_sale_products|length > 0 %}
+    <section class="py-12 md:py-16" {% if settings.on_sale_bg_color %}style="background-color: {{ settings.on_sale_bg_color }};"{% endif %}>
+        <div class="container">
+            <h2 class="text-2xl font-semibold text-slate-800 mb-8">{{ settings.on_sale_header|default:"On Sale" }}</h2>
+            <div class="product-grid" {% if settings.on_sale_columns %}style="--product-grid-columns: {{ settings.on_sale_columns }};"{% endif %}>
+                {% for product in settings.on_sale_products %}
+                    {% include 'partials/product_card.html' with product=product %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <section class="container py-12 md:py-16">
+        <div class="border-2 border-dashed border-slate-200 p-8">
+            <div class="h-5 w-32 bg-slate-100 rounded mb-6"></div>
+            <div class="product-grid">
+                {% for i in "123" %}
+                <div>
+                    <div class="aspect-square bg-slate-50 mb-3"></div>
+                    <div class="h-3 w-3/4 bg-slate-100 rounded mb-2"></div>
+                    <div class="h-3 w-1/3 bg-slate-100 rounded"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <p class="text-center text-xs text-slate-300 mt-4">On Sale &middot; Settings &rarr; Homepage &rarr; On Sale &rarr; Products</p>
+    </section>
+    {% endif %}
+{% endif %}

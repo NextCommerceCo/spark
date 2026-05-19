@@ -211,7 +211,7 @@
                 "label": "Columns (Desktop)",
                 "type": "range",
                 "min": 2,
-                "max": 4,
+                "max": 5,
                 "step": 1,
                 "unit": "",
                 "default": 3,
@@ -244,7 +244,7 @@
                 "label": "Columns (Desktop)",
                 "type": "range",
                 "min": 2,
-                "max": 4,
+                "max": 5,
                 "step": 1,
                 "unit": "",
                 "default": 3,
@@ -321,7 +321,7 @@
                 "label": "Columns (Desktop)",
                 "type": "range",
                 "min": 2,
-                "max": 4,
+                "max": 5,
                 "step": 1,
                 "unit": "",
                 "default": 2,
@@ -408,6 +408,15 @@
                 "help_text": "Where the product description appears relative to the image gallery."
             }
         ],
+        "Product Cards": [
+            {
+                "name": "product_card_border",
+                "label": "Show Product Card Borders",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Add a subtle border around product cards in grids."
+            }
+        ],
         "Product Reviews": [
             {
                 "name": "product_reviews",
@@ -423,6 +432,58 @@
                 "type": "checkbox",
                 "default": true,
                 "help_text": "Display recommended products section on product pages."
+            },
+            {
+                "name": "recommended_products_header",
+                "label": "Section Heading",
+                "type": "text",
+                "default": "Recommended Products",
+                "help_text": "Heading above the recommended products grid. Leave blank to use the default translation.",
+                "max_length": 250
+            },
+            {
+                "name": "recommended_products_header_align",
+                "label": "Heading Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Alignment of the recommended products heading."
+            },
+            {
+                "name": "recommended_products_columns",
+                "label": "Columns (Desktop)",
+                "type": "range",
+                "min": 2,
+                "max": 5,
+                "step": 1,
+                "unit": "",
+                "default": 3,
+                "help_text": "Number of recommended product columns on desktop."
+            },
+            {
+                "name": "recommended_products_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for white."
+            },
+            {
+                "name": "recommended_products_card_bg",
+                "label": "Card Background Color",
+                "type": "color",
+                "help_text": "Optional background color for product cards in this section."
             }
         ]
     },
@@ -672,6 +733,54 @@
                 "help_text": "Cart total for free gift milestone. Must be higher than the shipping threshold."
             },
             {
+                "name": "eur_goal_1",
+                "label": "Shipping Threshold (EUR)",
+                "type": "number",
+                "help_text": "Optional EUR cart total for the free shipping milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "eur_goal_2",
+                "label": "Gift Threshold (EUR)",
+                "type": "number",
+                "help_text": "Optional EUR cart total for the free gift milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "gbp_goal_1",
+                "label": "Shipping Threshold (GBP)",
+                "type": "number",
+                "help_text": "Optional GBP cart total for the free shipping milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "gbp_goal_2",
+                "label": "Gift Threshold (GBP)",
+                "type": "number",
+                "help_text": "Optional GBP cart total for the free gift milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "cad_goal_1",
+                "label": "Shipping Threshold (CAD)",
+                "type": "number",
+                "help_text": "Optional CAD cart total for the free shipping milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "cad_goal_2",
+                "label": "Gift Threshold (CAD)",
+                "type": "number",
+                "help_text": "Optional CAD cart total for the free gift milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "aud_goal_1",
+                "label": "Shipping Threshold (AUD)",
+                "type": "number",
+                "help_text": "Optional AUD cart total for the free shipping milestone. Falls back to USD when blank."
+            },
+            {
+                "name": "aud_goal_2",
+                "label": "Gift Threshold (AUD)",
+                "type": "number",
+                "help_text": "Optional AUD cart total for the free gift milestone. Falls back to USD when blank."
+            },
+            {
                 "name": "step_1_message",
                 "label": "Shipping Message",
                 "type": "text",
@@ -717,6 +826,14 @@
                 "default": "You May Also Like",
                 "help_text": "Heading displayed above suggested products in the side cart.",
                 "max_length": 100
+            },
+            {
+                "name": "upsell_fallback_slots",
+                "label": "Fallback Slots",
+                "type": "text",
+                "default": "1,2",
+                "help_text": "Comma-separated suggested product slots that can fill in when another suggested product is hidden.",
+                "max_length": 20
             },
             {
                 "name": "upsell_product_1",

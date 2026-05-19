@@ -1,13 +1,19 @@
 {# Spark Theme -- Recommended Products (used on PDP) #}
 {# Usage: {% include 'partials/recommended_products.html' %} #}
 {# Requires: product (parent context) #}
-{% if product.sorted_recommended_products %}
-<section class="border-t border-slate-200">
+{% if settings.show_recommended and product.sorted_recommended_products %}
+<section class="border-t border-slate-200" {% if settings.recommended_products_bg_color %}style="background-color: {{ settings.recommended_products_bg_color }};"{% endif %}>
     <div class="container py-12 md:py-16">
-        <h2 class="text-2xl font-semibold text-slate-800 mb-8">{% t "store.catalogue.recommended_products_header" %}</h2>
-        <div class="product-grid">
+        <h2 class="text-2xl font-semibold text-slate-800 mb-8 {% if settings.recommended_products_header_align == 'center' %}text-center{% elif settings.recommended_products_header_align == 'right' %}text-right{% endif %}">
+            {% if settings.recommended_products_header %}
+                {{ settings.recommended_products_header }}
+            {% else %}
+                {% t "store.catalogue.recommended_products_header" %}
+            {% endif %}
+        </h2>
+        <div class="product-grid" {% if settings.recommended_products_columns %}style="--product-grid-columns: {{ settings.recommended_products_columns }};"{% endif %}>
             {% for rec in product.sorted_recommended_products %}
-                {% include 'partials/product_card.html' with product=rec %}
+                {% include 'partials/product_card.html' with product=rec card_bg=settings.recommended_products_card_bg %}
             {% endfor %}
         </div>
     </div>

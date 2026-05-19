@@ -1,4 +1,5 @@
 {# Spark homepage featured category tiles. #}
+{% load theme_tags %}
 {% if settings.show_featured_categories %}
     {% if settings.featured_categories|length > 0 %}
     <section class="py-12 md:py-16" {% if settings.featured_categories_bg_color %}style="background-color: {{ settings.featured_categories_bg_color }};"{% endif %}>
@@ -17,8 +18,10 @@
                         {% else %}
                             <div class="w-full h-48 md:h-64 bg-slate-100"></div>
                         {% endif %}
-                        <div class="absolute inset-0 bg-black/20 flex items-end p-6">
-                            <h3 class="text-lg font-semibold text-white">{{ category.name }}</h3>
+                        <div class="absolute inset-0 flex items-end p-6"
+                             style="background-color: {{ settings.featured_categories_overlay_color|default:'#000000' }}; opacity: {{ settings.featured_categories_overlay_opacity|default:'20'|times:0.01 }};"></div>
+                        <div class="absolute inset-0 flex items-end p-6">
+                            <h3 class="text-lg font-semibold" style="color: {{ settings.featured_categories_text_color|default:'#ffffff' }};">{{ category.name }}</h3>
                         </div>
                     </a>
                 {% endfor %}

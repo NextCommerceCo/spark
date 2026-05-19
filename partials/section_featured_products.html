@@ -11,6 +11,11 @@
                     {% include 'partials/product_card.html' with product=product %}
                 {% endfor %}
             </div>
+            {% if settings.featured_products_cta_url %}
+                <div class="flex justify-center mt-8">
+                    {% include "partials/cta_button.html" with href=settings.featured_products_cta_url label=settings.featured_products_cta_text|default:"View All" style=settings.featured_products_cta_style outline=settings.featured_products_cta_outline %}
+                </div>
+            {% endif %}
         </div>
     </section>
     {% else %}

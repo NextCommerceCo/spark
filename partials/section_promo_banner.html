@@ -11,9 +11,8 @@
             {% endif %}
             {% if settings.promo_banner_cta_url %}
                 <a href="{{ settings.promo_banner_cta_url }}"
-                   class="inline-block px-8 py-3 font-medium border-2 transition-opacity hover:opacity-80"
-                   style="border-color: {{ settings.promo_banner_text_color|default:'#ffffff' }};
-                          color: {{ settings.promo_banner_text_color|default:'#ffffff' }};">
+                   class="btn {% if settings.promo_banner_cta_outline %}btn-outline{% elif settings.promo_banner_cta_style == 'accent' %}btn-accent{% else %}btn-primary{% endif %}"
+                   {% if settings.promo_banner_cta_outline %}style="--btn-color: {{ settings.promo_banner_text_color|default:'#ffffff' }};"{% endif %}>
                     {{ settings.promo_banner_cta_text|default:"Shop Now" }}
                 </a>
             {% endif %}

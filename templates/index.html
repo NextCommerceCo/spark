@@ -2,6 +2,13 @@
 
 {% block title %}{{ store.name }} - {{ store.tagline }}{% endblock %}
 
+{% block extrastyles %}
+{{ block.super }}
+{% if settings.home_page_css %}
+    <style>{{ settings.home_page_css|safe }}</style>
+{% endif %}
+{% endblock extrastyles %}
+
 {% block announcement_bar %}
     {% if settings.ab_text and settings.ab_placement != 'none' %}
         {% include "partials/announcement_bar.html" %}

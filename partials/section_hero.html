@@ -16,17 +16,17 @@
             <div class="absolute inset-0"
                  style="background-color: {{ settings.homepage_hero_overlay_color }}; opacity: {{ settings.homepage_hero_overlay_opacity|default:'30'|times:0.01 }};"></div>
         {% endif %}
-        <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-12 {% if settings.homepage_hero_text_align == 'center' %}items-center text-center{% else %}items-start text-left{% endif %}"
+        <div class="absolute inset-0 flex p-8 md:p-12 {% if settings.homepage_hero_content_position == 'top-left' %}items-start justify-start{% elif settings.homepage_hero_content_position == 'top-center' %}items-start justify-center{% elif settings.homepage_hero_content_position == 'top-right' %}items-start justify-end{% elif settings.homepage_hero_content_position == 'middle-left' %}items-center justify-start{% elif settings.homepage_hero_content_position == 'middle-center' %}items-center justify-center{% elif settings.homepage_hero_content_position == 'middle-right' %}items-center justify-end{% elif settings.homepage_hero_content_position == 'bottom-center' %}items-end justify-center{% elif settings.homepage_hero_content_position == 'bottom-right' %}items-end justify-end{% else %}items-end justify-start{% endif %}"
              style="color: {{ settings.homepage_hero_text_color|default:'#ffffff' }};">
-            {% if settings.homepage_hero_heading %}
-                <h1 class="text-3xl md:text-5xl font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
-            {% endif %}
-            {% if settings.homepage_hero_subheading %}
-                <p class="text-base md:text-lg mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ settings.homepage_hero_subheading }}</p>
-            {% endif %}
-            {% if settings.homepage_hero_link %}
-                <a href="{{ settings.homepage_hero_link }}" class="btn btn-primary">{{ settings.homepage_hero_cta|default:"Shop now" }}</a>
-            {% endif %}
+            <div class="{% if settings.homepage_hero_content_width == 'narrow' %}max-w-xl{% elif settings.homepage_hero_content_width == 'wide' %}max-w-4xl{% elif settings.homepage_hero_content_width == 'full' %}max-w-none{% else %}max-w-2xl{% endif %} {% if settings.homepage_hero_text_align == 'center' %}text-center{% elif settings.homepage_hero_text_align == 'right' %}text-right{% else %}text-left{% endif %}">
+                {% if settings.homepage_hero_heading %}
+                    <h1 class="text-3xl md:text-5xl font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
+                {% endif %}
+                {% if settings.homepage_hero_subheading %}
+                    <p class="text-base md:text-lg mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ settings.homepage_hero_subheading }}</p>
+                {% endif %}
+                {% include "partials/cta_button.html" with href=settings.homepage_hero_link label=settings.homepage_hero_cta|default:"Shop now" style=settings.homepage_hero_cta_style outline=settings.homepage_hero_cta_outline %}
+            </div>
         </div>
     </section>
     {% else %}

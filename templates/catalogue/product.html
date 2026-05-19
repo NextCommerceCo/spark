@@ -6,6 +6,13 @@
     {% seo %}
 {% endblock %}
 
+{% block extrastyles %}
+{{ block.super }}
+{% if settings.product_page_css %}
+    <style>{{ settings.product_page_css|safe }}</style>
+{% endif %}
+{% endblock extrastyles %}
+
 {% block breadcrumbs %}
 <div class="container py-3">
     <nav aria-label="breadcrumb">

@@ -32,7 +32,7 @@
                             {% endif %}
                         </p>
                     {% endif %}
-                    <a href="{{ product.get_absolute_url }}" class="btn btn-primary">{{ settings.featured_product_cta_text|default:"View Product" }}</a>
+                    {% include "partials/cta_button.html" with href=product.get_absolute_url label=settings.featured_product_cta_text|default:"View Product" style=settings.featured_product_cta_style outline=settings.featured_product_cta_outline %}
                 </div>
                 {% endwith %}
             </div>

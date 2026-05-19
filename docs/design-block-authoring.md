@@ -1,12 +1,14 @@
 # Design Block Authoring Guide
 
-Spark design blocks are DTL partials backed by Theme Settings. A good block is easy for a designer to configure, hard for a merchant to break, and still useful when content is missing.
+Spark design blocks are DTL partials backed by Theme Settings. A good design block is easy for a designer to configure, hard for a merchant to break, and still useful when content is missing.
 
-## Block Anatomy
+In Spark docs, "design block" means a design-team artifact, not a Shopify block and not a Django `{% block %}` inheritance region. Public theme developer docs should prefer "homepage section partial" for the current implementation and reserve "theme section" for a future platform feature.
 
-Every reusable storefront block should have:
+## Design Block Anatomy
 
-- A named partial in `partials/`, usually prefixed with `section_` for page-level blocks.
+Every reusable storefront design block should have:
+
+- A named partial in `partials/`, usually prefixed with `section_` for page-level homepage partials.
 - A settings group in `configs/settings_schema.json`.
 - Defaults in `configs/settings_data.json`.
 - A documented row in `docs/theme-settings-partials.md`.
@@ -23,11 +25,11 @@ Use stable, descriptive names:
 - Style setting: `featured_products_bg_color`
 - CTA setting: `featured_products_cta_text`, `featured_products_cta_url`, `featured_products_cta_style`, `featured_products_cta_outline`
 
-Prefer a shared prefix for all settings owned by a block. It makes Theme Settings easier to scan and makes future migration to section-local settings straightforward.
+Prefer a shared prefix for all settings owned by a design block. It makes Theme Settings easier to scan and makes future migration to explicit `section.settings.*` straightforward.
 
 ## Recommended Setting Set
 
-Most page sections should support:
+Most page-level section partials should support:
 
 - `show_*` toggle.
 - Primary content picker, such as `product`, `products`, `product_categories`, image, heading, or rich text.
@@ -36,7 +38,7 @@ Most page sections should support:
 - `*_bg_color` for section background.
 - `*_cta_text`, `*_cta_url`, `*_cta_style`, `*_cta_outline` when the section has a call to action.
 
-Image-led blocks should also consider:
+Image-led section partials should also consider:
 
 - Mobile image.
 - Alt text.
@@ -51,7 +53,7 @@ Image-led blocks should also consider:
 1. Add or update the partial.
 2. Add settings to `configs/settings_schema.json`.
 3. Add matching defaults to `configs/settings_data.json`.
-4. Wire the section into the page template, or document why it is a utility partial.
+4. Wire the partial into the page template, or document why it is a utility partial.
 5. Rebuild CSS with `make css` if classes changed.
 6. Run JSON and schema parity checks.
 7. Update `docs/theme-settings-partials.md`.
@@ -84,7 +86,7 @@ Set `outline` to render an outline button using the selected brand color.
 
 ## Before Handoff
 
-For every new block, give the design team:
+For every new design block, give the design team:
 
 - A screenshot at mobile and desktop widths.
 - Recommended image ratio.

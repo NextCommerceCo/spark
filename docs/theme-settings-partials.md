@@ -1,6 +1,6 @@
 # Spark Theme Settings Partials
 
-This catalog lists the Spark partials, homepage sections, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions.
+This catalog lists the Spark partials, homepage section partials, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions.
 
 ## Mechanical Scope
 
@@ -8,9 +8,9 @@ This catalog lists the Spark partials, homepage sections, and setting-backed tem
 - Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
-## Homepage Sections
+## Homepage Section Partials
 
-These are the primary design blocks for quick storefront builds. They are included from `templates/index.html` in this order.
+These are the primary design blocks for quick storefront builds. They are included from `templates/index.html` in this fixed order and are controlled by global Theme Settings.
 
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
@@ -40,7 +40,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 | `partials/side_cart.html` | Side Cart > General | Cart drawer shell and web component slots. | `cart_header_title`, `sidecart_open_on_add`, `gift_product`, `enable_upsells` |
 | `partials/block_cart_progress_wrapper.html` | Side Cart > Progress Bar | Currency-aware progress bar threshold selector. | `usd_goal_1`, `usd_goal_2`, `eur_goal_1`, `eur_goal_2`, `gbp_goal_1`, `gbp_goal_2`, `cad_goal_1`, `cad_goal_2`, `aud_goal_1`, `aud_goal_2` |
 | `partials/block_cart_progress_bar.html` | Side Cart > Progress Bar | Milestone progress UI and messages. | `enable_progress_bar`, `step_1_message`, `step_2_message`, `final_step_message`, `gift_product` |
-| `partials/block_cart_upsell.html` | Side Cart > Suggested Products | Suggested product block inside the cart drawer. | `enable_upsells`, `upsell_section_title`, `upsell_product_1`, `upsell_product_2`, `upsell_product_3` |
+| `partials/block_cart_upsell.html` | Side Cart > Suggested Products | Suggested product module inside the cart drawer. | `enable_upsells`, `upsell_section_title`, `upsell_product_1`, `upsell_product_2`, `upsell_product_3` |
 | `partials/block_cart_upsell_item.html` | Side Cart > Suggested Products | Single suggested product row. | `upsell_fallback_slots` |
 
 ## Template And Layout Surfaces
@@ -74,7 +74,7 @@ These are reusable implementation helpers. They are not directly controlled by T
 
 Spark now covers the highest-value Intro Bootstrap controls for quick design work:
 
-- Homepage blocks are now named partials instead of inline `index.html` sections.
+- Homepage design blocks are now named partials instead of inline `index.html` markup.
 - Existing Spark homepage schema controls are wired into rendering: mobile hero image, hero alignment/height/overlay, section background colors, headings, and desktop columns.
 - Hero, featured product, featured products, and promo banner CTAs support primary/accent and outline controls.
 - Featured category tiles support overlay color/opacity and text color.
@@ -88,6 +88,6 @@ Spark now covers the highest-value Intro Bootstrap controls for quick design wor
 
 Remaining candidates for core Spark:
 
-- A true sections-as-data architecture so merchants can reorder sections, duplicate section types, and compose pages outside `templates/index.html`.
+- A future NEXT theme sections architecture so merchants can reorder section instances, duplicate section types, and compose pages outside the fixed `templates/index.html` include order.
 
-See `docs/sections-architecture-proposal.md` for the proposed platform contract.
+See `docs/terminology.md` for NEXT-native vocabulary and `docs/sections-architecture-proposal.md` for the proposed platform contract.

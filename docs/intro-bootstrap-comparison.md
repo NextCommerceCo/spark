@@ -11,16 +11,16 @@ This comparison captures the useful Theme Settings surface from `intro-bootstrap
 
 Spark has more partial files because it now includes homepage section partials, cart web-component slot partials, and inline icon partials. The important change is not the raw count; it is that Spark now moves homepage design blocks into named, reusable partials instead of concentrating most design settings in `templates/index.html`.
 
-## Homepage Blocks
+## Homepage Section Partials
 
-| Block | Intro Bootstrap | Spark Status |
+| Homepage Surface | Intro Bootstrap | Spark Status |
 | --- | --- | --- |
 | Hero | Image, mobile image, text, text size, alignment, content width, content position, height, overlay, CTA color/outline. | Covered: image, mobile image, text, alignment, content width, content position, height, overlay, CTA primary/accent and outline. |
 | Featured Product | Product, description, background, text color, CTA color/outline. | Mostly covered: product, description, background, CTA primary/accent and outline. Text color remains inherited from theme colors. |
 | Featured Products | Product list, columns, heading size/alignment, card background, section background, CTA color/outline. | Covered: product list, columns, heading size/alignment, card background, section background, optional CTA primary/accent and outline. |
 | Featured Categories | Category list, columns, heading size/alignment, text color, overlay color/opacity, section background. | Covered: category list, columns, heading size/alignment, tile text color, overlay color/opacity, section background. |
-| On Sale | Not present as a first-class Intro block. | Spark-only: curated sale product grid with heading size/alignment, columns, card background, section background. |
-| Promo Banner | Not present as a first-class Intro block. | Spark-only: heading, subheading, CTA, CTA style, background, text color. |
+| On Sale | Not present as a first-class Intro homepage surface. | Spark-only: curated sale product grid with heading size/alignment, columns, card background, section background. |
+| Promo Banner | Not present as a first-class Intro homepage surface. | Spark-only: heading, subheading, CTA, CTA style, background, text color. |
 
 ## Product Pages
 
@@ -55,12 +55,12 @@ Spark has more partial files because it now includes homepage section partials, 
 - Product card helper shared by catalogue, category, search, homepage, sale, and recommendation grids.
 - Named homepage section partials.
 - Design block authoring docs.
-- Sections-as-data platform proposal.
+- Future NEXT theme sections platform proposal.
 
 ## Remaining Product Decisions
 
 - Whether to add per-section text color controls beyond category tile text. Spark currently favors global typography colors plus section backgrounds.
-- Whether to add CTA controls to the On Sale block. It is useful, but not required for Intro parity.
+- Whether to add CTA controls to the On Sale section partial. It is useful, but not required for Intro parity.
 - Whether header logo alignment should eventually move from CSS positioning to a more robust layout component once the navigation has more complex menus.
 - Whether homepage placeholders should hide automatically outside editor/preview mode once the platform exposes that context.
-- Whether to pursue the sections-as-data platform contract so these blocks can be reordered, duplicated, and reused beyond the homepage.
+- Whether to pursue a future NEXT theme sections platform contract so these homepage section partials can become reorderable, duplicable section instances beyond the homepage.

@@ -80,13 +80,13 @@ Project planning and session knowledge live in the separate `learn/` repo (Next 
 - **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.
 - **Cart milestones** — multi-step progress bar with currency-aware thresholds for free shipping and free gifts; auto-add/remove driven by progress events.
 - **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
-- **Homepage sections (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section has its own toggle in Theme Settings.
+- **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
 - **Sale badges** — automatic on product cards when `compare_at_price > price`.
 - **Review app hooks** — template surfaces (`{% app_hook %}`) for product cards, PDP rating summary, full reviews module, home/collection review feeds, and global social proof. Apps render into Spark without theme edits.
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
-See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage blocks, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for block authoring guidance, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the reorderable sections platform proposal.
+See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
 
 ## Design System
 

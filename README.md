@@ -86,7 +86,7 @@ Project planning and session knowledge live in the separate `learn/` repo (Next 
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
-See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage blocks, [docs/design-block-authoring.md](docs/design-block-authoring.md) for block authoring guidance, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the reorderable sections platform proposal.
+See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage blocks, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for block authoring guidance, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the reorderable sections platform proposal.
 
 ## Design System
 

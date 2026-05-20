@@ -1,21 +1,20 @@
 {% comment %}
-  Progress bar wrapper - selects currency-specific goals.
+  Progress bar wrapper - selects reward thresholds for the current currency.
   Included inside the cart drawer partial.
 
-  Default: USD thresholds. To add more currencies, duplicate the
-  usd_goal_1/usd_goal_2 settings in settings_schema.json with the
-  currency prefix (e.g. eur_goal_1, eur_goal_2) and add an elif below.
+  usd_goal_1/usd_goal_2 are the default thresholds. Optional currency
+  override settings fall back to the defaults when blank.
 {% endcomment %}
 {% if request.CURRENCY_CODE == 'USD' %}
   {% include "partials/block_cart_progress_bar.html" with first_value=settings.usd_goal_1 second_value=settings.usd_goal_2 max_value=settings.usd_goal_2|times:1.3 min_value=0 %}
-{% elif request.CURRENCY_CODE == 'EUR' and settings.eur_goal_1 %}
-  {% include "partials/block_cart_progress_bar.html" with first_value=settings.eur_goal_1 second_value=settings.eur_goal_2 max_value=settings.eur_goal_2|times:1.3 min_value=0 %}
-{% elif request.CURRENCY_CODE == 'GBP' and settings.gbp_goal_1 %}
-  {% include "partials/block_cart_progress_bar.html" with first_value=settings.gbp_goal_1 second_value=settings.gbp_goal_2 max_value=settings.gbp_goal_2|times:1.3 min_value=0 %}
-{% elif request.CURRENCY_CODE == 'CAD' and settings.cad_goal_1 %}
-  {% include "partials/block_cart_progress_bar.html" with first_value=settings.cad_goal_1 second_value=settings.cad_goal_2 max_value=settings.cad_goal_2|times:1.3 min_value=0 %}
-{% elif request.CURRENCY_CODE == 'AUD' and settings.aud_goal_1 %}
-  {% include "partials/block_cart_progress_bar.html" with first_value=settings.aud_goal_1 second_value=settings.aud_goal_2 max_value=settings.aud_goal_2|times:1.3 min_value=0 %}
+{% elif request.CURRENCY_CODE == 'EUR' %}
+  {% include "partials/block_cart_progress_bar.html" with first_value=settings.eur_goal_1|default:settings.usd_goal_1 second_value=settings.eur_goal_2|default:settings.usd_goal_2 max_value=settings.eur_goal_2|default:settings.usd_goal_2|times:1.3 min_value=0 %}
+{% elif request.CURRENCY_CODE == 'GBP' %}
+  {% include "partials/block_cart_progress_bar.html" with first_value=settings.gbp_goal_1|default:settings.usd_goal_1 second_value=settings.gbp_goal_2|default:settings.usd_goal_2 max_value=settings.gbp_goal_2|default:settings.usd_goal_2|times:1.3 min_value=0 %}
+{% elif request.CURRENCY_CODE == 'CAD' %}
+  {% include "partials/block_cart_progress_bar.html" with first_value=settings.cad_goal_1|default:settings.usd_goal_1 second_value=settings.cad_goal_2|default:settings.usd_goal_2 max_value=settings.cad_goal_2|default:settings.usd_goal_2|times:1.3 min_value=0 %}
+{% elif request.CURRENCY_CODE == 'AUD' %}
+  {% include "partials/block_cart_progress_bar.html" with first_value=settings.aud_goal_1|default:settings.usd_goal_1 second_value=settings.aud_goal_2|default:settings.usd_goal_2 max_value=settings.aud_goal_2|default:settings.usd_goal_2|times:1.3 min_value=0 %}
 {% else %}
   {# Fallback to USD thresholds for currencies without specific goals #}
   {% include "partials/block_cart_progress_bar.html" with first_value=settings.usd_goal_1 second_value=settings.usd_goal_2 max_value=settings.usd_goal_2|times:1.3 min_value=0 %}

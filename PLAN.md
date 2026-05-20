@@ -1,150 +1,136 @@
-# Spark Theme — Development Plan
+# Spark Theme — Dogfooding Plan
 
-**Status:** v1.1.1 shipped. Functional, installable, Web Components in place. Ready for an experienced storefront engineer to take it from "works" to "production-grade default theme for every NEXT merchant."
+**Status:** v1.1.1 shipped. Functional, installable, Web Components in place, and ready for deeper dogfooding by a storefront theme developer.
 
 **Release posture:** private dogfooding. Spark needs more merchant-store mileage before it should be treated as a public release candidate.
 
-**Goal:** Make Spark the default starter theme that NEXT ships with — replacing Intro Bootstrap — and the foundation that Apps and Theme Marketplace will build on.
-
-**Owner moving forward:** Henrique (Sellmore).
+**Goal:** make Spark the default starter theme that NEXT ships with, replacing Intro Bootstrap over time and becoming the foundation for Apps, derived themes, and a future theme marketplace.
 
 ---
 
-## Where Spark is today
+## Where Spark Is Today
 
-- Tailwind CSS v4 (standalone CLI, no Node), zero jQuery, zero Bootstrap
-- 18 templates (15 merchant-facing + 3 error pages)
-- 5 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`
-- Custom GraphQL-first side cart (`SparkCartClient` + `SparkSideCart` event API)
-- Cart milestones (free shipping, free gift) with currency-aware thresholds
-- App hook surface (`{% app_hook %}`) — Reviews app integrates without theme edits
-- Compiled `assets/main.css` committed (themes are self-contained on install)
-- DESIGN.md as single source of truth for visual decisions
-- Dev store: `https://keer.29next.store` (theme ID 133)
+- Tailwind CSS v4 standalone CLI, zero jQuery, zero Bootstrap.
+- 18 templates, including 15 merchant-facing templates and 3 error pages.
+- 5 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`.
+- Custom GraphQL-first side cart through `SparkCartClient` and `SparkSideCart`.
+- Cart milestones for free shipping and free gifts, with currency-aware thresholds.
+- App hook surface for Reviews and future Apps.
+- Setting-backed homepage section partials, included from `templates/index.html` in a fixed order.
+- Compiled `assets/main.css` committed so the theme is installable without a local CSS build.
+- Tracked design and theme-developer docs in `DESIGN.md` and `docs/`.
 
-**Scope reminder:** checkout is platform-managed in NEXT (same model as Shopify). Themes do not ship a checkout template — the storefront cart hands off and the platform takes over. Anything checkout-related is out of scope for this plan.
+**Scope reminder:** checkout is platform-managed in NEXT. Spark owns the storefront cart and the handoff to checkout, but it does not ship checkout templates.
 
-## Where Spark needs to go
+## What Needs To Improve
 
-Spark needs to graduate from "starter theme that works" to **the production default that any NEXT merchant can install and run a real storefront on without theme-edit work.** That means:
+Spark should graduate from "works on a dev store" to "a theme developer can confidently dogfood this on real merchant stores." The main gaps are:
 
-1. Real-merchant production hardening — proven on a live store, not just the dev store
-2. Performance budget enforced (Core Web Vitals targets, not vibes)
-3. Future NEXT theme sections architecture so merchants compose pages, not edit DTL
-4. Accessibility audit at WCAG 2.1 AA, documented and enforced
-5. Component test coverage so the Web Components don't regress
-6. Theme-developer docs so derived themes and Marketplace become possible
-7. The `{% app_hook %}` contract locked once a second app drives the second data point
+1. More production mileage on real storefront data and devices.
+2. Cleaner merchant-facing Theme Settings, especially side-cart rewards and suggested products.
+3. Performance and accessibility baselines that can be defended over time.
+4. Component tests for the custom Web Components.
+5. Clear theme-developer docs and public-readiness hygiene.
+6. A platform path for future NEXT theme sections, without renaming Spark's existing `templates/`, `partials/`, or global Theme Settings model.
 
 ---
 
 ## Workstreams
 
-### W1 — Production hardening (P0)
+### W1 — Merchant Dogfooding (P0)
 
-The next milestone is Spark running a real production storefront. Pick a low-risk merchant store, deploy Spark, observe, fix.
+Run Spark on low-risk real stores and fix what only real catalog, cart, currency, and device data will reveal.
 
-- Real-merchant pilot: deploy on a Sellmore-managed store with low traffic, run for 2 weeks, log every issue
-- Fix all P0/P1 issues found in pilot
-- Cross-browser matrix: Chrome, Safari (mac + iOS), Firefox, Edge, Samsung Internet
-- Device matrix: iPhone SE → iPhone 16 Pro Max, Android mid-tier, iPad, desktop
-- Stress test multi-currency, multi-language, RTL (Arabic/Hebrew if any merchant needs it)
-- Stress test edge cases: parent products, out-of-stock, backorder, sold-out variants, vouchers, partial-stock carts, free-gift conflicts
-- The cart → platform-checkout handoff must be smooth on every device (the theme's job ends at the handoff, but the handoff itself is the theme's job)
+- Pilot on at least one low-traffic merchant store.
+- Log all P0/P1 issues found during dogfooding.
+- Stress test parent products, child variants, out-of-stock states, vouchers, subscriptions, free gifts, partial-stock carts, and empty catalog states.
+- Test multi-currency, multi-language, and RTL scenarios where a merchant actually needs them.
+- Verify the cart to platform-checkout handoff on mobile Safari, Android Chrome, tablet, and desktop.
 
-### W2 — Performance pass (P1)
+### W2 — Side Cart Settings And Rewards UX (P0)
 
-Spark should be the fastest theme on the platform. Set a budget, then defend it.
+The side cart is Spark's riskiest custom commerce surface, and its current Theme Settings are too clunky for merchants. The per-currency threshold model is the clearest example: exposing `usd_goal_1`, `usd_goal_2`, `eur_goal_1`, `eur_goal_2`, and so on does not feel like a polished theme setting surface.
 
-- Establish Core Web Vitals targets (LCP < 2.5s, INP < 200ms, CLS < 0.1) on a representative merchant store
-- Critical CSS extraction for above-the-fold (currently ships full minified `main.css`)
-- Image optimization pass: confirm `loading="lazy"`, `fetchpriority`, `srcset`/`sizes` everywhere products render
-- JS audit: defer/async every non-critical script, audit Web Component hydration cost
-- Side cart open should be < 100ms perceived
-- Lighthouse + WebPageTest baseline → target → measured-after, all in the repo
+- Audit the current Side Cart settings groups: General, Rewards Progress, and Suggested Products.
+- Redesign reward settings around merchant language: "Free shipping threshold", "Free gift threshold", "Default thresholds", and "Currency overrides".
+- Decide whether currency overrides can be represented with a cleaner platform setting type. If not, improve the labels/help text and hide complexity as much as the current settings model allows.
+- Make fallback behavior explicit: blank currency overrides should fall back to the default thresholds.
+- Review suggested product settings, especially `upsell_fallback_slots`, and decide whether that control belongs in merchant settings or should become an implementation detail.
+- Dogfood the free-gift auto-add/remove behavior until it is boringly predictable.
 
-### W3 — Future theme sections architecture (P1)
+### W3 — Performance And Accessibility (P1)
 
-Today, homepage section partials are individual partials gated by setting toggles. Merchants can't reorder them, can't add multiple of the same type, or compose pages outside `index.html`. A future NEXT theme sections architecture unlocks the marketplace future while preserving Spark's `templates/`, `partials/`, and global Theme Settings conventions.
+Set measurable baselines before optimizing. The goal is a theme that stays fast and accessible as design controls expand.
 
-- Investigate platform support for NEXT-native theme section instances.
-- If the platform supports it, design Spark's section schema and migrate homepage section partials.
-- If platform doesn't yet, write a proposal for Alex / platform team and a spec for what Spark needs
-- Either way: document the path so Henrique and the platform team are aligned
+- Establish Core Web Vitals targets on a representative merchant store.
+- Audit image loading, `srcset`/`sizes`, lazy loading, and `fetchpriority` across product cards, PDP media, and homepage section partials.
+- Measure Web Component hydration cost, especially side cart and product gallery.
+- Run Lighthouse and axe across key templates.
+- Do a manual keyboard and screen-reader pass for header navigation, PDP, cart drawer, search, and checkout handoff.
+- Document findings that should become durable design rules in `DESIGN.md`.
 
-### W4 — Accessibility audit (P1)
+### W4 — Component Robustness (P1)
 
-Today: focus-visible everywhere, ARIA on side cart, contrast auto-detection. Not yet: a full WCAG 2.1 AA audit.
+The custom cart and Web Components need automated coverage before Spark becomes the default theme.
 
-- Run axe-core / Lighthouse a11y on every template
-- Manual screen-reader pass (VoiceOver + NVDA): nav, PDP, cart, search
-- Keyboard-only walkthrough of every customer journey up to checkout handoff
-- Color contrast pass on every merchant-configurable color combo (validate the lighter/darker computation under brand-color extremes)
-- Document findings in DESIGN.md as anti-slop rules
+- Add a minimal test harness for component logic.
+- Cover `SparkCartClient` with mocked GraphQL responses.
+- Cover quantity edge cases, side-cart open/close/render behavior, progress thresholds, and free-gift state transitions.
+- Add visual regression coverage for side cart, product cards, and the PDP gallery.
+- Run the test suite in CI once the harness exists.
 
-### W5 — Component robustness (P2)
+### W5 — Theme Settings And Section Partials (P1)
 
-5 Web Components, no automated tests. Easy to regress on the next change.
+Spark now has named homepage section partials and stronger Theme Settings coverage. The next pass should make those controls easier for designers and merchants to use.
 
-- Set up a minimal test harness (Vitest or Web Test Runner) for the components
-- Coverage targets: cart client (mocked GraphQL), quantity stepper edge cases, side-cart open/close/render, progress bar threshold logic
-- Visual regression on the side cart and product card via Playwright screenshots
-- CI runs tests on PR
+- Continue improving homepage section partial settings for real quick-build storefront workflows.
+- Keep global Theme Settings available as `settings.*`.
+- Keep the current homepage include order clear until the platform supports reorderable theme section instances.
+- Use `docs/theme-settings-partials.md` as the catalog for design-team block creation.
+- Keep Shopify mapping as a docs exercise in the Shopify-to-NEXT guide, not as renamed Spark internals.
 
-### W6 — Theme developer docs (P2)
+### W6 — Future Theme Sections Platform Path (P2)
 
-Spark is a private repo today. To turn it into the default-and-extensible theme, theme developers (agencies, in-house teams) need docs.
+Spark should be ready if NEXT adds platform-level theme sections, but current Spark docs and code should remain NEXT-native.
 
-- "Extending Spark" guide: where to add settings, how to add a section, how to add an app hook
-- Web Components reference: events, attributes, slots, public API per component
-- DTL pattern catalog: things that work, things that don't, the Tailwind+DTL gotcha
-- Living style guide page (rendered Spark, not Storybook) showing every component in every state
-- Publish to `guides.nextcommerce.com` (private merchant/agency docs portal)
+- Use `docs/sections-architecture-proposal.md` as the starting proposal.
+- Preserve Spark's `templates/`, `partials/`, and global `settings.*` conventions.
+- Prefer future `section.settings.*` for section instance settings.
+- Prototype with just hero and featured products before attempting a broad migration.
+- Validate duplicate/reordered section behavior with app hooks and Theme Settings fallbacks.
 
-### W7 — App hook contract (P2)
+### W7 — Theme Developer Docs And Release Hygiene (P2)
 
-Today: 8 hooks, only Reviews uses them. Lock the contract before more apps integrate.
+Public release is not today's goal, but the repo should gradually become easier for a theme developer to understand and dogfood.
 
-- Promote the hook list to a documented public contract (versioning, naming convention, deprecation policy)
-- Add a "list all hooks" surface for the App Store to query
-- Wait for the second non-Reviews app to need a hook before locking — that forces the second data point
-- Tracked in TODOS.md already
+- Keep `README.md`, `CLAUDE.md`, `PLAN.md`, and `docs/` accurate as Spark evolves.
+- Add an "Extending Spark" guide for settings, partials, app hooks, and Web Components.
+- Document Web Component events, attributes, slots, and public APIs.
+- Add a DTL pattern catalog for Spark-specific gotchas.
+- Decide the release package shape and license before any public repository or self-serve ZIP release.
 
 ---
 
-## Where storefront expertise pays off most
+## First Focus Areas
 
-These aren't separate workstreams — they're the surfaces I'd most value Henrique's eyes on inside W1, since they're where commerce-grade storefront experience shows up vs general front-end engineering:
+1. **Merchant dogfooding:** get hard miles on real stores and real carts.
+2. **Side cart settings cleanup:** make rewards, thresholds, gifts, and suggested products feel merchant-friendly.
+3. **Performance and accessibility baselines:** establish the numbers and workflows before broadening the theme surface.
 
-- **PDP** — variant picker UX, gallery interactions on touch, "out of stock for this variant" handling, cross-sell placement, review module density
-- **Category / search** — facet filter UX, sort options, empty state, pagination vs infinite scroll, search-as-you-type if worth it
-- **Mobile commerce polish** — sticky add-to-cart on PDP scroll, thumb-zone CTA placement, side-cart on small viewports, the cart → checkout handoff feel on iOS Safari specifically
-- **Side cart** — the GraphQL-first replacement is the riskiest custom surface in Spark; needs hard miles on real merchants before we trust it
+W4 through W7 should follow once the dogfooding loop is producing concrete issues.
 
-If any of these need their own workstream once Henrique sees the code, file the issue under this project and we'll promote it.
+## Working Agreement
 
-## What I'd like Henrique's eyes on first
+- Use a branch and PR for every change.
+- Keep PRs mapped to a workstream when possible.
+- `DESIGN.md` is the source of truth for visual decisions. If a change intentionally violates it, update `DESIGN.md` in the same PR.
+- Rebuild and commit `assets/main.css` with any `css/input.css` source change.
+- After the initial dogfood install, push only changed files with `ntk`.
 
-In order of leverage:
+## Open Questions
 
-1. **W1 production hardening** — a pilot merchant deployment is the fastest way to surface what's actually broken vs what looks fine on the dev store
-2. **W2 performance pass** — set a budget I can hold the theme to going forward
-3. **W4 accessibility audit** — I've done the obvious work; he'll catch what I missed
-
-W3 / W5 / W6 / W7 follow once W1–W2 are landed.
-
-## Working agreement
-
-- Spark repo is `NextCommerceCo/spark` (private). Henrique has push access.
-- Branch + PR for every change. PR description references the workstream (W1, W2, etc.) and the issue.
-- DESIGN.md is the source of truth for visuals. If a change violates it, the change wins only if DESIGN.md updates in the same PR.
-- `assets/main.css` must be recompiled and committed in the same PR as any `css/input.css` source change. Drift between source and compiled artifact is a bug.
-- Push convention: only push changed files (`ntk push templates/index.html`), never the entire theme.
-- Project planning lives in Linear (NEXT space → Spark Theme Development project), not in this repo.
-
-## Open questions for Henrique
-
-- Which Sellmore-managed merchant is the right pilot for W1? Low traffic, recent platform, agency relationship in good shape.
-- Has the platform team scoped NEXT-native theme section instances for any other theme? (W3 dependency.)
-- Read on the Web Components vs platform JS tradeoff at scale across N merchants — anything we'd regret?
-- Anything in Spark that smells wrong from your storefront experience? File issues under this project.
+- Which merchant store is the right next dogfood candidate?
+- What Theme Settings model should replace or soften the current per-currency side-cart threshold fields?
+- Does the platform have, or need, a cleaner setting type for keyed currency override lists?
+- What is the smallest useful Web Component test harness for Spark?
+- Has the platform team scoped NEXT-native theme section instances for any other theme?

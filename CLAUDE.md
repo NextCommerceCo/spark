@@ -4,14 +4,13 @@
 Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + vanilla JS. Clean, minimal commerce aesthetic. Intended to replace Intro Bootstrap as the default starter theme and become a product in its own right.
 
 **Current version:** 1.1.1
-**Repo:** `NextCommerceCo/spark` (private)
-**Dev store:** `https://keer.29next.store` — theme ID 133
-**ntk config:** `config.yml` (gitignored, contains API key)
+**Repo:** `NextCommerceCo/spark` (private during dogfooding)
+**ntk config:** `config.yml` is gitignored and store-specific. Create it with `ntk init`; never commit store credentials.
 
 ## Position in the ecosystem
 - **Replaces Intro Bootstrap** as the default starter for new Next Commerce stores.
 - **Apps integration surface** — exposes a stable set of `{% app_hook %}` slots so Apps (Reviews first) can extend the storefront without theme edits. Future Apps should target these surfaces rather than fork the theme.
-- **Project planning lives elsewhere** — session knowledge, ADRs, and roadmap notes belong in the `learn/` repo (Next Mind), not in this theme. The local `docs/` directory is gitignored for scratch use only.
+- **Docs and planning split** — tracked theme documentation lives in `docs/`. Dogfooding and release-readiness planning lives in `PLAN.md` and `TODOS.md` until the public release surface is finalized.
 
 ## Stack
 - **CSS:** Tailwind CSS v4.2.2 (standalone CLI binary `./tailwindcss`, no Node dependency)
@@ -85,7 +84,7 @@ CSS custom properties set in `layouts/base.html` from `store.branding`:
 Stable `{% app_hook 'NAME' %}` extension surfaces for Apps (Reviews app uses them today). Future Apps should target the same pattern rather than fork the theme. Grep `{% app_hook %}` in `templates/` and `partials/` to see what's exposed.
 
 ### Settings (`configs/settings_schema.json`)
-Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colors), Footer (menu, colors, social links ×8, payment icons, disclaimer), Homepage sections (hero with text overlay, featured products/categories, recommended products, On Sale, Promo Banner, Featured Product — each with its own toggle), Announcement Bar, Advanced (noindex, account-only mode). v1.1 added 22 settings; restructured for section-level granularity.
+Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colors), Footer (menu, colors, social links ×8, payment icons, disclaimer), homepage section partials (hero with text overlay, featured products/categories, recommended products, On Sale, Promo Banner, Featured Product — each with its own toggle), Announcement Bar, Advanced (noindex, account-only mode). v1.1 added 22 settings and restructured homepage settings around fixed-order section partials.
 
 ## Known Issues & Gotchas
 1. **Blog search** must use `{% include 'partials/form_field.html' with field=form.name %}` — the view passes a `form` context. Raw `<input>` crashes the template.
@@ -117,8 +116,8 @@ Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated
 - Use ASCII-only: `-` instead of `—`, `->` instead of `→`, `\u2713` instead of `✓`
 
 ## Push Convention
-Only push changed files: `ntk push templates/index.html`
-Never push the entire theme.
+After the initial dogfood install, only push changed files: `ntk push templates/index.html`
+Do not push the entire theme during normal iteration.
 
 ## Reference Theme
-The Intro Bootstrap theme at `/Users/devin/Developer/Themes/Intro Bootstrap/` is the reference for DTL patterns, available template tags/filters, URL names, and context variables. When in doubt about what variables a view provides, check the equivalent Intro Bootstrap template.
+Intro Bootstrap remains the comparison point for DTL patterns, available template tags/filters, URL names, and context variables. Prefer the tracked Spark docs first, especially `docs/intro-bootstrap-comparison.md` and `docs/terminology.md`, before relying on a local checkout of the reference theme.

@@ -38,7 +38,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 | `partials/product_card.html` | Product Pages > Product Images / Product Cards | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. | `product_media_fit`, `product_card_border` |
 | `partials/recommended_products.html` | Product Pages > Recommended Products | PDP recommended product section. | `show_recommended`, `recommended_products_header`, `recommended_products_header_size`, `recommended_products_header_align`, `recommended_products_columns`, `recommended_products_bg_color`, `recommended_products_card_bg` |
 | `partials/side_cart.html` | Side Cart > General | Cart drawer shell and web component slots. | `cart_header_title`, `sidecart_open_on_add`, `gift_product`, `enable_upsells` |
-| `partials/block_cart_progress_wrapper.html` | Side Cart > Rewards Progress | Currency-aware reward threshold selector. | `usd_goal_1`, `usd_goal_2`, `eur_goal_1`, `eur_goal_2`, `gbp_goal_1`, `gbp_goal_2`, `cad_goal_1`, `cad_goal_2`, `aud_goal_1`, `aud_goal_2` |
+| `partials/block_cart_progress_wrapper.html` | Side Cart > Rewards Progress | Default reward threshold selector and theme-developer extension point. | `usd_goal_1`, `usd_goal_2` |
 | `partials/block_cart_progress_bar.html` | Side Cart > Rewards Progress | Milestone progress UI and messages. | `enable_progress_bar`, `step_1_message`, `step_2_message`, `final_step_message`, `gift_product` |
 | `partials/block_cart_upsell.html` | Side Cart > Suggested Products | Suggested product module inside the cart drawer. | `enable_upsells`, `upsell_section_title`, `upsell_product_1`, `upsell_product_2`, `upsell_product_3` |
 | `partials/block_cart_upsell_item.html` | Side Cart > Suggested Products | Single suggested product row. | `upsell_fallback_slots` |
@@ -84,7 +84,7 @@ Spark now covers the highest-value Intro Bootstrap controls for quick design wor
 - Product grids support section-level card background colors.
 - Recommended products gained configurable heading, alignment, columns, background, and card background.
 - Product cards gained an optional border control.
-- Side-cart reward thresholds and suggested product settings are exposed in Theme Settings, with non-USD thresholds presented as optional currency overrides.
+- Side-cart reward thresholds and suggested product settings are exposed in Theme Settings. Spark ships one default threshold pair; theme developers can extend the progress wrapper for store-specific currency rules.
 
 Remaining candidates for core Spark:
 

@@ -14,7 +14,7 @@
 - 18 templates, including 15 merchant-facing templates and 3 error pages.
 - 5 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`.
 - Custom GraphQL-first side cart through `SparkCartClient` and `SparkSideCart`.
-- Cart milestones for free shipping and free gifts, with currency-aware thresholds.
+- Cart milestones for free shipping and free gifts, with simple default thresholds.
 - App hook surface for Reviews and future Apps.
 - Setting-backed homepage section partials, included from `templates/index.html` in a fixed order.
 - Compiled `assets/main.css` committed so the theme is installable without a local CSS build.
@@ -49,12 +49,12 @@ Run Spark on low-risk real stores and fix what only real catalog, cart, currency
 
 ### W2 — Side Cart Settings And Rewards UX (P0)
 
-The side cart is Spark's riskiest custom commerce surface, and its current Theme Settings are too clunky for merchants. The per-currency threshold model is the clearest example: exposing `usd_goal_1`, `usd_goal_2`, `eur_goal_1`, `eur_goal_2`, and so on does not feel like a polished theme setting surface.
+The side cart is Spark's riskiest custom commerce surface, and its Theme Settings should stay simple enough for merchants to understand. Spark should ship one default reward-threshold pair and leave store-specific currency rules to theme developers instead of exposing hard-coded currency fields that may not match the store.
 
 - Audit the current Side Cart settings groups: General, Rewards Progress, and Suggested Products.
-- Redesign reward settings around merchant language: "Free shipping threshold", "Free gift threshold", "Default thresholds", and "Currency overrides".
-- Decide whether currency overrides can be represented with a cleaner platform setting type. If not, improve the labels/help text and hide complexity as much as the current settings model allows.
-- Make fallback behavior explicit: blank currency overrides should fall back to the default thresholds.
+- Keep merchant settings to one free-shipping threshold and one free-gift threshold by default.
+- Document `partials/block_cart_progress_wrapper.html` as the extension point for theme developers who need currency-specific reward rules.
+- Avoid hard-coded currency fields in core Spark unless the platform can generate them from the store's enabled currencies.
 - Review suggested product settings, especially `upsell_fallback_slots`, and decide whether that control belongs in merchant settings or should become an implementation detail.
 - Dogfood the free-gift auto-add/remove behavior until it is boringly predictable.
 
@@ -130,7 +130,6 @@ W4 through W7 should follow once the dogfooding loop is producing concrete issue
 ## Open Questions
 
 - Which merchant store is the right next dogfood candidate?
-- What Theme Settings model should replace or soften the current per-currency side-cart threshold fields?
-- Does the platform have, or need, a cleaner setting type for keyed currency override lists?
+- Does the platform need a cleaner setting type for store-aware currency threshold overrides?
 - What is the smallest useful Web Component test harness for Spark?
 - Has the platform team scoped NEXT-native theme section instances for any other theme?

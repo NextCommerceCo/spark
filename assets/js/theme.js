@@ -205,6 +205,34 @@
         } catch(e) {}
     }
 
+    /* Market, Language, Currency Switching */
+
+    function initMarketSwitcher() {
+        document.querySelectorAll('[data-storefront-option]').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var form = btn.closest('form');
+                if (!form) return;
+
+                var country = form.querySelector('input[name="country"]');
+                var language = form.querySelector('input[name="language"]');
+                var currency = form.querySelector('input[name="currency"]');
+
+                if (country) country.value = btn.getAttribute('data-country') || '';
+                if (language) language.value = btn.getAttribute('data-language') || '';
+                if (currency) currency.value = btn.getAttribute('data-currency') || '';
+
+                form.submit();
+            });
+        });
+
+        document.querySelectorAll('[data-auto-submit]').forEach(function(control) {
+            control.addEventListener('change', function() {
+                if (control.form) control.form.submit();
+            });
+        });
+    }
+
     /* ─── Reduced Motion ─── */
 
     function respectReducedMotion() {
@@ -221,8 +249,8 @@
         initSideCart();
         initVariantPicker();
         initAnnouncementBar();
+        initMarketSwitcher();
         respectReducedMotion();
     });
 
 })();
-

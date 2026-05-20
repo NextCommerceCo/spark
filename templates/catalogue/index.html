@@ -19,10 +19,33 @@
 {% block content %}
 <div class="container py-8 md:py-12">
     {% if products %}
-        <div class="product-grid">
-            {% for product in products %}
-                {% include 'partials/product_card.html' with product=product %}
-            {% endfor %}
+        {% if filters %}
+            <details class="md:hidden border border-slate-200 mb-6">
+                <summary class="px-4 py-3 text-sm font-medium text-slate-800 cursor-pointer">
+                    {% t "store.catalogue.filters" %}
+                </summary>
+                <div class="px-4 pb-4">
+                    {% include "partials/catalogue_filters.html" with filter_clear_url=request.path %}
+                </div>
+            </details>
+        {% endif %}
+
+        <div class="{% if filters %}grid grid-cols-1 md:grid-cols-4 gap-8{% endif %}">
+            {% if filters %}
+                <aside class="hidden md:block md:col-span-1">
+                    <div class="border border-slate-200 p-4 sticky top-24">
+                        {% include "partials/catalogue_filters.html" with filter_clear_url=request.path %}
+                    </div>
+                </aside>
+            {% endif %}
+
+            <div class="{% if filters %}md:col-span-3{% endif %}">
+                <div class="product-grid">
+                    {% for product in products %}
+                        {% include 'partials/product_card.html' with product=product %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         {% include 'partials/pagination.html' %}

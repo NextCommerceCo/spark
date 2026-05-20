@@ -31,23 +31,45 @@
         {% endif %}
     </div>
 
-    {# Skeleton loading — hidden by JS after content paints #}
-    <div id="product-skeleton" class="product-grid" aria-hidden="true">
-        {% for i in "123456" %}
-        <div class="skeleton-card">
-            <div class="skeleton-image"></div>
-            <div class="skeleton-text" style="width: 60%;"></div>
-            <div class="skeleton-text-short"></div>
-        </div>
-        {% endfor %}
-    </div>
-
-    {# Product grid #}
     {% if products %}
-        <div class="product-grid" id="product-grid">
-            {% for product in products %}
-                {% include 'partials/product_card.html' with product=product %}
-            {% endfor %}
+        {% if filters %}
+            <details class="md:hidden border border-slate-200 mb-6">
+                <summary class="px-4 py-3 text-sm font-medium text-slate-800 cursor-pointer">
+                    {% t "store.catalogue.filters" %}
+                </summary>
+                <div class="px-4 pb-4">
+                    {% include "partials/catalogue_filters.html" with filter_clear_url=category.get_absolute_url %}
+                </div>
+            </details>
+        {% endif %}
+
+        <div class="{% if filters %}grid grid-cols-1 md:grid-cols-4 gap-8{% endif %}">
+            {% if filters %}
+                <aside class="hidden md:block md:col-span-1">
+                    <div class="border border-slate-200 p-4 sticky top-24">
+                        {% include "partials/catalogue_filters.html" with filter_clear_url=category.get_absolute_url %}
+                    </div>
+                </aside>
+            {% endif %}
+
+            <div class="{% if filters %}md:col-span-3{% endif %}">
+                {# Skeleton loading — hidden by JS after content paints #}
+                <div id="product-skeleton" class="product-grid" aria-hidden="true">
+                    {% for i in "123456" %}
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton-text-short"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="product-grid" id="product-grid">
+                    {% for product in products %}
+                        {% include 'partials/product_card.html' with product=product %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         {# Pagination #}

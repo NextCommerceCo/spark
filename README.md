@@ -86,6 +86,8 @@ Tracked theme documentation lives in [docs/](docs/). Dogfooding and release-read
 - **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
 - **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
 - **Sale badges** — automatic on product cards when `compare_at_price > price`.
+- **Catalogue basics** — shared product cards, native ratings, collection filters, pagination, and nested navigation menus.
+- **Market switching** — storefront geo selector with language/currency fallbacks using NEXT's `storefront_geos` and `currencies` context.
 - **Review app hooks** — template surfaces (`{% app_hook %}`) for product cards, PDP rating summary, full reviews module, home/collection review feeds, and global social proof. Apps render into Spark without theme edits.
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.

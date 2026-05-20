@@ -31,13 +31,28 @@
                                 {{ item.name }}
                                 {% include 'partials/icons/chevron-down.html' %}
                             </a>
-                            <ul class="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                            <ul class="absolute left-0 top-full mt-1 w-56 bg-white border border-slate-200 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
                                 {% for child in item.items %}
-                                    <li>
+                                    <li class="{% if child.level > 0 %}relative group/child{% endif %}">
                                         <a href="{{ child.url }}"
-                                           class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 {% if child.current %}text-slate-900 font-medium{% endif %}">
+                                           class="flex items-center justify-between gap-2 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 {% if child.current or child.child_active %}text-slate-900 font-medium{% endif %}">
                                             {{ child.name }}
+                                            {% if child.level > 0 %}
+                                                {% include 'partials/icons/chevron-right.html' %}
+                                            {% endif %}
                                         </a>
+                                        {% if child.level > 0 %}
+                                            <ul class="absolute left-full top-0 w-56 bg-white border border-slate-200 py-1 opacity-0 invisible group-hover/child:opacity-100 group-hover/child:visible transition-all duration-150">
+                                                {% for grandchild in child.items %}
+                                                    <li>
+                                                        <a href="{{ grandchild.url }}"
+                                                           class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 {% if grandchild.current %}text-slate-900 font-medium{% endif %}">
+                                                            {{ grandchild.name }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -107,9 +122,21 @@
                                 {% for child in item.items %}
                                     <li>
                                         <a href="{{ child.url }}"
-                                           class="block px-4 py-2 text-sm text-slate-500 hover:text-slate-700">
+                                           class="block px-4 py-2 text-sm text-slate-500 hover:text-slate-700 {% if child.current or child.child_active %}font-medium text-slate-800{% endif %}">
                                             {{ child.name }}
                                         </a>
+                                        {% if child.level > 0 %}
+                                            <ul class="pl-4">
+                                                {% for grandchild in child.items %}
+                                                    <li>
+                                                        <a href="{{ grandchild.url }}"
+                                                           class="block px-4 py-2 text-sm text-slate-400 hover:text-slate-700 {% if grandchild.current %}font-medium text-slate-800{% endif %}">
+                                                            {{ grandchild.name }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -128,7 +155,7 @@
 </header>
 
 {# Search overlay #}
-<div id="search-overlay" class="search-overlay" role="dialog" aria-label="Search" aria-modal="true">
+<div id="search-overlay" class="search-overlay" role="dialog" aria-label="{% t 'navigation.search' %}" aria-modal="true">
     <div class="search-overlay-backdrop" data-close="search-overlay"></div>
     <div class="search-overlay-content">
         <form action="{% url 'search:search' %}" method="get" class="search-overlay-form">
@@ -136,15 +163,15 @@
             <input type="text"
                    id="search-input"
                    name="q"
-                   placeholder="{% t 'store.search.search_placeholder' %}"
+                   placeholder="{% t 'global.button.search' %}"
                    autocomplete="off"
                    autocapitalize="off"
                    spellcheck="false"
                    class="search-overlay-input" />
-            <button type="submit" class="search-overlay-submit" aria-label="Search">
+            <button type="submit" class="search-overlay-submit" aria-label="{% t 'navigation.search' %}">
                 {% include 'partials/icons/search.html' %}
             </button>
-            <button type="button" class="search-overlay-close" data-close="search-overlay" aria-label="Close search">
+            <button type="button" class="search-overlay-close" data-close="search-overlay" aria-label="{% t 'global.button.close' %}">
                 {% include 'partials/icons/close.html' %}
             </button>
         </form>

@@ -1,0 +1,4 @@
+{# Spark Theme -- Render a form field collection with the shared field partial. #}
+{% for field in form %}
+    {% include 'partials/form_field.html' with field=field %}
+{% endfor %}

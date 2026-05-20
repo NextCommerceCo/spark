@@ -70,7 +70,7 @@
             {# Support links #}
             <div>
                 <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
-                    {% t 'footer.support' %}
+                    {% t 'navigation.footer.support' %}
                 </h3>
                 <ul class="space-y-2">
                     <li>
@@ -84,7 +84,7 @@
                         <a href="{% url 'support:category-list' %}"
                            class="text-sm hover:opacity-80"
                            style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
-                            {% t 'footer.help' %}
+                            {% t 'navigation.footer.support' %}
                         </a>
                     </li>
                 </ul>
@@ -128,8 +128,8 @@
             </div>
         </div>
 
-        {# Payment icons + language/currency #}
-        {% if settings.pay_icons or currencies and currencies|length > 1 or languages_active_storefront %}
+        {# Payment icons + market/language/currency #}
+        {% if settings.pay_icons or storefront_geos and storefront_geos|length > 1 or currencies and currencies|length > 1 or languages_active_storefront and languages_active_storefront|length > 1 %}
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 mt-8 pt-6">
             {% if settings.pay_icons %}
                 <div class="flex items-center gap-2">
@@ -162,45 +162,14 @@
             {% endif %}
 
             <div class="flex items-center gap-4">
-                {% if currencies and currencies|length > 1 %}
-                    <form action="{% url 'core:set-currency' %}" method="post" class="inline">
-                        {% csrf_token %}
-                        <select name="currency"
-                                class="text-xs bg-transparent border-0 cursor-pointer"
-                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
-                                onchange="this.form.submit()">
-                            {% for currency in currencies %}
-                                <option value="{{ currency.code }}" {% if request.CURRENCY_CODE == currency.code %}selected{% endif %}>
-                                    {{ currency.symbol }} {{ currency.code }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                {% endif %}
-
-                {% if languages_active_storefront and languages_active_storefront|length > 1 %}
-                    <form action="{% url 'set_language' %}" method="post" class="inline">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ language_neutral_url_path }}">
-                        <select name="language"
-                                class="text-xs bg-transparent border-0 cursor-pointer"
-                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
-                                onchange="this.form.submit()">
-                            {% for language_code, name in languages_active_storefront %}
-                                <option value="{{ language_code }}" {% if request.LANGUAGE_CODE == language_code %}selected{% endif %}>
-                                    {{ name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                {% endif %}
+                {% include 'partials/nav_lang_currency_switcher.html' %}
             </div>
         </div>
         {% endif %}
 
         {# Copyright #}
         <div class="border-t border-slate-200 mt-6 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p class="text-xs" style="opacity: 0.5;">&copy; {% now "Y" %} {{ store.name }}. {% t 'footer.rights' %}</p>
+            <p class="text-xs" style="opacity: 0.5;">&copy; {% now "Y" %} {{ store.name }}. {% t 'navigation.footer.copyright' %}</p>
         </div>
 
         {# Site disclaimer #}

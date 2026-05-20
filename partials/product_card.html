@@ -19,9 +19,7 @@
                  class="{% if settings.product_media_fit == 'cover' %}object-cover aspect-square{% endif %}"
                  loading="lazy" />
         {% else %}
-            <div class="aspect-square bg-slate-100 flex items-center justify-center">
-                <span class="text-slate-300 text-sm">{% t 'product.no_image' %}</span>
-            </div>
+            <div class="aspect-square bg-slate-100" aria-hidden="true"></div>
         {% endif %}
     {% endwith %}
     {% if session.price.exists and session.price.price_retail > session.price.price %}
@@ -31,6 +29,20 @@
     {% endif %}
     <div class="product-title text-slate-800 group-hover:text-slate-600">{{ product.get_title }}</div>
     {% app_hook 'product_card_rating_summary' %}
+    {% if settings.product_reviews and product.rating %}
+        <div class="flex items-center gap-1 mt-1 text-xs text-slate-500">
+            <span class="flex text-amber-400" aria-hidden="true">
+                {% for i in '12345' %}
+                    {% if forloop.counter <= product.rating %}
+                        <span>&#9733;</span>
+                    {% else %}
+                        <span class="text-slate-200">&#9733;</span>
+                    {% endif %}
+                {% endfor %}
+            </span>
+            <span>({{ product.num_approved_reviews }})</span>
+        </div>
+    {% endif %}
     <div class="product-price">
         {% if session.price.exists %}
             {{ session.price.price|currency:session.price.currency }}

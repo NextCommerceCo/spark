@@ -1,0 +1,58 @@
+{# Spark Theme -- Market, language, and currency switcher. #}
+{% if storefront_geos and storefront_geos|length > 1 %}
+<details class="relative">
+    <summary class="list-none cursor-pointer text-xs hover:opacity-80" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}">
+        {{ request.COUNTRY_CODE|upper }} / {{ request.CURRENCY_CODE|upper }}
+    </summary>
+    <form action="{% url 'core:set-storefront' %}" method="post" class="absolute right-0 bottom-full mb-2 w-56 bg-white border border-slate-200 shadow-sm z-20">
+        {% csrf_token %}
+        <input name="country" type="hidden" value="" />
+        <input name="language" type="hidden" value="" />
+        <input name="currency" type="hidden" value="" />
+        <input name="next" type="hidden" value="{{ language_neutral_url_path }}">
+        {% for storefront in storefront_geos %}
+            <button type="button"
+                    class="block w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    data-storefront-option
+                    data-country="{{ storefront.country.code }}"
+                    data-language="{{ storefront.get_language }}"
+                    data-currency="{{ storefront.currency.code }}">
+                {{ storefront.country }} &middot; {{ storefront.currency.code }}
+            </button>
+        {% endfor %}
+    </form>
+</details>
+{% else %}
+    {% if currencies and currencies|length > 1 %}
+        <form action="{% url 'core:set-currency' %}" method="post" class="inline">
+            {% csrf_token %}
+            <select name="currency"
+                    class="text-xs bg-transparent border-0 cursor-pointer"
+                    style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                    data-auto-submit>
+                {% for currency in currencies %}
+                    <option value="{{ currency.code }}" {% if request.CURRENCY_CODE == currency.code %}selected{% endif %}>
+                        {{ currency.symbol }} {{ currency.code }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    {% endif %}
+
+    {% if languages_active_storefront and languages_active_storefront|length > 1 %}
+        <form action="{% url 'set_language' %}" method="post" class="inline">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ language_neutral_url_path }}">
+            <select name="language"
+                    class="text-xs bg-transparent border-0 cursor-pointer"
+                    style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                    data-auto-submit>
+                {% for language_code, name in languages_active_storefront %}
+                    <option value="{{ language_code }}" {% if request.LANGUAGE_CODE == language_code %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    {% endif %}
+{% endif %}

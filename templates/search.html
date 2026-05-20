@@ -23,7 +23,7 @@
             <input type="text"
                    name="q"
                    value="{{ query }}"
-                   placeholder="{% t 'store.search.search_placeholder' %}"
+                   placeholder="{% t 'global.button.search' %}"
                    autocomplete="off"
                    class="flex-1 px-4 py-3 text-sm text-slate-800 border-none outline-none bg-transparent" />
             <button type="submit" class="px-4 py-3 text-slate-500 hover:text-slate-800 transition-colors">
@@ -45,10 +45,10 @@
                 <h2 class="text-lg text-slate-600 mb-2">{% t "store.search.search_not_found" %}</h2>
                 {% if suggestion %}
                     {% url 'search:search' as search_url %}
-                    <p class="text-sm text-slate-500">{% t "store.search.suggestion" with link=search_url %}</p>
+                    <p class="text-sm text-slate-500"><a href="{{ search_url }}" class="hover:text-slate-800">{% t "global.button.search" %}</a></p>
                 {% endif %}
             {% else %}
-                <p class="text-slate-500">Search for products by name, description, or category.</p>
+                <p class="text-slate-500">{% t "global.button.search" %}</p>
             {% endif %}
         </div>
     {% endif %}

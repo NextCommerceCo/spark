@@ -1,10 +1,10 @@
 {# Spark Theme -- Catalogue Filters #}
-<form id="productFilters" novalidate>
+<form class="catalogue-filters" novalidate>
     <div class="flex flex-wrap gap-2 mb-4">
         <div class="flex justify-between w-full items-center">
             <h5 class="text-sm font-semibold text-slate-800">{% t "store.catalogue.filters" %}</h5>
             {% if has_active_filter %}
-                <a class="text-xs text-slate-500 hover:text-slate-800" href="{% url 'catalogue:index' %}">
+                <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ filter_clear_url|default:request.path }}">
                     {% t "store.catalogue.filter_clear" %}
                 </a>
             {% endif %}
@@ -13,13 +13,13 @@
             {% if filter.type == 'price_range' and filter.active_values %}
                 <a class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-slate-100 text-slate-600 hover:bg-slate-200" href="{{ filter.url_to_remove }}">
                     {{ filter.min_value.value|default:0|currency:request.CURRENCY_CODE }} - {{ filter.max_value.value|default:filter.range_max|currency:request.CURRENCY_CODE }}
-                    <span aria-hidden="true">x</span>
+                    <span aria-hidden="true">&times;</span>
                 </a>
             {% else %}
                 {% for value in filter.active_values %}
                     <a class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-slate-100 text-slate-600 hover:bg-slate-200" href="{{ value.url_to_remove }}">
                         {{ filter.label }}: {{ value.label }}
-                        <span aria-hidden="true">x</span>
+                        <span aria-hidden="true">&times;</span>
                     </a>
                 {% endfor %}
             {% endif %}
@@ -48,7 +48,7 @@
                 <div class="flex justify-between items-center mb-2">
                     <h5 class="text-sm font-semibold text-slate-800">{{ filter.label }}</h5>
                     {% if filter.active_values %}
-                        <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ filter.url_to_remove }}">Reset</a>
+                        <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ filter.url_to_remove }}">{% t "store.catalogue.filter_clear" %}</a>
                     {% endif %}
                 </div>
                 <div class="space-y-1">
@@ -81,7 +81,7 @@
                 <div class="flex justify-between items-center mb-2">
                     <h5 class="text-sm font-semibold text-slate-800">{{ filter.label }}</h5>
                     {% if filter.active_values %}
-                        <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ filter.url_to_remove }}">Reset</a>
+                        <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ filter.url_to_remove }}">{% t "store.catalogue.filter_clear" %}</a>
                     {% endif %}
                 </div>
                 <div class="space-y-1">
@@ -102,5 +102,5 @@
             </div>
         {% endif %}
     {% endfor %}
-    <button type="submit" class="btn btn-primary w-full">{% t "store.catalogue.apply_filters" %}</button>
+    <button type="submit" class="btn btn-primary w-full">{% t "global.button.search" %}</button>
 </form>

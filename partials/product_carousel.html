@@ -24,8 +24,6 @@
     {% image_thumbnail images.0.original "400x400" crop="center" as thumb %}
     <img src="{{ thumb.url }}" alt="{{ product.get_title }}" class="w-full aspect-square object-cover" loading="lazy" />
 {% else %}
-    <div class="aspect-square bg-slate-100 flex items-center justify-center">
-        <span class="text-slate-300 text-sm">{% t 'product.no_image' %}</span>
-    </div>
+    <div class="aspect-square bg-slate-100" aria-hidden="true"></div>
 {% endif %}
 {% endwith %}

@@ -4,14 +4,16 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 
 **Current version:** 1.1.1
 
+**Release status:** Private dogfooding. Spark is installable on NEXT stores via `ntk`, but it is not yet a public release candidate or self-serve theme package.
+
 ## Requirements
 
-- [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`)
-- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) — fetched via `make install-tailwind`
+- [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`) for installing or pushing the theme to a store.
+- [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) only when editing `css/input.css`; fetch it with `make install-tailwind`.
 
 ## Quick Start
 
-The compiled `assets/main.css` is committed to the repo, so you can install Spark on a store immediately without a local toolchain — clone, point ntk at your store, push.
+The compiled `assets/main.css` is committed to the repo, so NEXT developers can dogfood Spark on a store without a local Tailwind toolchain. Clone the repo, point `ntk` at a store you control, and push.
 
 1. Install ntk and configure your store:
    ```bash
@@ -19,7 +21,7 @@ The compiled `assets/main.css` is committed to the repo, so you can install Spar
    ntk init
    ```
 
-2. Push the theme to your store:
+2. Push the theme to your store for the initial dogfood install:
    ```bash
    ntk push
    ```
@@ -39,9 +41,11 @@ When you change `css/input.css` (or any source that affects the build), run `mak
 
 | Command | Description |
 |---------|-------------|
+| `make install-tailwind` | Download the standalone Tailwind binary for local CSS development |
 | `ntk watch` | Watch mode — auto-compile Tailwind + push changes |
 | `ntk tailwind` | One-shot: compile Tailwind + sass-compat + push CSS |
 | `ntk tailwind --minify` | Production build: compile minified + push |
+| `make release` | Rebuild minified `assets/main.css` and stage it for commit |
 | `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
 
 ## Structure
@@ -70,7 +74,7 @@ spark/
 └── templates/       Page templates (18 files including error pages)
 ```
 
-Project planning and session knowledge live in the separate `learn/` repo (Next Mind), not in this theme.
+Tracked theme documentation lives in [docs/](docs/). Dogfooding and release-readiness planning currently lives in [PLAN.md](PLAN.md) and [TODOS.md](TODOS.md).
 
 ## Features
 
@@ -95,3 +99,5 @@ All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, co
 ## License
 
 Proprietary — Next Commerce.
+
+Public distribution terms are TBD before any public repository or self-serve release package.

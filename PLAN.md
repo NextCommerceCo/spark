@@ -2,6 +2,8 @@
 
 **Status:** v1.1.1 shipped. Functional, installable, Web Components in place. Ready for an experienced storefront engineer to take it from "works" to "production-grade default theme for every NEXT merchant."
 
+**Release posture:** private dogfooding. Spark needs more merchant-store mileage before it should be treated as a public release candidate.
+
 **Goal:** Make Spark the default starter theme that NEXT ships with — replacing Intro Bootstrap — and the foundation that Apps and Theme Marketplace will build on.
 
 **Owner moving forward:** Henrique (Sellmore).
@@ -28,7 +30,7 @@ Spark needs to graduate from "starter theme that works" to **the production defa
 
 1. Real-merchant production hardening — proven on a live store, not just the dev store
 2. Performance budget enforced (Core Web Vitals targets, not vibes)
-3. Sections/blocks architecture so merchants compose pages, not edit DTL
+3. Future NEXT theme sections architecture so merchants compose pages, not edit DTL
 4. Accessibility audit at WCAG 2.1 AA, documented and enforced
 5. Component test coverage so the Web Components don't regress
 6. Theme-developer docs so derived themes and Marketplace become possible
@@ -61,12 +63,12 @@ Spark should be the fastest theme on the platform. Set a budget, then defend it.
 - Side cart open should be < 100ms perceived
 - Lighthouse + WebPageTest baseline → target → measured-after, all in the repo
 
-### W3 — Sections / blocks architecture (P1)
+### W3 — Future theme sections architecture (P1)
 
-Today, homepage sections are individual partials gated by setting toggles. Merchants can't reorder them, can't add multiple of the same type, can't compose pages outside `index.html`. Sections architecture unlocks the marketplace future.
+Today, homepage section partials are individual partials gated by setting toggles. Merchants can't reorder them, can't add multiple of the same type, or compose pages outside `index.html`. A future NEXT theme sections architecture unlocks the marketplace future while preserving Spark's `templates/`, `partials/`, and global Theme Settings conventions.
 
-- Investigate platform support for sections-as-data (similar to Shopify sections JSON)
-- If platform supports it, design Spark's section schema and migrate homepage sections
+- Investigate platform support for NEXT-native theme section instances.
+- If the platform supports it, design Spark's section schema and migrate homepage section partials.
 - If platform doesn't yet, write a proposal for Alex / platform team and a spec for what Spark needs
 - Either way: document the path so Henrique and the platform team are aligned
 
@@ -143,6 +145,6 @@ W3 / W5 / W6 / W7 follow once W1–W2 are landed.
 ## Open questions for Henrique
 
 - Which Sellmore-managed merchant is the right pilot for W1? Low traffic, recent platform, agency relationship in good shape.
-- Has the platform team scoped sections-as-data for any other theme? (W3 dependency.)
+- Has the platform team scoped NEXT-native theme section instances for any other theme? (W3 dependency.)
 - Read on the Web Components vs platform JS tradeoff at scale across N merchants — anything we'd regret?
 - Anything in Spark that smells wrong from your storefront experience? File issues under this project.

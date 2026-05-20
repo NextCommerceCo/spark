@@ -1135,79 +1135,31 @@
                 "help_text": "Automatically open the side cart when a product is added."
             }
         ],
-        "Progress Bar": [
+        "Rewards Progress": [
             {
                 "name": "enable_progress_bar",
-                "label": "Enable Progress Bar",
+                "label": "Enable Rewards Progress",
                 "type": "checkbox",
                 "default": false,
-                "help_text": "Show a milestone progress bar in the side cart with free shipping and free gift goals."
+                "help_text": "Show a progress bar in the side cart for free shipping and free gift rewards."
             },
             {
                 "name": "usd_goal_1",
-                "label": "Shipping Threshold (USD)",
+                "label": "Free Shipping Threshold",
                 "type": "number",
                 "default": 50,
-                "help_text": "Cart total for free shipping milestone. To add thresholds for other currencies, duplicate this setting with the currency prefix (e.g. eur_goal_1)."
+                "help_text": "Cart total required for free shipping."
             },
             {
                 "name": "usd_goal_2",
-                "label": "Gift Threshold (USD)",
+                "label": "Free Gift Threshold",
                 "type": "number",
                 "default": 100,
-                "help_text": "Cart total for free gift milestone. Must be higher than the shipping threshold."
-            },
-            {
-                "name": "eur_goal_1",
-                "label": "Shipping Threshold (EUR)",
-                "type": "number",
-                "help_text": "Optional EUR cart total for the free shipping milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "eur_goal_2",
-                "label": "Gift Threshold (EUR)",
-                "type": "number",
-                "help_text": "Optional EUR cart total for the free gift milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "gbp_goal_1",
-                "label": "Shipping Threshold (GBP)",
-                "type": "number",
-                "help_text": "Optional GBP cart total for the free shipping milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "gbp_goal_2",
-                "label": "Gift Threshold (GBP)",
-                "type": "number",
-                "help_text": "Optional GBP cart total for the free gift milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "cad_goal_1",
-                "label": "Shipping Threshold (CAD)",
-                "type": "number",
-                "help_text": "Optional CAD cart total for the free shipping milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "cad_goal_2",
-                "label": "Gift Threshold (CAD)",
-                "type": "number",
-                "help_text": "Optional CAD cart total for the free gift milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "aud_goal_1",
-                "label": "Shipping Threshold (AUD)",
-                "type": "number",
-                "help_text": "Optional AUD cart total for the free shipping milestone. Falls back to USD when blank."
-            },
-            {
-                "name": "aud_goal_2",
-                "label": "Gift Threshold (AUD)",
-                "type": "number",
-                "help_text": "Optional AUD cart total for the free gift milestone. Falls back to USD when blank."
+                "help_text": "Cart total required for the free gift. Must be higher than the free shipping threshold."
             },
             {
                 "name": "step_1_message",
-                "label": "Shipping Message",
+                "label": "Free Shipping Message",
                 "type": "text",
                 "default": "You are {amount} away from FREE shipping",
                 "help_text": "Message shown when cart is below the shipping threshold. Use {amount} for the remaining amount.",
@@ -1215,7 +1167,7 @@
             },
             {
                 "name": "step_2_message",
-                "label": "Gift Message",
+                "label": "Free Gift Message",
                 "type": "text",
                 "default": "You are {amount} away from a FREE gift!",
                 "help_text": "Message shown when cart is between shipping and gift thresholds. Use {amount} for the remaining amount.",
@@ -1223,7 +1175,7 @@
             },
             {
                 "name": "final_step_message",
-                "label": "All Goals Reached",
+                "label": "All Rewards Reached Message",
                 "type": "text",
                 "default": "You have unlocked all rewards!",
                 "help_text": "Celebration message shown when the cart total exceeds all milestones.",
@@ -1254,10 +1206,10 @@
             },
             {
                 "name": "upsell_fallback_slots",
-                "label": "Fallback Slots",
+                "label": "Advanced: Fallback Slot Order",
                 "type": "text",
                 "default": "1,2",
-                "help_text": "Comma-separated suggested product slots that can fill in when another suggested product is hidden.",
+                "help_text": "Advanced fallback order for suggested products. Usually leave as 1,2.",
                 "max_length": 20
             },
             {

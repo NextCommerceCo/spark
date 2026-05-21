@@ -23,6 +23,15 @@
 {% endif %}
 {% endblock extrastyles %}
 
+{% block component_scripts %}
+{{ block.super }}
+<script type="text/javascript" src="{{ 'js/spark-variant-state.js'|asset_url }}"></script>
+<script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
+<script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
+<script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
+<script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
+{% endblock component_scripts %}
+
 {% block breadcrumbs %}
 <div class="container py-3">
     <nav aria-label="breadcrumb">

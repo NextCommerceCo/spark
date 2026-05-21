@@ -38,8 +38,8 @@ Allowed `spark:cart:updated` actions:
 
 | Adapter | Listens To | Responsibility |
 | --- | --- | --- |
-| `layouts/base.html` cart badge script | `spark:cart:updated`, `spark:cart:added` | Updates the cart badge count. |
-| `<spark-cart-drawer>` | `spark:cart:updated`, `spark:cart:added`, `spark:cart:toggle` | Renders the side cart, opens after add, and toggles drawer visibility. |
+| `SparkCartLoader` | `spark:cart:updated`, `spark:cart:added`, `spark:cart:toggle` | Updates the cart badge, lazy-loads the drawer stack, and forwards add/toggle intent after the drawer is ready. |
+| `<spark-cart-drawer>` | `spark:cart:updated`, `spark:cart:added`, `spark:cart:toggle` | Renders the side cart after it is loaded, opens after add, and toggles drawer visibility. |
 | Header cart trigger in `theme.js` | User click | Dispatches `spark:cart:toggle`. |
 | `<spark-add-to-cart>` | Form submit | Calls `SparkCartClient.addToCart`, then dispatches `spark:cart:added`. |
 

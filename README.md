@@ -56,6 +56,7 @@ spark/
 │   ├── main.css                       Compiled Tailwind output
 │   └── js/
 │       ├── spark-cart-drawer-renderer.js  Side-cart markup renderer
+│       ├── spark-cart-loader.js       Lazy side-cart loader + badge hydration
 │       ├── spark-cart-rewards.js       Side-cart reward and upsell rules
 │       ├── spark-cart.js              GraphQL cart client
 │       ├── spark-events.js            Shared DOM event contract helpers
@@ -85,6 +86,7 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Dogfoodi
 - **Zero legacy dependencies** — no jQuery, no Bootstrap. Pure vanilla JS + Web Components.
 - **Web Components (5)** — `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`. Shadow DOM where appropriate, progressive enhancement, no-JS fallbacks.
 - **Custom GraphQL-first side cart** — `<spark-cart-drawer>` replaces the platform's side cart black box. Event-driven `SparkSideCart` API, no platform CSS bleed.
+- **Lazy cart stack** — the drawer, rewards, progress, and upsell modules load only when the shopper asks for the cart or add-to-cart opens it.
 - **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.
 - **Documented extension modules** — `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and the cart drawer renderer keep extension points explicit for theme developers and apps.
 - **Cart milestones** — multi-step progress bar with default thresholds for free shipping and free gifts; auto-add/remove driven by progress events.

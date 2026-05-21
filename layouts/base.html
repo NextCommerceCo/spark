@@ -171,12 +171,12 @@
         <script type="text/javascript" src="{{ 'js/spark-events.js'|asset_url }}"></script>
         <script>
         window.SparkCartAssets = {
-            cart: "{{ 'js/spark-cart.js'|asset_url }}",
-            cartRewards: "{{ 'js/spark-cart-rewards.js'|asset_url }}",
-            cartRenderer: "{{ 'js/spark-cart-drawer-renderer.js'|asset_url }}",
-            progressBar: "{{ 'js/components/spark-progress-bar.js'|asset_url }}",
-            upsellItem: "{{ 'js/components/spark-upsell-item.js'|asset_url }}",
-            cartDrawer: "{{ 'js/components/spark-cart-drawer.js'|asset_url }}"
+            cart: "{{ 'js/spark-cart.js'|asset_url|escapejs }}",
+            cartRewards: "{{ 'js/spark-cart-rewards.js'|asset_url|escapejs }}",
+            cartRenderer: "{{ 'js/spark-cart-drawer-renderer.js'|asset_url|escapejs }}",
+            progressBar: "{{ 'js/components/spark-progress-bar.js'|asset_url|escapejs }}",
+            upsellItem: "{{ 'js/components/spark-upsell-item.js'|asset_url|escapejs }}",
+            cartDrawer: "{{ 'js/components/spark-cart-drawer.js'|asset_url|escapejs }}"
         };
         </script>
         <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>

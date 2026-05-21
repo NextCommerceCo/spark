@@ -12,7 +12,14 @@
     var assets = window.SparkCartAssets || {};
     var scriptPromises = {};
     var drawerPromise = null;
-    var pendingToggle = false;
+    var togglePromise = null;
+    var queuedToggle = false;
+
+    function reportError(message, err, level) {
+        if (!window.console) return;
+        var reporter = console[level] || console.warn || console.error || console.log;
+        if (reporter) reporter.call(console, '[spark-cart-loader] ' + message, err);
+    }
 
     function readCookie(name) {
         var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -47,6 +54,7 @@
             script.async = false;
             script.onload = resolve;
             script.onerror = function() {
+                delete scriptPromises[name];
                 reject(new Error('Unable to load Spark cart asset: ' + name));
             };
             document.head.appendChild(script);
@@ -85,7 +93,8 @@
             .then(waitForDrawerUpgrade)
             .catch(function(err) {
                 drawerPromise = null;
-                if (window.console && console.error) console.error('[spark-cart-loader]', err);
+                reportError('drawer stack failed to load', err, 'error');
+                throw err;
             });
 
         return drawerPromise;
@@ -125,7 +134,9 @@
             return client.getCart();
         }).then(function(cart) {
             rememberCart(cart);
-        }).catch(function() {});
+        }).catch(function(err) {
+            reportError('badge hydration failed', err, 'warn');
+        });
     }
 
     function openDrawer() {
@@ -135,15 +146,26 @@
     }
 
     function toggleDrawer() {
-        if (pendingToggle && !window.SparkSideCart) return drawerPromise || Promise.resolve();
-        pendingToggle = true;
-        return ensureDrawer().then(function() {
-            pendingToggle = false;
-            if (window.SparkSideCart) SparkSideCart.toggle();
+        if (window.SparkSideCart) {
+            SparkSideCart.toggle();
+            return Promise.resolve();
+        }
+
+        queuedToggle = true;
+        if (togglePromise) return togglePromise;
+
+        togglePromise = ensureDrawer().then(function() {
+            var shouldToggle = queuedToggle;
+            queuedToggle = false;
+            togglePromise = null;
+            if (shouldToggle && window.SparkSideCart) SparkSideCart.toggle();
         }).catch(function(err) {
-            pendingToggle = false;
+            queuedToggle = false;
+            togglePromise = null;
             throw err;
         });
+
+        return togglePromise;
     }
 
     function replayCartAdded(detail) {
@@ -179,17 +201,26 @@
 
         ensureDrawer().then(function() {
             replayCartAdded(detail);
+        }).catch(function(err) {
+            reportError('drawer load after cart add failed', err, 'error');
         });
     });
 
     document.addEventListener('spark:cart:toggle', function() {
         if (window.SparkSideCart) return;
-        toggleDrawer();
+        toggleDrawer().catch(function(err) {
+            reportError('drawer toggle failed', err, 'error');
+        });
     });
 
     if (readCookie('openSideCart') === '1') {
+        // Clear before the delayed open so the drawer does not replay on refresh.
         clearCookie('openSideCart');
-        setTimeout(openDrawer, 300);
+        setTimeout(function() {
+            openDrawer().catch(function(err) {
+                reportError('saved drawer open failed', err, 'error');
+            });
+        }, 300);
     }
 
     if (document.readyState === 'loading') {

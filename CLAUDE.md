@@ -16,8 +16,9 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 - **CSS:** Tailwind CSS v4.2.2 (standalone CLI binary `./tailwindcss`, no Node dependency)
 - **JS:** Vanilla JS + Web Components. No bundler — self-contained `<script>` tags. Shadow DOM where encapsulation pays off; light DOM where slotted content needs to be styled by the theme.
 - **Web Components (5):** `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>` — progressive enhancement via `SparkCartClient` GraphQL client.
-- **Side cart:** Custom GraphQL-first `<spark-cart-drawer>` replaces the platform side cart. Event-driven `SparkSideCart` API (`open`, `close`, `toggle`) backed by `SparkEvents`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
+- **Side cart:** Custom GraphQL-first `<spark-cart-drawer>` replaces the platform side cart. `SparkCartLoader` lazy-loads the drawer stack, then exposes the event-driven `SparkSideCart` API (`open`, `close`, `toggle`) backed by `SparkEvents`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
 - **PDP variants:** `SparkVariantState` owns selected child-product matching for radio, select, and future picker designs. Gallery, price, and add-to-cart behavior react through the same variant state Interface.
+- **Performance load order:** `layouts/base.html` separates metadata, LCP preloads, CSS, rare priority JS, body content, ordered theme JS, footer app hooks, and tracking. See `docs/performance-load-order.md` before adding head scripts or preloads.
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
 - **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS.
@@ -90,6 +91,7 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 ### Architecture Docs
 - `CONTEXT.md` defines Spark's domain language for architecture reviews.
 - `docs/figma-section-library-plan.md` and `docs/section-specs/` define the Figma-to-theme section authoring workflow.
+- `docs/performance-load-order.md` documents the critical-path loading convention for templates, app hooks, and tracking.
 - `docs/pdp-variant-state.md` documents the selected-variant Interface for PDP picker designs.
 - `docs/cart-events.md`, `docs/cart-rewards.md`, and `docs/cart-drawer-architecture.md` document the cart event, reward, and drawer Module split.
 
@@ -112,7 +114,7 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 - Header: full logo (responsive with icon on mobile). Footer: icon preferred (compact).
 
 ## Web Components
-5 components live in `assets/js/components/` (`spark-add-to-cart`, `spark-cart-drawer`, `spark-progress-bar`, `spark-quantity`, `spark-upsell-item`) plus focused support Modules in `assets/js/`: `SparkCartClient`, `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
+5 components live in `assets/js/components/` (`spark-add-to-cart`, `spark-cart-drawer`, `spark-progress-bar`, `spark-quantity`, `spark-upsell-item`) plus focused support Modules in `assets/js/`: `SparkCartLoader`, `SparkCartClient`, `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
 
 Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated`, `spark:cart:toggle`, `spark:variant:changed`, `spark:progress:shipping-reached/-unreached`, `spark:progress:gift-reached/-unreached`. Prefer `SparkEvents` for dispatch. The cart drawer's public API is `window.SparkSideCart.open() / close() / toggle()`.
 

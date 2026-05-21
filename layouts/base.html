@@ -2,6 +2,7 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 
 <head>
+    {# 1. Metadata / SEO / GEO. Keep this plain and early. #}
     <title>{% block title %}{{ store.get_meta_title }} - {{ store.tagline }}{% endblock %}</title>
     <link rel="alternate" hreflang="{{ LANGUAGE_CODE }}" href="https://{{ request.get_host }}{{ request.path }}" />
     <meta charset="UTF-8" />
@@ -27,12 +28,16 @@
         {% endif %}
     {% endblock favicon %}
 
+    {# 2. Critical preloads. Page templates should only preload LCP assets here. #}
+    {% block critical_preloads %}{% endblock critical_preloads %}
+
+    {# 3. CSS. Discover the theme stylesheet before optional font embeds. #}
     {% block styles %}
+        <link rel="stylesheet" type="text/css" href="{{ 'main.css'|asset_url }}">
+
         {% if settings.font_script %}
             {{ settings.font_script|safe }}
         {% endif %}
-
-        <link rel="stylesheet" type="text/css" href="{{ 'main.css'|asset_url }}">
 
         <style>
             :root {
@@ -77,6 +82,8 @@
         </style>
     {% endblock styles %}
 
+    {# 4. Priority JS. Keep this rare, tiny, and before-paint only. #}
+    {% block priority_scripts %}
     {# Contrast auto-detection — must run before first paint to avoid flash #}
     <script>
     (function(){
@@ -97,6 +104,7 @@
         }
     })();
     </script>
+    {% endblock priority_scripts %}
 
     {% block extrastyles %}{% endblock extrastyles %}
 
@@ -104,9 +112,11 @@
         <style>{{ settings.custom_css|safe }}</style>
     {% endif %}
     {% block extrahead %}{% endblock extrahead %}
-    {% block tracking %}{% endblock tracking %}
 
-    {% app_hook 'global_header' %}
+    {# Head app hook is for platform-critical head snippets only. Prefer footer hooks. #}
+    {% block head_app_hooks %}
+        {% app_hook 'global_header' %}
+    {% endblock head_app_hooks %}
 </head>
 
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
@@ -151,26 +161,29 @@
     {# Modals #}
     {% block modals %}{% endblock modals %}
 
-    {# Theme JS — zero jQuery, zero Bootstrap, pure vanilla #}
+    {# Non-critical UI shells are parsed before their Web Components register. #}
+    {% block side_cart %}
+        {% include 'partials/side_cart.html' %}
+    {% endblock side_cart %}
+
+    {# Theme JS - dependency ordered, zero jQuery, zero Bootstrap. #}
     {% block scripts %}
         <script type="text/javascript" src="{{ 'js/spark-events.js'|asset_url }}"></script>
-        <script type="text/javascript" src="{{ 'js/spark-variant-state.js'|asset_url }}"></script>
+        <script>
+        window.SparkCartAssets = {
+            cart: "{{ 'js/spark-cart.js'|asset_url|escapejs }}",
+            cartRewards: "{{ 'js/spark-cart-rewards.js'|asset_url|escapejs }}",
+            cartRenderer: "{{ 'js/spark-cart-drawer-renderer.js'|asset_url|escapejs }}",
+            progressBar: "{{ 'js/components/spark-progress-bar.js'|asset_url|escapejs }}",
+            upsellItem: "{{ 'js/components/spark-upsell-item.js'|asset_url|escapejs }}",
+            cartDrawer: "{{ 'js/components/spark-cart-drawer.js'|asset_url|escapejs }}"
+        };
+        </script>
+        <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
     {% endblock %}
 
-    {# Spark components #}
-    <script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/spark-cart-rewards.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/spark-cart-drawer-renderer.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/components/spark-cart-drawer.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/components/spark-progress-bar.js'|asset_url }}"></script>
-    <script type="text/javascript" src="{{ 'js/components/spark-upsell-item.js'|asset_url }}"></script>
-
-    {# Side cart (custom Web Component replacing platform's side_cart.js) #}
-    {% include 'partials/side_cart.html' %}
+    {% block component_scripts %}{% endblock component_scripts %}
 
     {# Platform compatibility — replaces jQuery-dependent core_js with vanilla JS #}
     <script type="text/javascript" src="{{ 'js/spark-platform.js'|asset_url }}"></script>
@@ -178,10 +191,7 @@
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
 
-    {% app_hook 'global_social_proof' %}
-    {% app_hook 'global_footer' %}
-
-    {# Delight: skeleton dismiss + keyboard nav + cart badge #}
+    {# Delight: skeleton dismiss + keyboard nav #}
     <script>
     (function(){
         // Skeleton: hide once product grid is rendered
@@ -220,46 +230,15 @@
             }
         });
 
-        // Cart badge: listen for cart events
-        function updateCartBadge(count) {
-            var badge = document.getElementById('cart-badge');
-            if (!badge) return;
-            if (count && count > 0) {
-                badge.textContent = count > 99 ? '99+' : count;
-                badge.style.display = '';
-                badge.removeAttribute('data-animate');
-                void badge.offsetWidth;
-                badge.setAttribute('data-animate', '');
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-        document.addEventListener('spark:cart:updated', function(e) {
-            updateCartBadge(e.detail && e.detail.count);
-        });
-        document.addEventListener('spark:cart:added', function(e) {
-            updateCartBadge(e.detail && e.detail.count);
-        });
-
-        // Page-load: fetch cart to populate badge for returning visitors
-        if (window.SparkCartClient) {
-            var client = new SparkCartClient();
-            if (client.getCartId()) {
-                client.getCart().then(function(cart) {
-                    if (cart && cart.numItems) {
-                        updateCartBadge(cart.numItems);
-                        // Pre-populate drawer data so it opens instantly
-                        var drawer = document.querySelector('spark-cart-drawer');
-                        if (drawer && !drawer._cart) {
-                            drawer._cart = cart;
-                            drawer._currencyCode = cart.currency || drawer._currencyCode;
-                        }
-                    }
-                }).catch(function() {});
-            }
-        }
     })();
     </script>
+
+    {# Non-critical apps and tracking run after content and theme JS. #}
+    {% block footer_app_hooks %}
+        {% app_hook 'global_social_proof' %}
+        {% app_hook 'global_footer' %}
+    {% endblock footer_app_hooks %}
+    {% block tracking %}{% endblock tracking %}
 
 </body>
 </html>

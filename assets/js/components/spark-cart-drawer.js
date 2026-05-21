@@ -270,6 +270,7 @@
         this._footer = shadow.querySelector('.spark-drawer-footer');
 
         this._titleEl.textContent = this._headerTitle;
+        this.removeAttribute('hidden');
         this.setAttribute('data-open', 'false');
 
         // Progress bar reference (slotted from light DOM)
@@ -376,6 +377,12 @@
             toggle: function() { drawer.toggleCart(); },
             isOpen: function() { return drawer._isOpen; }
         };
+
+        if (window.SparkCartInitialCart) {
+            this._cart = window.SparkCartInitialCart;
+            this._currencyCode = this._cart.currency || this._currencyCode;
+            this._renderCart();
+        }
     };
 
     disconnectedCallback() {

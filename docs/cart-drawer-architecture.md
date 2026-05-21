@@ -6,6 +6,7 @@
 
 | Module | Responsibility |
 | --- | --- |
+| `assets/js/spark-cart-loader.js` | Lightweight global loader: badge hydration, drawer stack lazy-loading, and cart event forwarding. |
 | `assets/js/components/spark-cart-drawer.js` | Web Component Adapter: open/close/toggle, event listeners, mutation orchestration, loading state, focus behavior. |
 | `assets/js/spark-cart-drawer-renderer.js` | Markup renderer for cart lines, vouchers, totals, and empty state. |
 | `assets/js/spark-cart-rewards.js` | Reward and upsell rules: gift line detection, progress updates, active upsell slots, fallback slots, product-in-cart hiding. |
@@ -20,6 +21,7 @@ Theme developers should use:
 
 - `<spark-cart-drawer>` markup from `partials/side_cart.html`.
 - `window.SparkSideCart.open()`, `.close()`, `.toggle()`, and `.isOpen()`.
+- `window.SparkCartLoader.open()`, `.toggle()`, and `.ensureDrawer()` when code may run before the drawer stack is loaded.
 - Cart events documented in `docs/cart-events.md`.
 - Reward rules documented in `docs/cart-rewards.md`.
 

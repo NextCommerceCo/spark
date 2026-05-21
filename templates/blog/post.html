@@ -8,6 +8,16 @@
     {% seo %}
 {% endblock %}
 
+{% block critical_preloads %}
+{{ block.super }}
+{% with image=post.featured_image %}
+    {% if image %}
+        {% image_thumbnail image "x700" upscale=False as thumb %}
+        <link rel="preload" as="image" href="{{ thumb.url }}" fetchpriority="high">
+    {% endif %}
+{% endwith %}
+{% endblock critical_preloads %}
+
 {% block breadcrumbs %}
 <div class="container py-3">
     <nav aria-label="breadcrumb">
@@ -41,6 +51,7 @@
                 <img src="{{ thumb.url }}"
                      alt="{{ post.title }}"
                      class="w-full object-cover"
+                     loading="eager"
                      fetchpriority="high" />
             </div>
         {% endif %}

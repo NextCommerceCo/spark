@@ -77,7 +77,11 @@
         document.querySelectorAll('[data-toggle="side-cart"]').forEach(function(el) {
             el.addEventListener('click', function(e) {
                 e.preventDefault();
-                document.dispatchEvent(new CustomEvent('spark:cart:toggle'));
+                if (window.SparkEvents) {
+                    SparkEvents.cartToggle();
+                } else {
+                    document.dispatchEvent(new CustomEvent('spark:cart:toggle'));
+                }
             });
         });
     }
@@ -87,75 +91,55 @@
     window.theme = window.theme || {};
     theme.product = {
         productObject: null,
+        variantState: null,
+        messages: {
+            addToCart: 'Add to cart',
+            unavailable: 'Unavailable'
+        },
         init: function(options) {
             options = options || {};
-            var dataEl = document.getElementById('product-data');
-            if (!dataEl) return;
-            try {
-                theme.product.productObject = JSON.parse(dataEl.textContent);
-            } catch(e) { return; }
+            theme.product.messages.addToCart = options.add_to_cart_msg || theme.product.messages.addToCart;
+            theme.product.messages.unavailable = options.unavailable_msg || theme.product.messages.unavailable;
+            if (typeof SparkVariantState === 'undefined') return;
 
-            var prod = theme.product.productObject;
+            var state = SparkVariantState.fromPage();
+            if (!state) return;
+            theme.product.variantState = state;
+            theme.product.productObject = state.product;
 
-            // If parent with children, auto-select first child and update form
-            if (prod.structure === 'parent' && prod.children && prod.children.length) {
-                var firstChild = prod.children[0];
-                theme.product.updateForm(firstChild);
+            var initialVariant = state.getSelectedVariant() || state.getDefaultVariant();
+            if (initialVariant) {
+                theme.product.updateForm(initialVariant);
+                theme.product.updatePrice(initialVariant);
+                state.emitChange(initialVariant);
             }
 
-            // Listen for variant attribute changes
-            var variantInputs = document.querySelectorAll('input[name^="attr_"]');
-            variantInputs.forEach(function(input) {
-                input.addEventListener('change', function() {
-                    var variant = theme.product.getVariantFromSelection();
-                    if (variant) {
-                        theme.product.updateForm(variant);
-                        theme.product.updatePrice(variant);
-                    }
-                });
+            state.onChange(function(variant) {
+                theme.product.updateForm(variant);
+                theme.product.updatePrice(variant);
             });
         },
         getVariantFromSelection: function() {
-            var prod = theme.product.productObject;
-            if (!prod || !prod.children) return null;
-            var selected = {};
-            document.querySelectorAll('input[name^="attr_"]:checked').forEach(function(input) {
-                selected[input.name] = parseInt(input.value);
-            });
-            return prod.children.find(function(child) {
-                if (!child.variant_attribute_values || !child.variant_attribute_values.length) return true;
-                return child.variant_attribute_values.every(function(attr) {
-                    return selected['attr_' + attr.code] === attr.id;
-                });
-            }) || null;
+            return theme.product.variantState ? theme.product.variantState.getSelectedVariant() : null;
         },
         updateForm: function(variant) {
             var form = document.getElementById('add-to-cart');
             if (!form || !variant) return;
-            var action = form.getAttribute('action');
-            var newAction = action.replace(/(cart\/add\/)\d+/, '$1' + variant.id);
-            form.setAttribute('action', newAction);
+            SparkVariantState.updateFormAction(form, variant);
 
             var btn = form.querySelector('button[type="submit"]');
             if (!btn) return;
-            if (!variant.purchase_info || variant.purchase_info.availability === 'outofstock' || variant.purchase_info.availability === 'unavailable') {
+            if (!SparkVariantState.isPurchasable(variant)) {
                 btn.disabled = true;
-                btn.textContent = btn.getAttribute('data-disabled-text') || 'Unavailable';
+                btn.textContent = btn.getAttribute('data-disabled-text') || theme.product.messages.unavailable;
             } else {
                 btn.disabled = false;
-                btn.textContent = btn.getAttribute('data-loading-text') ? 'Add to cart' : btn.textContent;
+                btn.textContent = theme.product.messages.addToCart;
             }
         },
         updatePrice: function(variant) {
-            if (!variant || !variant.purchase_info) return;
-            var priceEl = document.querySelector('[data-price]');
-            var retailEl = document.querySelector('[data-price-retail]');
-            if (priceEl && variant.purchase_info.price) {
-                priceEl.textContent = variant.purchase_info.price.format;
-            }
-            if (retailEl && variant.purchase_info.price_retail && variant.purchase_info.price_retail.price) {
-                retailEl.textContent = variant.purchase_info.price_retail.format;
-            }
+            if (typeof SparkVariantState === 'undefined') return;
+            SparkVariantState.updatePrice(document, variant);
         }
     };
 

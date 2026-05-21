@@ -4,16 +4,25 @@ Spark design blocks are DTL partials backed by Theme Settings. A good design blo
 
 In Spark docs, "design block" means a design-team artifact, not a Shopify block and not a Django `{% block %}` inheritance region. Public theme developer docs should prefer "homepage section partial" for the current implementation and reserve "theme section" for a future platform feature.
 
+For Figma library planning, use the deeper section authoring unit in `docs/figma-section-library-plan.md`. It defines the shared Interface between Figma, Theme Settings, DTL partials, empty states, and future theme sections.
+
 ## Design Block Anatomy
 
 Every reusable storefront design block should have:
 
 - A named partial in `partials/`, usually prefixed with `section_` for page-level homepage partials.
+- A Figma component and setting map when the block is part of the public Spark library.
 - A settings group in `configs/settings_schema.json`.
 - Defaults in `configs/settings_data.json`.
 - A documented row in `docs/theme-settings-partials.md`.
 - Empty states for required merchant data, such as missing products, categories, images, links, or headings.
 - Mobile-safe layout and copy lengths.
+
+Use shared helpers for repeated chrome when they preserve the section's clear Interface:
+
+- `partials/section_heading.html` for section heading size and alignment.
+- `partials/product_grid.html` for product-card grids.
+- `partials/cta_button.html` for primary/accent and outline CTAs.
 
 ## Naming
 
@@ -83,6 +92,8 @@ Supported styles:
 - `accent`
 
 Set `outline` to render an outline button using the selected brand color.
+
+Set `outline_color` only when a section intentionally needs an outline CTA to follow a local text color, such as Promo Banner.
 
 ## Before Handoff
 

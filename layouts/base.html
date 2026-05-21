@@ -153,12 +153,16 @@
 
     {# Theme JS — zero jQuery, zero Bootstrap, pure vanilla #}
     {% block scripts %}
+        <script type="text/javascript" src="{{ 'js/spark-events.js'|asset_url }}"></script>
+        <script type="text/javascript" src="{{ 'js/spark-variant-state.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
     {% endblock %}
 
     {# Spark components #}
     <script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/spark-cart-rewards.js'|asset_url }}"></script>
+    <script type="text/javascript" src="{{ 'js/spark-cart-drawer-renderer.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
     <script type="text/javascript" src="{{ 'js/components/spark-cart-drawer.js'|asset_url }}"></script>

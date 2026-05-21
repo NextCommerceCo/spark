@@ -12,6 +12,7 @@ Spark should preserve NEXT theme terminology. Shopify familiarity belongs in mig
 | `template blocks` | Django template inheritance regions created with `{% block %}`. Avoid using bare "blocks" for merchant-editable content because this term already means template inheritance in NEXT docs. |
 | `Theme Settings` | Global theme configuration from `configs/settings_schema.json` and `configs/settings_data.json`, exposed to templates as `settings.*`. |
 | `homepage section partials` | The current Spark homepage partials, such as `partials/section_hero.html`. These are fixed-order partials backed by global Theme Settings. |
+| `section authoring unit` | The design and implementation package for one homepage section partial: Figma references, a setting map, DTL partial, defaults, docs, empty states, and QA references. |
 | `theme sections` | A future platform feature for merchant-reorderable and duplicable section instances. Do not use this term to describe today's fixed homepage partial includes without qualification. |
 | `app_hook` | Platform extension points where apps can inject storefront fragments. Keep this separate from Shopify "app blocks" terminology. |
 | Web Components | Client-side custom elements used for cart, quantity, progress, and other per-user or interactive behavior. |
@@ -23,6 +24,7 @@ Use this wording for Spark today:
 - "Spark includes setting-backed homepage section partials."
 - "Homepage section partials are included from `templates/index.html` in a fixed order."
 - "Global Theme Settings control section visibility, content, and styling."
+- "Use a section authoring unit to keep Figma, Theme Settings, partials, defaults, docs, and QA references aligned."
 - "A future NEXT theme sections feature could make these reorderable and duplicable."
 
 Avoid this wording unless the platform feature exists:

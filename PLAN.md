@@ -14,9 +14,11 @@
 - 18 templates, including 15 merchant-facing templates and 3 error pages.
 - 5 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`.
 - Custom GraphQL-first side cart through `SparkCartClient` and `SparkSideCart`.
-- Cart milestones for free shipping and free gifts, with simple default thresholds.
+- Cart milestones for free shipping and free gifts, with simple default thresholds and reward rules localized in `SparkCartRewards`.
 - App hook surface for Reviews and future Apps.
-- Setting-backed homepage section partials, included from `templates/index.html` in a fixed order.
+- Setting-backed homepage section partials, included from `templates/index.html` in a fixed order, with Figma section specs for the first library pass.
+- PDP selected variant behavior localized in `SparkVariantState`, so picker designs can vary without reimplementing child product matching.
+- Cart event, reward, and drawer rendering Interfaces documented in `docs/cart-events.md`, `docs/cart-rewards.md`, and `docs/cart-drawer-architecture.md`.
 - Compiled `assets/main.css` committed so the theme is installable without a local CSS build.
 - Tracked design and theme-developer docs in `DESIGN.md` and `docs/`.
 
@@ -27,7 +29,7 @@
 Spark should graduate from "works on a dev store" to "a theme developer can confidently dogfood this on real merchant stores." The main gaps are:
 
 1. More production mileage on real storefront data and devices.
-2. Cleaner merchant-facing Theme Settings, especially side-cart rewards and suggested products.
+2. More merchant mileage on side-cart rewards and suggested products now that their implementation rules are localized.
 3. Performance and accessibility baselines that can be defended over time.
 4. Component tests for the custom Web Components.
 5. Clear theme-developer docs and public-readiness hygiene.
@@ -57,6 +59,7 @@ The side cart is Spark's riskiest custom commerce surface, and its Theme Setting
 - Avoid hard-coded currency fields in core Spark unless the platform can generate them from the store's enabled currencies.
 - Review suggested product settings, especially `upsell_fallback_slots`, and decide whether that control belongs in merchant settings or should become an implementation detail.
 - Dogfood the free-gift auto-add/remove behavior until it is boringly predictable.
+- Keep reward logic in `SparkCartRewards` and drawer interaction logic in `<spark-cart-drawer>`.
 
 ### W3 — Performance And Accessibility (P1)
 
@@ -83,6 +86,7 @@ The custom cart and Web Components need automated coverage before Spark becomes 
 
 Spark now has named homepage section partials and stronger Theme Settings coverage. The next pass should make those controls easier for designers and merchants to use.
 
+- Use `docs/figma-section-library-plan.md` and `docs/section-specs/` as the current design-team planning packet.
 - Continue improving homepage section partial settings for real quick-build storefront workflows.
 - Keep global Theme Settings available as `settings.*`.
 - Keep the current homepage include order clear until the platform supports reorderable theme section instances.
@@ -105,7 +109,7 @@ Public release is not today's goal, but the repo should gradually become easier 
 
 - Keep `README.md`, `CLAUDE.md`, `PLAN.md`, and `docs/` accurate as Spark evolves.
 - Add an "Extending Spark" guide for settings, partials, app hooks, and Web Components.
-- Document Web Component events, attributes, slots, and public APIs.
+- Keep Web Component events, attributes, slots, and public APIs documented in `docs/cart-events.md`, `docs/cart-rewards.md`, `docs/cart-drawer-architecture.md`, and future extension docs.
 - Add a DTL pattern catalog for Spark-specific gotchas.
 - Decide the release package shape and license before any public repository or self-serve ZIP release.
 

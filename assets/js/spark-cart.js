@@ -133,7 +133,23 @@
     }
 
     SparkCartClient.prototype._dispatch = function(name, detail) {
+        if (window.SparkEvents) {
+            SparkEvents.dispatch(name, detail);
+            return;
+        }
         document.dispatchEvent(new CustomEvent(name, { detail: detail, bubbles: true }));
+    };
+
+    SparkCartClient.prototype._dispatchCartUpdated = function(cart, action) {
+        if (window.SparkEvents) {
+            SparkEvents.cartUpdated(cart, action);
+            return;
+        }
+        this._dispatch('spark:cart:updated', {
+            cart: cart,
+            count: cart ? cart.numItems : 0,
+            action: action
+        });
     };
 
     SparkCartClient.prototype._request = function(query, variables) {
@@ -256,11 +272,7 @@
                 var result = data.addCartLines;
                 if (result && result.cart) {
                     setCartId(result.cart.id);
-                    self._dispatch('spark:cart:updated', {
-                        cart: result.cart,
-                        count: result.cart.numItems,
-                        action: 'add'
-                    });
+                    self._dispatchCartUpdated(result.cart, 'add');
                 }
                 return result;
             });
@@ -296,11 +308,7 @@
             var result = data.updateCartLines;
             if (result && result.cart) {
                 setCartId(result.cart.id);
-                self._dispatch('spark:cart:updated', {
-                    cart: result.cart,
-                    count: result.cart.numItems,
-                    action: 'update'
-                });
+                self._dispatchCartUpdated(result.cart, 'update');
             }
             return result;
         });
@@ -319,11 +327,7 @@
             var result = data.removeCartLines;
             if (result && result.cart) {
                 setCartId(result.cart.id);
-                self._dispatch('spark:cart:updated', {
-                    cart: result.cart,
-                    count: result.cart.numItems,
-                    action: 'remove'
-                });
+                self._dispatchCartUpdated(result.cart, 'remove');
             }
             return result;
         });
@@ -341,11 +345,7 @@
         return this._request(ADD_VOUCHER, { input: input }).then(function(data) {
             var result = data.addVoucher;
             if (result && result.cart) {
-                self._dispatch('spark:cart:updated', {
-                    cart: result.cart,
-                    count: result.cart.numItems,
-                    action: 'voucher_add'
-                });
+                self._dispatchCartUpdated(result.cart, 'voucher_add');
             }
             return result;
         });
@@ -363,11 +363,7 @@
         return this._request(REMOVE_VOUCHER, { input: input }).then(function(data) {
             var result = data.removeVoucher;
             if (result && result.cart) {
-                self._dispatch('spark:cart:updated', {
-                    cart: result.cart,
-                    count: result.cart.numItems,
-                    action: 'voucher_remove'
-                });
+                self._dispatchCartUpdated(result.cart, 'voucher_remove');
             }
             return result;
         });

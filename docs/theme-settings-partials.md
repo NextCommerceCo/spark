@@ -1,10 +1,10 @@
 # Spark Theme Settings Partials
 
-This catalog lists the Spark partials, homepage section partials, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions.
+This catalog lists the Spark partials, homepage section partials, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions. For the Figma library workflow, pair this catalog with `docs/figma-section-library-plan.md`.
 
 ## Mechanical Scope
 
-- Spark has 18 partial files that reference `settings.*` directly.
+- Spark has 19 partial files that reference `settings.*` directly.
 - Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
@@ -14,7 +14,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
-| `partials/section_hero.html` | Homepage > Hero | Full-width image hero with text overlay and CTA. | `show_hero`, `homepage_hero_image`, `homepage_hero_image_mobile`, `homepage_hero_heading`, `homepage_hero_subheading`, `homepage_hero_text_color`, `homepage_hero_text_align`, `homepage_hero_content_position`, `homepage_hero_content_width`, `homepage_hero_height`, `homepage_hero_overlay_color`, `homepage_hero_overlay_opacity`, `homepage_hero_link`, `homepage_hero_cta`, `homepage_hero_cta_style`, `homepage_hero_cta_outline` |
+| `partials/section_hero.html` | Homepage > Hero | Full-width image hero with text overlay and CTA. | `show_hero`, `homepage_hero_image`, `homepage_hero_image_mobile`, `homepage_hero_heading`, `homepage_hero_subheading`, `homepage_hero_text_color`, `homepage_hero_text_align`, `homepage_hero_content_position`, `homepage_hero_content_width`, `homepage_hero_height`, `homepage_hero_overlay_color`, `homepage_hero_overlay_opacity`, `homepage_hero_alt`, `homepage_hero_link`, `homepage_hero_cta`, `homepage_hero_cta_style`, `homepage_hero_cta_outline` |
 | `partials/section_featured_product.html` | Homepage > Featured Product | Single product spotlight with image, copy, price, and CTA. | `show_featured_product`, `featured_product`, `featured_product_header`, `featured_product_header_size`, `featured_product_header_align`, `featured_product_description`, `featured_product_cta_text`, `featured_product_cta_style`, `featured_product_cta_outline`, `featured_product_bg_color` |
 | `partials/section_featured_products.html` | Homepage > Featured Products | Merchant-curated product grid with optional section CTA. | `show_featured_products`, `featured_products`, `featured_products_header`, `featured_products_header_size`, `featured_products_header_align`, `featured_products_columns`, `featured_products_bg_color`, `featured_products_card_bg`, `featured_products_cta_text`, `featured_products_cta_url`, `featured_products_cta_style`, `featured_products_cta_outline` |
 | `partials/section_featured_categories.html` | Homepage > Featured Categories | Category image tile grid. | `show_featured_categories`, `featured_categories`, `featured_categories_header`, `featured_categories_header_size`, `featured_categories_header_align`, `featured_categories_columns`, `featured_categories_bg_color`, `featured_categories_overlay_color`, `featured_categories_overlay_opacity`, `featured_categories_text_color` |
@@ -51,7 +51,7 @@ These files are not partials, but they are important setting-backed surfaces des
 | --- | --- | --- | --- |
 | `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
 | `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
-| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
+| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. Variant behavior is coordinated by `assets/js/spark-variant-state.js`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
 
 ## Utility Partials
 
@@ -67,7 +67,9 @@ These are reusable implementation helpers. They are not directly controlled by T
 | `partials/pagination.html` | Pagination controls. |
 | `partials/alert_messages.html` | Flash/message renderer. |
 | `partials/product_carousel.html` | Legacy PDP carousel placeholder; Spark PDP currently uses `spark-gallery` directly. |
-| `partials/cta_button.html` | Shared CTA button helper for primary/accent and outline variants. |
+| `partials/section_heading.html` | Shared heading helper for section heading size and alignment. |
+| `partials/product_grid.html` | Shared product grid helper for repeated commerce grids. |
+| `partials/cta_button.html` | Shared CTA button helper for primary/accent and outline variants, with optional custom outline color. |
 | `partials/icons/*.html` | Inline SVG icons used by header, search, pagination, and drawers. |
 
 ## Intro Bootstrap Parity

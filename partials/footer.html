@@ -1,5 +1,15 @@
 {# Spark Theme — Footer #}
-<footer class="border-t border-slate-200 mt-16" style="{% if settings.footer_bg_color %}background-color: {{ settings.footer_bg_color }};{% else %}background-color: #F8FAFC;{% endif %}{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% endif %}">
+<footer class="site-footer border-t border-slate-200 mt-16"
+        style="--footer-bg-color: {% if settings.footer_bg_color %}{{ settings.footer_bg_color }}{% else %}#F8FAFC{% endif %};
+               --footer-text-color: {% if settings.footer_text_color %}{{ settings.footer_text_color }}{% else %}#1E293B{% endif %};
+               --footer-link-color: {% if settings.footer_link_color %}{{ settings.footer_link_color }}{% elif settings.footer_text_color %}{{ settings.footer_text_color }}{% else %}#64748B{% endif %};
+               background-color: var(--footer-bg-color);
+               color: var(--footer-text-color);">
+    <style>
+        .site-footer a {
+            color: var(--footer-link-color);
+        }
+    </style>
     <div class="container py-12">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 
@@ -23,7 +33,7 @@
                                  class="h-8 w-auto" />
                         {% endwith %}
                     {% else %}
-                        <span class="text-sm font-semibold uppercase tracking-wider" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">{{ store.name }}</span>
+                        <span class="text-sm font-semibold uppercase tracking-wider" style="color: var(--footer-text-color);">{{ store.name }}</span>
                     {% endif %}
                 </a>
                 {% if store.tagline %}
@@ -37,7 +47,7 @@
             {# Footer menu #}
             {% if settings.footer_menu %}
                 <div>
-                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: var(--footer-text-color);">
                         {{ settings.footer_menu.name }}
                     </h3>
                     <ul class="space-y-2">
@@ -45,7 +55,7 @@
                             <li>
                                 <a href="{{ item.url }}"
                                    class="text-sm hover:opacity-80"
-                                   style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                   style="color: var(--footer-link-color);">
                                     {{ item.name }}
                                 </a>
                                 {% if item.level > 0 %}
@@ -54,7 +64,7 @@
                                             <li>
                                                 <a href="{{ child.url }}"
                                                    class="text-sm hover:opacity-80"
-                                                   style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                                                   style="color: var(--footer-link-color);">
                                                     {{ child.name }}
                                                 </a>
                                             </li>
@@ -69,21 +79,21 @@
 
             {# Support links #}
             <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: var(--footer-text-color);">
                     {% t 'footer.support' %}
                 </h3>
                 <ul class="space-y-2">
                     <li>
                         <a href="{% url 'customer:summary' %}"
                            class="text-sm hover:opacity-80"
-                           style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                           style="color: var(--footer-link-color);">
                             {% t 'navigation.account.account' %}
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'support:category-list' %}"
                            class="text-sm hover:opacity-80"
-                           style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                           style="color: var(--footer-link-color);">
                             {% t 'footer.help' %}
                         </a>
                     </li>
@@ -93,7 +103,7 @@
             {# Contact info #}
             <div>
                 {% if store.address.line_1 or store.phone or store.email %}
-                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #1E293B;{% endif %}">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: var(--footer-text-color);">
                         {% t 'navigation.footer.contact_us' %}
                     </h3>
                     {% if store.address.line_1 %}
@@ -111,7 +121,7 @@
                     {% if store.phone %}
                         <p class="text-sm mb-1" style="opacity: 0.7;">
                             <a href="tel:{{ store.phone }}" class="hover:opacity-80"
-                               style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                               style="color: var(--footer-link-color);">
                                 {{ store.phone }}
                             </a>
                         </p>
@@ -119,7 +129,7 @@
                     {% if store.email %}
                         <p class="text-sm" style="opacity: 0.7;">
                             <a href="mailto:{{ store.email }}" class="hover:opacity-80"
-                               style="{% if settings.footer_link_color %}color: {{ settings.footer_link_color }};{% else %}color: #64748B;{% endif %}">
+                               style="color: var(--footer-link-color);">
                                 {{ store.email }}
                             </a>
                         </p>
@@ -167,7 +177,7 @@
                         {% csrf_token %}
                         <select name="currency"
                                 class="text-xs bg-transparent border-0 cursor-pointer"
-                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                                style="color: var(--footer-link-color);"
                                 onchange="this.form.submit()">
                             {% for currency in currencies %}
                                 <option value="{{ currency.code }}" {% if request.CURRENCY_CODE == currency.code %}selected{% endif %}>
@@ -184,7 +194,7 @@
                         <input name="next" type="hidden" value="{{ language_neutral_url_path }}">
                         <select name="language"
                                 class="text-xs bg-transparent border-0 cursor-pointer"
-                                style="{% if settings.footer_text_color %}color: {{ settings.footer_text_color }};{% else %}color: #64748B;{% endif %}"
+                                style="color: var(--footer-link-color);"
                                 onchange="this.form.submit()">
                             {% for language_code, name in languages_active_storefront %}
                                 <option value="{{ language_code }}" {% if request.LANGUAGE_CODE == language_code %}selected{% endif %}>

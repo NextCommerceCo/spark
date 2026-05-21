@@ -147,9 +147,12 @@
             var shipThreshold = parseFloat(this._shippingMsg.getAttribute('data-value')) || 0;
             var shipReached = currentValue >= shipThreshold;
             if (this._prevShippingReached !== shipReached) {
-                document.dispatchEvent(new CustomEvent(
-                    shipReached ? 'spark:progress:shipping-reached' : 'spark:progress:shipping-unreached'
-                ));
+                var shipEvent = shipReached ? 'spark:progress:shipping-reached' : 'spark:progress:shipping-unreached';
+                if (window.SparkEvents) {
+                    SparkEvents.progress(shipEvent);
+                } else {
+                    document.dispatchEvent(new CustomEvent(shipEvent));
+                }
                 this._prevShippingReached = shipReached;
             }
         }
@@ -160,10 +163,12 @@
             var giftId = this._giftMsg.getAttribute('data-gift-id') || '';
             var giftReached = currentValue >= giftThreshold;
             if (this._prevGiftReached !== giftReached) {
-                document.dispatchEvent(new CustomEvent(
-                    giftReached ? 'spark:progress:gift-reached' : 'spark:progress:gift-unreached',
-                    { detail: { giftId: giftId } }
-                ));
+                var giftEvent = giftReached ? 'spark:progress:gift-reached' : 'spark:progress:gift-unreached';
+                if (window.SparkEvents) {
+                    SparkEvents.progress(giftEvent, { giftId: giftId });
+                } else {
+                    document.dispatchEvent(new CustomEvent(giftEvent, { detail: { giftId: giftId } }));
+                }
                 this._prevGiftReached = giftReached;
             }
         }

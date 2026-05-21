@@ -16,7 +16,8 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 - **CSS:** Tailwind CSS v4.2.2 (standalone CLI binary `./tailwindcss`, no Node dependency)
 - **JS:** Vanilla JS + Web Components. No bundler — self-contained `<script>` tags. Shadow DOM where encapsulation pays off; light DOM where slotted content needs to be styled by the theme.
 - **Web Components (5):** `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>` — progressive enhancement via `SparkCartClient` GraphQL client.
-- **Side cart:** Custom GraphQL-first `<spark-cart-drawer>` replaces the platform side cart. Event-driven `SparkSideCart` API (`open`, `close`, `toggle`).
+- **Side cart:** Custom GraphQL-first `<spark-cart-drawer>` replaces the platform side cart. Event-driven `SparkSideCart` API (`open`, `close`, `toggle`) backed by `SparkEvents`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
+- **PDP variants:** `SparkVariantState` owns selected child-product matching for radio, select, and future picker designs. Gallery, price, and add-to-cart behavior react through the same variant state Interface.
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
 - **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS.
@@ -86,6 +87,12 @@ Stable `{% app_hook 'NAME' %}` extension surfaces for Apps (Reviews app uses the
 ### Settings (`configs/settings_schema.json`)
 Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colors), Footer (menu, colors, social links ×8, payment icons, disclaimer), homepage section partials (hero with text overlay, featured products/categories, recommended products, On Sale, Promo Banner, Featured Product — each with its own toggle), Announcement Bar, Advanced (noindex, account-only mode). v1.1 added 22 settings and restructured homepage settings around fixed-order section partials.
 
+### Architecture Docs
+- `CONTEXT.md` defines Spark's domain language for architecture reviews.
+- `docs/figma-section-library-plan.md` and `docs/section-specs/` define the Figma-to-theme section authoring workflow.
+- `docs/pdp-variant-state.md` documents the selected-variant Interface for PDP picker designs.
+- `docs/cart-events.md`, `docs/cart-rewards.md`, and `docs/cart-drawer-architecture.md` document the cart event, reward, and drawer Module split.
+
 ## Known Issues & Gotchas
 1. **Blog search** must use `{% include 'partials/form_field.html' with field=form.name %}` — the view passes a `form` context. Raw `<input>` crashes the template.
 2. **Reviews breadcrumbs** need `{% if category %}` guard around `category.get_ancestors_and_self` — products without categories crash otherwise.
@@ -93,7 +100,7 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 4. **Instagram typo**: The setting name is `instragram_link` (not `instagram_link`) — preserved from Intro Bootstrap for platform compatibility.
 5. **Payment icons** multi-select uses `"type": "select"` with `"multi-select": true` — NOT a `"multi_select"` type (which doesn't exist).
 6. **CDN caching**: CloudFront aggressively caches `assets/main.css` with a fixed `?v=` hash. Templates are server-rendered and not cached.
-7. **Parent products** can't be added to cart — `product.html` has inline JS to rewrite form action to first child product ID.
+7. **Parent products** can't be added to cart directly — `SparkVariantState` rewrites the add-to-cart form action to the selected child product ID and dispatches `spark:variant:changed` for gallery/price adapters.
 
 ## Design Principles
 - Products are the design — generous whitespace, large photography
@@ -105,9 +112,9 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 - Header: full logo (responsive with icon on mobile). Footer: icon preferred (compact).
 
 ## Web Components
-5 components live in `assets/js/components/` (`spark-add-to-cart`, `spark-cart-drawer`, `spark-progress-bar`, `spark-quantity`, `spark-upsell-item`) plus the `SparkCartClient` GraphQL client at `assets/js/spark-cart.js`. Read the source for the API surface — each file is short.
+5 components live in `assets/js/components/` (`spark-add-to-cart`, `spark-cart-drawer`, `spark-progress-bar`, `spark-quantity`, `spark-upsell-item`) plus focused support Modules in `assets/js/`: `SparkCartClient`, `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
 
-Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated`, `spark:cart:toggle`, `spark:progress:shipping-reached/-unreached`, `spark:progress:gift-reached/-unreached`. The cart drawer's public API is `window.SparkSideCart.open() / close() / toggle()`.
+Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated`, `spark:cart:toggle`, `spark:variant:changed`, `spark:progress:shipping-reached/-unreached`, `spark:progress:gift-reached/-unreached`. Prefer `SparkEvents` for dispatch. The cart drawer's public API is `window.SparkSideCart.open() / close() / toggle()`.
 
 ### CRITICAL: JS Asset Files
 **NEVER use non-ASCII characters in JS asset files.** The platform processes JS through its template engine:

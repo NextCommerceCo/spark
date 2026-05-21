@@ -171,16 +171,19 @@
             this._client.addToCart(productId, quantity).then(function(result) {
                 if (result && result.success && result.cart) {
                     self._setState('success');
-                    // Dispatch spark:cart:added event for side cart integration
-                    document.dispatchEvent(new CustomEvent('spark:cart:added', {
-                        detail: {
-                            cart: result.cart,
-                            count: result.cart ? result.cart.numItems : 0,
-                            productId: self._getProductId(),
-                            quantity: quantity
-                        },
-                        bubbles: true
-                    }));
+                    if (window.SparkEvents) {
+                        SparkEvents.cartAdded(result.cart, self._getProductId(), quantity);
+                    } else {
+                        document.dispatchEvent(new CustomEvent('spark:cart:added', {
+                            detail: {
+                                cart: result.cart,
+                                count: result.cart ? result.cart.numItems : 0,
+                                productId: self._getProductId(),
+                                quantity: quantity
+                            },
+                            bubbles: true
+                        }));
+                    }
                     setTimeout(function() {
                         if (self._state === 'success') {
                             self._setState('idle');

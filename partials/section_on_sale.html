@@ -3,12 +3,8 @@
     {% if settings.on_sale_products|length > 0 %}
     <section class="py-12 md:py-16" {% if settings.on_sale_bg_color %}style="background-color: {{ settings.on_sale_bg_color }};"{% endif %}>
         <div class="container">
-            <h2 class="{% if settings.on_sale_header_size == 'large' %}text-3xl md:text-4xl{% elif settings.on_sale_header_size == 'small' %}text-xl{% else %}text-2xl{% endif %} font-semibold text-slate-800 mb-8 {% if settings.on_sale_header_align == 'center' %}text-center{% elif settings.on_sale_header_align == 'right' %}text-right{% endif %}">{{ settings.on_sale_header|default:"On Sale" }}</h2>
-            <div class="product-grid" {% if settings.on_sale_columns %}style="--product-grid-columns: {{ settings.on_sale_columns }};"{% endif %}>
-                {% for product in settings.on_sale_products %}
-                    {% include 'partials/product_card.html' with product=product card_bg=settings.on_sale_card_bg %}
-                {% endfor %}
-            </div>
+            {% include "partials/section_heading.html" with heading=settings.on_sale_header|default:"On Sale" size=settings.on_sale_header_size align=settings.on_sale_header_align %}
+            {% include "partials/product_grid.html" with products=settings.on_sale_products columns=settings.on_sale_columns card_bg=settings.on_sale_card_bg %}
         </div>
     </section>
     {% else %}

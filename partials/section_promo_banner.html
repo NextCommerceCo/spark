@@ -10,11 +10,7 @@
                 <p class="text-base md:text-lg mb-8 opacity-90">{{ settings.promo_banner_subheading }}</p>
             {% endif %}
             {% if settings.promo_banner_cta_url %}
-                <a href="{{ settings.promo_banner_cta_url }}"
-                   class="btn {% if settings.promo_banner_cta_outline %}btn-outline{% elif settings.promo_banner_cta_style == 'accent' %}btn-accent{% else %}btn-primary{% endif %}"
-                   {% if settings.promo_banner_cta_outline %}style="--btn-color: {{ settings.promo_banner_text_color|default:'#ffffff' }};"{% endif %}>
-                    {{ settings.promo_banner_cta_text|default:"Shop Now" }}
-                </a>
+                {% include "partials/cta_button.html" with href=settings.promo_banner_cta_url label=settings.promo_banner_cta_text|default:"Shop Now" style=settings.promo_banner_cta_style outline=settings.promo_banner_cta_outline outline_color=settings.promo_banner_text_color|default:"#ffffff" %}
             {% endif %}
         </div>
     </section>

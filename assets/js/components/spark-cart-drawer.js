@@ -17,84 +17,6 @@
 (function() {
     'use strict';
 
-    /* --- HTML escaping (XSS prevention) --- */
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
-    /* --- Cart Item Sub-component (rendered inside drawer shadow DOM) --- */
-
-    function createCartItemEl(line, currency, doc) {
-        var item = doc.createElement('div');
-        item.className = 'spark-drawer-item';
-        item.setAttribute('data-line-id', line.pk);
-
-        var product = line.product || {};
-        var image = product.primaryImage ? product.primaryImage.thumbnail : '';
-        var title = product.title || '';
-        var url = product.url || '#';
-        var attrs = line.attributes || [];
-        var variant = attrs.map(function(a) { return a.option + ': ' + a.value; }).join(', ');
-        var price = SparkCartClient.formatMoney(line.linePriceExclTaxInclDiscounts || line.linePriceExclTax || 0, currency);
-        var unitPrice = Number(line.unitPriceExclTax || 0);
-        var retailInfo = product.purchaseInfo ? product.purchaseInfo.priceRetail : null;
-        var retailValue = retailInfo ? Number(retailInfo.value || 0) : 0;
-        var hasComparePrice = retailValue > 0 && retailValue > unitPrice;
-        var isFreeGift = line.isUpsell;
-        var subInfo = product.subscriptionInfo;
-        var maxQty = SparkCartClient.MAX_QTY_PER_LINE || 15;
-
-        var safeTitle = escapeHtml(title);
-        var safeVariant = escapeHtml(variant);
-        var safeUrl = escapeHtml(url);
-
-        var html = '<div class="spark-drawer-item-image">' +
-            (image ? '<img src="' + escapeHtml(image) + '" alt="' + safeTitle + '" width="80" height="80" loading="lazy" />' : '') +
-            '</div>' +
-            '<div class="spark-drawer-item-details">' +
-            '<a href="' + safeUrl + '" class="spark-drawer-item-title">' + safeTitle + '</a>' +
-            (safeVariant ? '<div class="spark-drawer-item-variant">' + safeVariant + '</div>' : '') +
-            (subInfo && subInfo.interval ? '<div class="spark-drawer-item-sub">Every ' + subInfo.intervalCount + ' ' + subInfo.interval.toLowerCase() + (subInfo.intervalCount > 1 ? 's' : '') + '</div>' : '') +
-            '<div class="spark-drawer-item-bottom">';
-
-        if (isFreeGift) {
-            html += '<span class="spark-drawer-item-free">FREE</span>';
-        } else {
-            html += '<div class="spark-drawer-item-qty">' +
-                '<button class="spark-drawer-qty-btn" data-action="decrease" aria-label="Decrease quantity"' +
-                (line.quantity <= 1 ? ' disabled' : '') +
-                '>&minus;</button>' +
-                '<span class="spark-drawer-qty-val" aria-label="Quantity">' + line.quantity + '</span>' +
-                '<button class="spark-drawer-qty-btn" data-action="increase" aria-label="Increase quantity"' +
-                (line.quantity >= maxQty ? ' disabled' : '') +
-                '>+</button>' +
-                '</div>';
-        }
-
-        html += '<div class="spark-drawer-item-price">' +
-            (hasComparePrice ? '<span class="spark-drawer-item-compare">' + SparkCartClient.formatMoney(retailValue * line.quantity, currency) + '</span> ' : '') +
-            '<span' + (isFreeGift ? ' class="spark-drawer-item-free"' : '') + '>' + (isFreeGift ? 'FREE' : price) + '</span>' +
-            '</div>' +
-            '</div>';
-
-        if (!isFreeGift) {
-            html += '<button class="spark-drawer-item-remove" data-action="remove" aria-label="Remove ' + safeTitle + '">' +
-                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-                '</button>';
-        }
-
-        html += '</div>';
-        item.innerHTML = html;
-        return item;
-    }
-
     /* --- Drawer styles (injected into Shadow DOM) --- */
 
     var DRAWER_STYLES = [
@@ -321,6 +243,20 @@
         this._giftProductId = this.getAttribute('data-gift-product-id') || '';
         this._currencyCode = this.getAttribute('data-currency') || 'USD';
         this._openOnAdd = this.getAttribute('data-open-on-add') !== 'false';
+        this._labels = {
+            checkoutUrl: this._checkoutUrl,
+            headerTitle: this._headerTitle,
+            emptyTitle: this._emptyTitle,
+            emptySub: this._emptySub,
+            continueCta: this._continueCta,
+            continueUrl: this._continueUrl,
+            checkoutText: this._checkoutText,
+            subtotalText: this._subtotalText,
+            discountText: this._discountText,
+            shippingText: this._shippingText,
+            couponPlaceholder: this._couponPlaceholder,
+            couponBtn: this._couponBtn
+        };
 
         // Attach shadow DOM
         var shadow = this.attachShadow({ mode: 'open' });
@@ -531,73 +467,31 @@
         }
 
         var currency = this._currencyCode;
-        var self = this;
-
         // Render items
-        var itemsHtml = '';
-        var doc = this.shadowRoot;
-        var frag = document.createDocumentFragment();
         var lines = cart.lines || [];
-        for (var i = 0; i < lines.length; i++) {
-            frag.appendChild(createCartItemEl(lines[i], currency, document));
-        }
-
-        // Voucher section
-        var voucherHtml = '<div class="spark-drawer-voucher">';
-        var vouchers = cart.voucherDiscounts || [];
-        for (var v = 0; v < vouchers.length; v++) {
-            var vc = vouchers[v];
-            var vcode = escapeHtml(vc.voucher ? vc.voucher.code : vc.name);
-            var vid = escapeHtml(vc.voucher ? vc.voucher.code : '');
-            voucherHtml += '<div class="spark-drawer-voucher-applied">' +
-                '<span class="spark-drawer-voucher-tag">' +
-                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ' +
-                vcode + ' (-' + SparkCartClient.formatMoney(vc.amount, currency) + ')' +
-                '</span>' +
-                '<button class="spark-drawer-voucher-remove" data-action="remove-voucher" data-voucher-id="' + vid + '" aria-label="Remove voucher">' +
-                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-                '</button></div>';
-        }
-        voucherHtml += '<div class="spark-drawer-voucher-form">' +
-            '<input type="text" class="spark-drawer-voucher-input" placeholder="' + this._couponPlaceholder + '" />' +
-            '<button class="spark-drawer-voucher-btn" data-action="apply-voucher">' + this._couponBtn + '</button>' +
-            '</div>' +
-            '<div class="spark-drawer-voucher-error" style="display:none;"></div>' +
-            '</div>';
+        var renderer = window.SparkCartDrawerRenderer;
+        var frag = renderer.createItemsFragment(lines, currency, document);
 
         this._body.innerHTML = '';
         var itemsContainer = document.createElement('div');
         itemsContainer.className = 'spark-drawer-items';
         itemsContainer.appendChild(frag);
         this._body.appendChild(itemsContainer);
-        this._body.insertAdjacentHTML('beforeend', voucherHtml);
+        this._body.insertAdjacentHTML('beforeend', renderer.voucherHtml(cart, currency, this._labels));
 
         // Footer with totals
-        var totalDiscount = Number(cart.totalDiscount || 0);
-        var subtotal = Number(cart.totalExclTaxExclDiscounts || cart.totalExclTax || 0);
         var total = Number(cart.totalExclTax || 0);
 
-        var footerHtml = '<div class="spark-drawer-totals">' +
-            '<div class="spark-drawer-total-row"><span>' + this._subtotalText + '</span><span>' + SparkCartClient.formatMoney(subtotal, currency) + '</span></div>';
-
-        if (totalDiscount > 0) {
-            footerHtml += '<div class="spark-drawer-total-row discount"><span>' + this._discountText + '</span><span>-' + SparkCartClient.formatMoney(totalDiscount, currency) + '</span></div>';
-        }
-
-        footerHtml += '<div class="spark-drawer-total-row"><span>Shipping</span><span style="color:#94A3B8;font-size:12px;">' + this._shippingText + '</span></div>' +
-            '<div class="spark-drawer-total-row grand"><span>Total</span><span>' + SparkCartClient.formatMoney(total, currency) + '</span></div>' +
-            '</div>' +
-            '<a href="' + this._checkoutUrl + '" class="spark-drawer-checkout">' + this._checkoutText + '</a>' +
-            '<button class="spark-drawer-continue" data-action="close">' + this._continueCta + '</button>';
-
-        this._footer.innerHTML = footerHtml;
+        this._footer.innerHTML = renderer.footerHtml(cart, currency, this._labels);
         this._footer.style.display = '';
 
         // Update progress bar value (lazy query - children may not be ready in connectedCallback)
         if (!this._progressBar) {
             this._progressBar = this.querySelector('spark-progress-bar');
         }
-        if (this._progressBar) {
+        if (window.SparkCartRewards) {
+            SparkCartRewards.updateProgressBar(this._progressBar, total);
+        } else if (this._progressBar) {
             this._progressBar.setAttribute('data-value', String(total));
         }
 
@@ -605,43 +499,35 @@
         this._updateUpsellVisibility(cart);
 
         // Track gift state for auto-add/remove
-        this._isCartContainsGift = false;
-        this._giftLineId = null;
-        if (this._giftProductId) {
-            for (var g = 0; g < lines.length; g++) {
-                var gLine = lines[g];
-                if (gLine.isUpsell && gLine.product &&
-                    String(gLine.product.pk) === String(this._giftProductId)) {
-                    this._isCartContainsGift = true;
-                    this._giftLineId = gLine.pk;
-                    break;
-                }
-            }
+        if (window.SparkCartRewards) {
+            var giftState = SparkCartRewards.giftState(cart, this._giftProductId);
+            this._isCartContainsGift = giftState.containsGift;
+            this._giftLineId = giftState.lineId;
+        } else {
+            this._isCartContainsGift = false;
+            this._giftLineId = null;
         }
     };
 
     _renderEmpty() {
-        this._body.innerHTML = '<div class="spark-drawer-empty">' +
-            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-            '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>' +
-            '<line x1="3" y1="6" x2="21" y2="6"/>' +
-            '<path d="M16 10a4 4 0 01-8 0"/>' +
-            '</svg>' +
-            '<div class="spark-drawer-empty-title">' + this._emptyTitle + '</div>' +
-            '<div class="spark-drawer-empty-sub">' + this._emptySub + '</div>' +
-            '<a href="' + this._continueUrl + '" class="spark-drawer-empty-cta">' + this._continueCta + '</a>' +
-            '</div>';
+        this._body.innerHTML = SparkCartDrawerRenderer.emptyHtml(this._labels);
         this._footer.style.display = 'none';
 
         // Hide upsells and reset progress bar when empty
-        var upsells = this.querySelectorAll('spark-upsell-item');
-        for (var i = 0; i < upsells.length; i++) {
-            upsells[i].style.display = 'none';
+        if (window.SparkCartRewards) {
+            SparkCartRewards.hideUpsells(this);
+        } else {
+            var upsells = this.querySelectorAll('spark-upsell-item');
+            for (var i = 0; i < upsells.length; i++) {
+                upsells[i].style.display = 'none';
+            }
         }
         if (!this._progressBar) {
             this._progressBar = this.querySelector('spark-progress-bar');
         }
-        if (this._progressBar) {
+        if (window.SparkCartRewards) {
+            SparkCartRewards.updateProgressBar(this._progressBar, 0);
+        } else if (this._progressBar) {
             this._progressBar.setAttribute('data-value', '0');
         }
     };
@@ -718,95 +604,28 @@
         var self = this;
         if (!this._client || !this._cart) return;
 
-        if (shouldAdd && !this._isCartContainsGift) {
-            this._client.addToCart(Number(giftProductId), 1, true)
-                .then(function(result) {
-                    if (result && result.cart) {
-                        self._cart = result.cart;
-                        self._renderCart();
-                    }
-                }).catch(function() {});
-        } else if (!shouldAdd && this._isCartContainsGift && this._giftLineId) {
-            this._client.removeCartLines(this._cart.id, [this._giftLineId])
-                .then(function(result) {
-                    if (result && result.cart) {
-                        self._cart = result.cart;
-                        self._renderCart();
-                    }
-                }).catch(function() {});
-        }
+        if (shouldAdd && this._isCartContainsGift) return;
+        if (!shouldAdd && (!this._isCartContainsGift || !this._giftLineId)) return;
+
+        var promise = window.SparkCartRewards
+            ? SparkCartRewards.toggleGift(this._client, this._cart, shouldAdd, giftProductId, this._giftLineId)
+            : (shouldAdd
+                ? this._client.addToCart(Number(giftProductId), 1, true)
+                : this._client.removeCartLines(this._cart.id, [this._giftLineId]));
+
+        promise.then(function(result) {
+            if (result && result.cart) {
+                self._cart = result.cart;
+                self._renderCart();
+            }
+        }).catch(function() {});
     };
 
     /* --- Upsell visibility --- */
 
     _updateUpsellVisibility(cart) {
-        var upsells = this.querySelectorAll('spark-upsell-item');
-        if (!upsells.length) return;
-
-        // Build set of product PKs in cart (including parent PKs)
-        var cartProductPks = {};
-        var lines = cart.lines || [];
-        for (var i = 0; i < lines.length; i++) {
-            var p = lines[i].product;
-            if (p) {
-                cartProductPks[String(p.pk)] = true;
-                if (p.parent) cartProductPks[String(p.parent.pk)] = true;
-            }
-        }
-
-        // Build set of active upsell slots from cart products' metadata
-        var activeSlots = {};
-        for (var j = 0; j < lines.length; j++) {
-            var prod = lines[j].product;
-            if (!prod) continue;
-            var meta = prod.metadata || (prod.parent ? prod.parent.metadata : null);
-            if (meta) {
-                var slotsStr = '';
-                // metadata can be object or JSON string
-                if (typeof meta === 'string') {
-                    try { meta = JSON.parse(meta); } catch(e) { meta = {}; }
-                }
-                slotsStr = meta.cart_upsell_slots || '';
-                if (slotsStr) {
-                    var slotArr = String(slotsStr).split(',');
-                    for (var s = 0; s < slotArr.length; s++) {
-                        activeSlots[slotArr[s].trim()] = true;
-                    }
-                }
-            }
-        }
-
-        // Show/hide each upsell
-        for (var u = 0; u < upsells.length; u++) {
-            var upsell = upsells[u];
-            var slot = upsell.getAttribute('data-upsell-slot');
-            var productId = upsell.getAttribute('data-product-id');
-            var fallback = upsell.getAttribute('data-fallback-slots') || '1,2';
-
-            // Hide if product already in cart
-            if (productId && cartProductPks[String(productId)]) {
-                upsell.style.display = 'none';
-                continue;
-            }
-
-            // Check slot visibility
-            var hasActiveSlots = Object.keys(activeSlots).length > 0;
-            var slotsToCheck = hasActiveSlots ? activeSlots : {};
-            if (!hasActiveSlots) {
-                // Use fallback slots
-                var fb = fallback.split(',');
-                for (var f = 0; f < fb.length; f++) {
-                    slotsToCheck[fb[f].trim()] = true;
-                }
-            }
-
-            if (slot && slotsToCheck[slot]) {
-                upsell.style.display = '';
-            } else if (!slot) {
-                upsell.style.display = '';
-            } else {
-                upsell.style.display = 'none';
-            }
+        if (window.SparkCartRewards) {
+            SparkCartRewards.updateUpsellVisibility(this, cart);
         }
     };
 

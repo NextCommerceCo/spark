@@ -129,9 +129,11 @@
                 <div class="mt-4">
                     {% if session.price.exists %}
                         {% if session.price.price_retail > session.price.price %}
-                            <del class="text-sm text-slate-400">{{ session.price.price_retail|currency:session.price.currency }}</del>
+                            <del class="text-sm text-slate-400" data-price-retail>{{ session.price.price_retail|currency:session.price.currency }}</del>
+                        {% else %}
+                            <del class="text-sm text-slate-400" data-price-retail hidden></del>
                         {% endif %}
-                        <span class="text-lg text-slate-800 font-medium">
+                        <span class="text-lg text-slate-800 font-medium" data-price>
                             {{ session.price.price|currency:session.price.currency }}
                         </span>
                     {% endif %}
@@ -339,47 +341,20 @@
     if (typeof theme !== 'undefined' && theme.product && theme.product.init) {
         theme.product.init(opts);
     } else {
-        // Inline fallback: auto-select child product for parent products
-        var dataEl = document.getElementById('product-data');
-        if (dataEl) {
-            try {
-                var prod = JSON.parse(dataEl.textContent);
-                if (prod.structure === 'parent' && prod.children && prod.children.length) {
-                    var form = document.getElementById('add-to-cart');
-                    if (form) {
-                        var action = form.getAttribute('action');
-                        form.setAttribute('action', action.replace(/(cart\/add\/)\d+/, '$1' + prod.children[0].id));
-                    }
-                }
-            } catch(e) {}
-        }
-        // Variant attribute change handler
-        document.querySelectorAll('input[name^="attr_"]').forEach(function(input) {
-            input.addEventListener('change', function() {
-                var dataEl = document.getElementById('product-data');
-                if (!dataEl) return;
-                try {
-                    var prod = JSON.parse(dataEl.textContent);
-                    if (!prod.children) return;
-                    var selected = {};
-                    document.querySelectorAll('input[name^="attr_"]:checked').forEach(function(inp) {
-                        selected[inp.name] = parseInt(inp.value);
-                    });
-                    var match = prod.children.find(function(child) {
-                        if (!child.variant_attribute_values || !child.variant_attribute_values.length) return true;
-                        return child.variant_attribute_values.every(function(attr) {
-                            return selected['attr_' + attr.code] === attr.id;
-                        });
-                    });
-                    if (match) {
-                        var form = document.getElementById('add-to-cart');
-                        if (form) {
-                            form.setAttribute('action', form.getAttribute('action').replace(/(cart\/add\/)\d+/, '$1' + match.id));
-                        }
-                    }
-                } catch(e) {}
+        var state = window.SparkVariantState && SparkVariantState.fromPage();
+        var form = document.getElementById('add-to-cart');
+        if (state && form) {
+            var initialVariant = state.getSelectedVariant() || state.getDefaultVariant();
+            if (initialVariant) {
+                SparkVariantState.updateFormAction(form, initialVariant);
+                SparkVariantState.updatePrice(document, initialVariant);
+                state.emitChange(initialVariant);
+            }
+            state.onChange(function(variant) {
+                SparkVariantState.updateFormAction(form, variant);
+                SparkVariantState.updatePrice(document, variant);
             });
-        });
+        }
     }
 })();
 </script>

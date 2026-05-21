@@ -4,18 +4,14 @@
 {% if settings.show_recommended and product.sorted_recommended_products %}
 <section class="border-t border-slate-200" {% if settings.recommended_products_bg_color %}style="background-color: {{ settings.recommended_products_bg_color }};"{% endif %}>
     <div class="container py-12 md:py-16">
-        <h2 class="{% if settings.recommended_products_header_size == 'large' %}text-3xl md:text-4xl{% elif settings.recommended_products_header_size == 'small' %}text-xl{% else %}text-2xl{% endif %} font-semibold text-slate-800 mb-8 {% if settings.recommended_products_header_align == 'center' %}text-center{% elif settings.recommended_products_header_align == 'right' %}text-right{% endif %}">
-            {% if settings.recommended_products_header %}
-                {{ settings.recommended_products_header }}
-            {% else %}
+        {% if settings.recommended_products_header %}
+            {% include "partials/section_heading.html" with heading=settings.recommended_products_header size=settings.recommended_products_header_size align=settings.recommended_products_header_align %}
+        {% else %}
+            <h2 class="{% if settings.recommended_products_header_size == 'large' %}text-3xl md:text-4xl{% elif settings.recommended_products_header_size == 'small' %}text-xl{% else %}text-2xl{% endif %} font-semibold text-slate-800 mb-8 {% if settings.recommended_products_header_align == 'center' %}text-center{% elif settings.recommended_products_header_align == 'right' %}text-right{% endif %}">
                 {% t "store.catalogue.recommended_products_header" %}
-            {% endif %}
-        </h2>
-        <div class="product-grid" {% if settings.recommended_products_columns %}style="--product-grid-columns: {{ settings.recommended_products_columns }};"{% endif %}>
-            {% for rec in product.sorted_recommended_products %}
-                {% include 'partials/product_card.html' with product=rec card_bg=settings.recommended_products_card_bg %}
-            {% endfor %}
-        </div>
+            </h2>
+        {% endif %}
+        {% include "partials/product_grid.html" with products=product.sorted_recommended_products columns=settings.recommended_products_columns card_bg=settings.recommended_products_card_bg %}
     </div>
 </section>
 {% endif %}

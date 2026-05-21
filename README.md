@@ -55,9 +55,13 @@ spark/
 ├── assets/
 │   ├── main.css                       Compiled Tailwind output
 │   └── js/
+│       ├── spark-cart-drawer-renderer.js  Side-cart markup renderer
+│       ├── spark-cart-rewards.js       Side-cart reward and upsell rules
 │       ├── spark-cart.js              GraphQL cart client
+│       ├── spark-events.js            Shared DOM event contract helpers
 │       ├── spark-gallery.js           PDP image gallery
 │       ├── spark-platform.js          Core platform JS (replaces jQuery)
+│       ├── spark-variant-state.js     PDP selected variant state
 │       ├── theme.js                   Theme utilities
 │       └── components/                Web Components
 │           ├── spark-add-to-cart.js   ATC button (Shadow DOM)
@@ -74,7 +78,7 @@ spark/
 └── templates/       Page templates (18 files including error pages)
 ```
 
-Tracked theme documentation lives in [docs/](docs/). Dogfooding and release-readiness planning currently lives in [PLAN.md](PLAN.md) and [TODOS.md](TODOS.md).
+Tracked theme documentation starts at [docs/README.md](docs/README.md). Dogfooding and release-readiness planning currently lives in [PLAN.md](PLAN.md) and [TODOS.md](TODOS.md).
 
 ## Features
 
@@ -82,6 +86,7 @@ Tracked theme documentation lives in [docs/](docs/). Dogfooding and release-read
 - **Web Components (5)** — `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`. Shadow DOM where appropriate, progressive enhancement, no-JS fallbacks.
 - **Custom GraphQL-first side cart** — `<spark-cart-drawer>` replaces the platform's side cart black box. Event-driven `SparkSideCart` API, no platform CSS bleed.
 - **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.
+- **Documented extension modules** — `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and the cart drawer renderer keep extension points explicit for theme developers and apps.
 - **Cart milestones** — multi-step progress bar with default thresholds for free shipping and free gifts; auto-add/remove driven by progress events.
 - **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
 - **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
@@ -90,7 +95,7 @@ Tracked theme documentation lives in [docs/](docs/). Dogfooding and release-read
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
-See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
+See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/figma-section-library-plan.md](docs/figma-section-library-plan.md) for the Spark Figma section library plan, [docs/pdp-variant-state.md](docs/pdp-variant-state.md) for the PDP variant state Interface, [docs/cart-events.md](docs/cart-events.md) for the cart event Interface, [docs/cart-rewards.md](docs/cart-rewards.md) for side-cart rewards and upsell rules, [docs/cart-drawer-architecture.md](docs/cart-drawer-architecture.md) for the drawer Module split, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
 
 ## Design System
 

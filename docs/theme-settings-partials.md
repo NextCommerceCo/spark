@@ -49,7 +49,7 @@ These files are not partials, but they are important setting-backed surfaces des
 
 | File | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
-| `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
+| `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, critical-path load order, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
 | `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
 | `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. Variant behavior is coordinated by `assets/js/spark-variant-state.js`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
 

@@ -6,6 +6,16 @@
     {% seo %}
 {% endblock %}
 
+{% block critical_preloads %}
+{{ block.super }}
+{% with images=product.get_all_images %}
+    {% if images %}
+        {% image_thumbnail images.0.original "800x800" crop="center" as first_thumb %}
+        <link rel="preload" as="image" href="{{ first_thumb.url }}" fetchpriority="high">
+    {% endif %}
+{% endwith %}
+{% endblock critical_preloads %}
+
 {% block extrastyles %}
 {{ block.super }}
 {% if settings.product_page_css %}
@@ -46,7 +56,10 @@
                             {% image_thumbnail images.0.original "800x800" crop="center" as first_thumb %}
                             <img src="{{ first_thumb.url }}"
                                  alt="{{ product.get_title }}"
+                                 width="800"
+                                 height="800"
                                  class="spark-gallery-hero"
+                                 loading="eager"
                                  fetchpriority="high" />
 
                             {% if images|length > 1 %}

@@ -18,6 +18,7 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 - **Web Components (5):** `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>` — progressive enhancement via `SparkCartClient` GraphQL client.
 - **Side cart:** Custom GraphQL-first `<spark-cart-drawer>` replaces the platform side cart. Event-driven `SparkSideCart` API (`open`, `close`, `toggle`) backed by `SparkEvents`, `SparkCartRewards`, and `SparkCartDrawerRenderer`.
 - **PDP variants:** `SparkVariantState` owns selected child-product matching for radio, select, and future picker designs. Gallery, price, and add-to-cart behavior react through the same variant state Interface.
+- **Performance load order:** `layouts/base.html` separates metadata, LCP preloads, CSS, rare priority JS, body content, ordered theme JS, footer app hooks, and tracking. See `docs/performance-load-order.md` before adding head scripts or preloads.
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
 - **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS.
@@ -90,6 +91,7 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 ### Architecture Docs
 - `CONTEXT.md` defines Spark's domain language for architecture reviews.
 - `docs/figma-section-library-plan.md` and `docs/section-specs/` define the Figma-to-theme section authoring workflow.
+- `docs/performance-load-order.md` documents the critical-path loading convention for templates, app hooks, and tracking.
 - `docs/pdp-variant-state.md` documents the selected-variant Interface for PDP picker designs.
 - `docs/cart-events.md`, `docs/cart-rewards.md`, and `docs/cart-drawer-architecture.md` document the cart event, reward, and drawer Module split.
 

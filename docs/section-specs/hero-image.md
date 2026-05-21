@@ -28,7 +28,7 @@ Do not use this section for dense merchandising, multiple offers, or app-injecte
 ## Current Render Contract
 
 - The section renders only when `settings.show_hero` is true and `settings.homepage_hero_image` has a value.
-- The image is rendered with `fetchpriority="high"` because this section is usually above the fold.
+- The template preloads the image through `critical_preloads`, and the visible image is rendered with `loading="eager"` and `fetchpriority="high"` because this section is usually above the fold.
 - The desktop image is always the fallback image.
 - The mobile image is served through a `<source>` at `max-width: 767px`.
 - The image uses `object-cover`, so Figma references must include safe focal areas for cropping.

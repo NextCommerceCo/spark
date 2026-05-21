@@ -2,6 +2,18 @@
 
 {% block title %}{{ store.name }} - {{ store.tagline }}{% endblock %}
 
+{% block critical_preloads %}
+{{ block.super }}
+{% if settings.show_hero and settings.homepage_hero_image %}
+    {% if settings.homepage_hero_image_mobile %}
+        <link rel="preload" as="image" href="{{ settings.homepage_hero_image_mobile }}" fetchpriority="high" media="(max-width: 767px)">
+        <link rel="preload" as="image" href="{{ settings.homepage_hero_image }}" fetchpriority="high" media="(min-width: 768px)">
+    {% else %}
+        <link rel="preload" as="image" href="{{ settings.homepage_hero_image }}" fetchpriority="high">
+    {% endif %}
+{% endif %}
+{% endblock critical_preloads %}
+
 {% block extrastyles %}
 {{ block.super }}
 {% if settings.home_page_css %}

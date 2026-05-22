@@ -179,7 +179,6 @@
         rememberCart(detail.cart);
         updateCartBadge(detail.count);
 
-        if (detail._sparkCartLoaderReplay) return;
         if (detail.openSideCart === false) return;
         if (window.SparkSideCart) return;
 

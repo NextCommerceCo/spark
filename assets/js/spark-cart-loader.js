@@ -168,22 +168,6 @@
         return togglePromise;
     }
 
-    function replayCartAdded(detail) {
-        detail = detail || {};
-        if (detail._sparkCartLoaderReplay) return;
-
-        var replayDetail = {};
-        Object.keys(detail).forEach(function(key) {
-            replayDetail[key] = detail[key];
-        });
-        replayDetail._sparkCartLoaderReplay = true;
-
-        document.dispatchEvent(new CustomEvent('spark:cart:added', {
-            detail: replayDetail,
-            bubbles: true
-        }));
-    }
-
     document.addEventListener('spark:cart:updated', function(e) {
         var detail = e.detail || {};
         rememberCart(detail.cart);
@@ -195,12 +179,11 @@
         rememberCart(detail.cart);
         updateCartBadge(detail.count);
 
-        if (detail._sparkCartLoaderReplay) return;
         if (detail.openSideCart === false) return;
         if (window.SparkSideCart) return;
 
         ensureDrawer().then(function() {
-            replayCartAdded(detail);
+            if (window.SparkSideCart) SparkSideCart.open();
         }).catch(function(err) {
             reportError('drawer load after cart add failed', err, 'error');
         });

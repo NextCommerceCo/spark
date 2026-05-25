@@ -6,8 +6,8 @@ Companion to [`figma-section-library-plan.md`](./figma-section-library-plan.md)
 (which describes the section authoring unit and workflow) and
 [`section-specs/`](./section-specs/) (where per-section detail lives).
 
-This doc exists to answer one question: **what does Mario's team need
-to design in Figma, and what do Spark theme developers need to build
+This doc answers one question: **what does the design team need to
+build in Figma, and what do Spark theme developers need to implement
 in DTL, to support any story-driven D2C brand without bespoke
 per-brand partial work?**
 
@@ -15,10 +15,9 @@ per-brand partial work?**
 
 Three inputs shaped this roster:
 
-1. **UVBrite v4 redesign** (May 2026) — 7 desktop layouts: Home, About,
-   UVBrite Go PDP, Beam+ PDP, DuoCore Filter PDP, DuoCore Technology
-   page, Beam+ Care Membership page. Concrete pilot for what a premium
-   founder-led D2C brand demands.
+1. **Real-world D2C storefronts** — a representative premium founder-led
+   D2C reference set covering home, about, multiple PDP layouts,
+   technology / explainer pages, and membership pages.
 2. **Shopify reference themes** — Dawn (free reference), Sense / Origin
    / Crave (free D2C-friendly), Impulse / Motion / Prestige (paid).
    Section catalogs across these are the de facto standard for what
@@ -53,17 +52,16 @@ Three inputs shaped this roster:
 
 ## Tier 1 — must-have for D2C parity (12)
 
-These cover the 70% of UVBrite (and most premium D2C brand) layout
-needs that today require either bespoke partial work or static HTML
-in Page content. Every one of them shows up across multiple sections
-of UVBrite and is also standard in Dawn / Sense / Origin.
+These cover the layout patterns that today require either bespoke
+partial work or static HTML in Page content. Each one shows up across
+multiple page types in any premium D2C brand and is also standard in
+Dawn / Sense / Origin.
 
 ### 1. `section_value_props`
 **Purpose:** N-column row of icon + headline + body. The benefit/value
 trio every brand opens with.
-**Seen in:** UVBrite Home (3-up benefit row under hero), UVBrite Go
-PDP (3-up feature row), DuoCore Tech ("Complete Contamination Profile"
-5-col grid).
+**Pattern:** "3 benefit icons below the hero", "5-column contamination
+profile grid", "feature row above the fold on a PDP".
 **Shopify analog:** Dawn `multicolumn`.
 **Settings sketch:**
 - `value_props_heading` (text, optional eyebrow above row)
@@ -74,11 +72,10 @@ PDP (3-up feature row), DuoCore Tech ("Complete Contamination Profile"
 **Variants:** with eyebrow, without; icons-only (no body); body-only (no icons).
 
 ### 2. `section_process_steps`
-**Purpose:** Numbered sequence with photo + body per step. Tech /
-process explainers.
-**Seen in:** UVBrite Home ("DuoCore Three-Stage System"), DuoCore
-Tech ("Three Stages, One System"), Beam+ Care ("How Beam+ Care Works"
-4-step).
+**Purpose:** Numbered sequence with photo + body per step. Technology
+and process explainers.
+**Pattern:** "Three-stage filtration system", "how the membership
+works in 4 steps", "from order to doorstep".
 **Shopify analog:** Origin-theme process step block; Dawn doesn't ship
 this stock.
 **Settings sketch:**
@@ -91,11 +88,8 @@ this stock.
 
 ### 3. `section_comparison_table`
 **Purpose:** Side-by-side feature matrix with check/x indicators.
-**Seen in:** UVBrite Home ("Not Marketing Language" cert table, "The
-Standard Shift" 4-col compare), DuoCore Filter ("What the DuoCore
-Filter Removes"), DuoCore Tech ("Why Every Previous Solution Lost
-Half The Threat Protection"), Beam+ Care ("Beam+ Care vs Standard
-Ownership", "Warranty for Life Not 12 Months").
+**Pattern:** "Our product vs every other option", "membership vs
+standard ownership", "ingredient breakdown vs competitors".
 **Shopify analog:** Most premium themes ship a comparison table
 section; not in Dawn stock.
 **Settings sketch:**
@@ -109,8 +103,8 @@ section; not in Dawn stock.
 ### 4. `section_benefit_grid`
 **Purpose:** Benefit cards in 2x2 or 3x2 grid (richer than `value_props`,
 with image/illustration per card).
-**Seen in:** UVBrite Go ("Pocketable. Packable. Pour and Go." grid),
-Beam+ Care ("Six Benefits, One Price" hero grid).
+**Pattern:** "Six benefits, one price", "what's included in the box",
+"why our material matters".
 **Shopify analog:** Dawn `multicolumn` with larger images; Sense
 "feature grid".
 **Settings sketch:**
@@ -121,7 +115,8 @@ Beam+ Care ("Six Benefits, One Price" hero grid).
 
 ### 5. `section_press_logos`
 **Purpose:** "As reviewed in" / "As seen in" press logo strip.
-**Seen in:** UVBrite Go PDP ("As Reviewed").
+**Pattern:** Press logos below the hero on PDPs, "trusted by"
+publications on About / press pages.
 **Shopify analog:** Common across premium themes; Dawn ships nothing
 for this.
 **Settings sketch:**
@@ -133,7 +128,8 @@ for this.
 ### 6. `section_specs_table`
 **Purpose:** Product specification data table — dimensions, materials,
 ratings, technical specs.
-**Seen in:** UVBrite Go ("Full Specifications").
+**Pattern:** "Full specifications" block on a PDP, "what's in the
+box" on a SKU detail page.
 **Shopify analog:** Dawn ships nothing stock; "tabbed product info" or
 custom liquid is the workaround.
 **Settings sketch:**
@@ -145,7 +141,7 @@ custom liquid is the workaround.
 
 ### 7. `section_faq`
 **Purpose:** Accordion FAQ list.
-**Seen in:** Every UVBrite PDP and explainer page has one.
+**Pattern:** PDP FAQ, page-level FAQ on explainer pages.
 **Shopify analog:** Dawn `collapsible_content` since OS 2.0.
 **Settings sketch:**
 - `faq_heading`, `faq_subheading`
@@ -159,8 +155,8 @@ custom liquid is the workaround.
 **Purpose:** 2-column promo banner with image one side, content card
 the other side (vs the current single-column hero-style
 `section_promo_banner`).
-**Seen in:** UVBrite Home ("Beam+ Care Membership" dark-navy + product
-shot + benefits list + dual CTAs).
+**Pattern:** Membership promo with product shot left + benefits +
+dual CTA right; subscription pitch; bundle offer.
 **Shopify analog:** Dawn `image_with_text`-style but configured as a
 promo callout.
 **Settings sketch:**
@@ -174,9 +170,8 @@ promo callout.
 ### 9. `section_text_block`
 **Purpose:** Standalone rich text block. The "intro paragraph" or
 "closing thought" between sections.
-**Seen in:** UVBrite Home ("Pure Water For The Places You Don't
-Control" intro, "Engineered at the Intersection..." closing),
-About Us multiple text-only sections.
+**Pattern:** Brand statement on the homepage, transition text on About
+pages, mission copy between product showcases.
 **Shopify analog:** Dawn `rich_text`.
 **Settings sketch:**
 - `text_eyebrow`, `text_heading`, `text_body` (richtext)
@@ -186,11 +181,10 @@ About Us multiple text-only sections.
 
 ### 10. `section_image_text`
 **Purpose:** 50/50 image + text split. Foundational layout for any
-story / explainer page.
-**Seen in:** UVBrite About ("It Started With a $5 Bottle...", "The
-Category Had An Answer"), UVBrite Go ("UV-C: The Technology Behind
-The Bottle"), DuoCore Filter ("When to Replace. How To Do It.").
-**Shopify analog:** Dawn `image_with_text` — most-used section in
+story or explainer page.
+**Pattern:** Founder story chapters, ingredient deep-dives, "how it
+started" alternating image/text blocks, technology callouts.
+**Shopify analog:** Dawn `image_with_text` — the most-used section in
 Shopify themes by a wide margin.
 **Settings sketch:**
 - `image_text_image`, `image_text_image_position` (select: left, right)
@@ -201,9 +195,9 @@ Shopify themes by a wide margin.
 **Variants:** image-left/image-right; full-bleed image vs contained; light/dark.
 
 ### 11. `section_cta_band`
-**Purpose:** Full-bleed CTA band with single headline + button. The
-"Two Bottles. One Standard." closer.
-**Seen in:** UVBrite About closer, DuoCore Tech closer, Home closer.
+**Purpose:** Full-bleed CTA band with single headline + button.
+**Pattern:** Page-closing CTA, recurring brand statement between
+content blocks.
 **Shopify analog:** Standalone CTA section in most premium themes.
 **Settings sketch:**
 - `cta_band_heading`, `cta_band_subheading` (optional)
@@ -214,7 +208,8 @@ Shopify themes by a wide margin.
 
 ### 12. `section_testimonials`
 **Purpose:** Customer testimonial cards (single hero or grid).
-**Seen in:** Beam+ Care Membership ("What Members Are Saying" 2-card row).
+**Pattern:** "What customers are saying" row on membership/subscription
+pages, single-quote hero callout, multi-card grid.
 **Shopify analog:** Standard across premium themes; Dawn ships
 nothing stock.
 **Settings sketch:**
@@ -226,9 +221,9 @@ nothing stock.
 
 ## Tier 2 — completeness with Shopify-theme catalogs (8)
 
-Not in UVBrite but standard across Dawn/Sense/Origin. Build to avoid
-gaps when migrating merchants from Shopify or onboarding non-D2C
-brands.
+Not in the immediate D2C reference set but standard across Dawn /
+Sense / Origin. Build to avoid gaps when migrating merchants from
+Shopify or onboarding non-D2C brands.
 
 ### 13. `section_newsletter`
 Email signup section. Form posts to platform endpoint or app hook for
@@ -302,17 +297,16 @@ that already exist. Should be designed in the same Figma file as
 variants of the parent component.
 
 ### `product_card` additions
-- `bullet_list` variant — for "Choose Your System" Beam+ vs Go style
-  picker where each card has 3–5 feature bullets above the CTA.
-- `with_subscription_toggle` — Auto-Ship vs One-Time pricing toggle
-  (DuoCore Filter PDP). Depends on platform subscriptions support.
+- `bullet_list` variant — for product-picker style sections where each
+  card has 3–5 feature bullets above the CTA.
+- `with_subscription_toggle` — Auto-Ship vs One-Time pricing toggle.
+  Depends on platform subscriptions support.
 - `with_quick_view` — opens a quick-view modal instead of (or in
   addition to) deep linking.
 - `with_compare_checkbox` — adds to compare-products tray.
 
 ### `header` additions
-- `with_featured_cta` — primary action button slot to the right of nav
-  (UVBrite has a cyan "SHOP NOW" CTA here).
+- `with_featured_cta` — primary action button slot to the right of nav.
 - `with_mega_menu` — multi-column dropdown for catalogues with many
   categories. Significant platform work; depends on menu data shape.
 - `dismissible_announcement_strip` — allow shoppers to close the
@@ -340,30 +334,28 @@ in the Commerce Partials page.
 
 ## Out of scope for this pass
 
-- **Custom product templates** (`product.<slug>.html`) — these are
-  per-product bespoke layouts (UVBrite would need at least
-  `product.beam-plus.html`, `product.uvbrite-go.html`,
-  `product.duocore-filter.html`). Spark partial roster doesn't change
-  to support them; they compose existing partials with bespoke layout.
+- **Custom product templates** (`product.<slug>.html`) — per-product
+  bespoke layouts. The partial roster doesn't change to support them;
+  they compose existing partials with bespoke layout.
 - **Static page templates** (`templates/pages/<slug>.html`) — About,
   Press, Sustainability, etc. Built as DTL templates that compose
   these section partials; not new partials themselves.
 - **Cart drawer enhancements** — already covered by Spark's existing
-  side-cart partials. UVBrite ships with standard Spark cart.
+  side-cart partials.
 - **Account templates** — login, register, dashboard. Owned by platform
   more than theme.
 
 ## Recommended sequencing
 
-If Mario's team has budget for 8 weeks of design work, here's the
-order that closes the most merchant friction fastest:
+If the design team has eight sprints of capacity, the order that
+closes the most merchant friction fastest is:
 
 | Sprint | Sections | Why |
 |---|---|---|
-| 1 | `image_text`, `value_props`, `text_block` | Foundational layout primitives. Image+text alone covers 30% of pages. |
+| 1 | `image_text`, `value_props`, `text_block` | Foundational layout primitives. Image+text alone covers ~30% of D2C pages. |
 | 2 | `comparison_table`, `faq`, `cta_band` | Trust-building primitives. Every premium D2C brand needs all three. |
-| 3 | `process_steps`, `benefit_grid`, `promo_banner_2col` | Story / explainer primitives. UVBrite-grade coverage. |
-| 4 | `press_logos`, `testimonials`, `specs_table` | Social proof + product detail. Closes the rest of UVBrite. |
+| 3 | `process_steps`, `benefit_grid`, `promo_banner_2col` | Story / explainer primitives. |
+| 4 | `press_logos`, `testimonials`, `specs_table` | Social proof + product detail. |
 | 5 | Tier 2 (newsletter, video, image_banner, slideshow, collection_list, blog_posts, trust_strip, logo_cloud) | Shopify-parity for non-D2C and converting merchants. |
 | 6 | Partial variants — product_card bullet_list, header featured_cta, footer inline_newsletter | Lifts the existing partials to D2C-grade. |
 | 7 | Tier 3 on demand | Lookbook, countdown, instagram_feed if merchants ask. |
@@ -373,23 +365,15 @@ order that closes the most merchant friction fastest:
 partials, the total Figma component library lands at roughly 28
 section components plus the 6 already-shipped — call it 34.
 
-## UVBrite as the pilot brand variant
+## Coverage validation
 
-Once the Figma library has Tier 1, UVBrite becomes the first brand
-variant that exercises every new partial:
-
-| UVBrite page | Sections used |
-|---|---|
-| Home | hero, value_props, text_block, comparison_table, process_steps, featured_products (with bullet_list cards), text_block, comparison_table, promo_banner_2col, featured_products (4-col), footer |
-| About | image_banner (or hero variant), image_text (×2), value_props, cta_band |
-| Beam+ PDP | (custom product template) using image_text, benefit_grid, press_logos, specs_table, faq |
-| UVBrite Go PDP | same as Beam+ |
-| DuoCore Filter PDP | image_text, comparison_table (large), image_text, comparison_table (smaller), cta_band, faq |
-| DuoCore Tech page | hero, comparison_table, process_steps, benefit_grid, cta_band, value_props, featured_products (2-col exclusive), faq |
-| Care Membership page | hero, image_text, comparison_table (×3), process_steps, testimonials, faq |
-
-Every UVBrite page composes from Tier 0 + Tier 1 sections only. No
-bespoke partial work.
+Spark designs are validated by composing each target page from
+sections in this roster. A representative premium D2C reference set
+covering home, about, multiple PDP layouts, technology / explainer
+pages, and membership pages composes from Tier 0 + Tier 1 only — no
+bespoke partial work needed once Tier 1 ships. Concrete page
+compositions are tracked separately as private merchant briefs and
+are not part of this public roster.
 
 ## Open decisions from `figma-section-library-plan.md`, resolved
 
@@ -397,8 +381,8 @@ The original plan listed "Whether the next new section should be a
 feature carousel or a more fundamental media-with-text unit" as an
 open decision. **Resolved:** `image_text` (media-with-text) is the
 right next section. It's the foundational layout primitive, shows up
-in every UVBrite page, and is the most-used section in Shopify themes
-by a wide margin. Carousel (`slideshow`) is Tier 2.
+in every common D2C page composition, and is the most-used section
+in Shopify themes by a wide margin. Carousel (`slideshow`) is Tier 2.
 
 Other open decisions remain — mobile reference width (390 vs 375),
 export tool location, generated-DTL prototype-only policy, app-hook
@@ -414,11 +398,11 @@ extension points — and are not blocked by this roster.
 
 ## Reference — Shopify theme section catalogs
 
-For Mario's team, these are good comparables to skim when designing
-each section's variants and states:
+Good comparables to skim when designing each section's variants and
+states:
 
 - **Dawn** (Shopify's OS 2.0 reference): https://shopify.github.io/dawn/ — comprehensive Tier 1 / Tier 2 coverage, free, MIT
-- **Sense** (free, wellness focus): https://themes.shopify.com/themes/sense — strong tabbed-content, testimonials, value-props
+- **Sense** (free, wellness focus): strong tabbed-content, testimonials, value-props
 - **Origin** (free, single-product brand focus): process_steps, founder_story, sustainability_badges
 - **Crave** (free, food/beverage): strong promo_banner_2col variants
 - **Impulse** (paid): mega_menu, quick_view, sticky_atc, countdown — Tier 3 references

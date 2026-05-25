@@ -15,4 +15,4 @@ Each spec should describe one merchant-configurable section across Figma, Theme 
 | [On Sale](on-sale.md) | First pass | `partials/section_on_sale.html` |
 | [Promo banner](promo-banner.md) | First pass | `partials/section_promo_banner.html` |
 
-Use `docs/figma-section-library-plan.md` for the overall workflow and library structure.
+Use `docs/figma-section-library-plan.md` for the overall workflow and library structure, and [`docs/section-roster.md`](../section-roster.md) for the full Tier 1/2/3 partial roster Spark should ship to fully cover modern D2C storefronts.

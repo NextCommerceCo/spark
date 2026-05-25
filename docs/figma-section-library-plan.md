@@ -104,7 +104,7 @@ Use snake_case for exported properties. If Figma display labels need to be short
 | On Sale | `partials/section_on_sale.html` | `products`, product card sale state | First-pass spec in `docs/section-specs/on-sale.md`. Needs sale badge and compare-at price states from `partials/product_card.html`; otherwise this should share grid anatomy with Featured products. |
 | Promo banner | `partials/section_promo_banner.html` | text, CTA settings, colors | First-pass spec in `docs/section-specs/promo-banner.md`. Needs contrast states, short and long copy states, no-CTA state, and primary/accent/outline button states. |
 
-These are enough for the first Figma library pass. New section ideas, such as a feature carousel, media-with-text, reviews feed, UGC strip, FAQ, or richer collection highlight, should use the same section authoring unit before implementation begins.
+These are enough for the first Figma library pass. The full roster of section partials Spark needs to ship to fully cover D2C storefronts — including image-with-text, FAQ, comparison table, process steps, press logos, testimonials, value props, and the rest of the Tier 1/2/3 catalog — lives in [`section-roster.md`](./section-roster.md). New section ideas should follow the section authoring unit pattern below.
 
 ## Section Spec Template
 
@@ -182,4 +182,4 @@ When the platform supports true theme sections, each Spark section authoring uni
 - Whether the first Spark Figma export tool should live in `figma-sections-export`, a new storefront-specific repo, or Spark itself.
 - Whether generated DTL should remain prototype-only at first, with production partials curated manually.
 - Which Spark app-hook locations should become public extension points for section-level app integrations.
-- Whether the next new section should be a feature carousel or a more fundamental media-with-text unit.
+- ~~Whether the next new section should be a feature carousel or a more fundamental media-with-text unit.~~ **Resolved:** image-with-text (`section_image_text`) is the right next section. See [`section-roster.md`](./section-roster.md#open-decisions-from-figma-section-library-planmd-resolved).

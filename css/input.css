@@ -1177,3 +1177,27 @@
         vertical-align: middle;
     }
 }
+
+/* Custom Dropdown Menu - Mais confiável */
+.nav-item {
+    position: relative;
+}
+
+.nav-item.has-children {
+    padding-bottom: 10px;
+    transform: translateY(5px);
+}
+
+.nav-item:hover > .nav-submenu {
+    opacity: 1;
+    transform: scale(1) translateY(-10px);
+    pointer-events: auto;
+}
+
+.nav-submenu {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    pointer-events: none;
+    transition: all 200ms ease-out;
+    z-index: 80;
+}

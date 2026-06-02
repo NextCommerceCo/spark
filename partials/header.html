@@ -24,18 +24,18 @@
             <ul class="hidden md:flex items-center gap-8 {% if settings.logo_align == 'left' %}ml-10{% endif %} {% if settings.logo_align == 'right' %}md:order-1{% endif %}">
                 {% for item in settings.main_menu.items %}
                     {% if item.level > 0 %}
-                        <li class="relative group">
+                        <li class="nav-item has-children">
                             <a href="{{ item.url }}"
-                               class="text-sm font-medium py-2 inline-flex items-center gap-1"
+                               class="text-sm font-medium py-2 inline-flex items-center gap-1 hover:bg-slate-100 rounded-md transition-colors"
                                style="color: var(--spark-nav-color);">
                                 {{ item.name }}
                                 {% include 'partials/icons/chevron-down.html' %}
                             </a>
-                            <ul class="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                            <ul class="nav-submenu absolute left-0 top-full mt-2 w-56 bg-white border border-slate-200 shadow-2xl rounded-2xl py-2">
                                 {% for child in item.items %}
                                     <li>
                                         <a href="{{ child.url }}"
-                                           class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 {% if child.current %}text-slate-900 font-medium{% endif %}">
+                                           class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                                             {{ child.name }}
                                         </a>
                                     </li>
@@ -43,9 +43,9 @@
                             </ul>
                         </li>
                     {% else %}
-                        <li>
+                        <li class="nav-item">
                             <a href="{{ item.url }}"
-                               class="text-sm font-medium"
+                               class="text-sm font-medium py-3 px-4 block hover:bg-slate-100 rounded-md transition-colors"
                                style="color: var(--spark-nav-color);">
                                 {{ item.name }}
                             </a>

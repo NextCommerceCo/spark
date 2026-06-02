@@ -69,6 +69,7 @@ spark/
 │           ├── spark-cart-drawer.js   Custom GraphQL-first side cart
 │           ├── spark-progress-bar.js  Free-shipping / free-gift progress
 │           ├── spark-quantity.js      Quantity stepper (Shadow DOM)
+│           ├── spark-subscription.js  Subscription selector (One-time / Subscribe)
 │           └── spark-upsell-item.js   Side-cart upsell slot
 ├── css/             Tailwind v4 input (source of truth for styles)
 ├── configs/         Theme settings schema + data
@@ -84,7 +85,7 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Dogfoodi
 ## Features
 
 - **Zero legacy dependencies** — no jQuery, no Bootstrap. Pure vanilla JS + Web Components.
-- **Web Components (5)** — `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`. Shadow DOM where appropriate, progressive enhancement, no-JS fallbacks.
+- **Web Components (6)** — `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-subscription>`, `<spark-upsell-item>`. Shadow DOM where appropriate, progressive enhancement, no-JS fallbacks.
 - **Custom GraphQL-first side cart** — `<spark-cart-drawer>` replaces the platform's side cart black box. Event-driven `SparkSideCart` API, no platform CSS bleed.
 - **Lazy cart stack** — the drawer, rewards, progress, and upsell modules load only when the shopper asks for the cart or add-to-cart opens it.
 - **GraphQL cart client** — `SparkCartClient` handles cart operations with auto-create, CSRF, timeouts, and retries.

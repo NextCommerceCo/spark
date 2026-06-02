@@ -56,6 +56,7 @@ The product template loads PDP-specific modules through `component_scripts`:
 - `spark-gallery.js`
 - `spark-cart.js`
 - `spark-quantity.js`
+- `spark-subscription.js`
 - `spark-add-to-cart.js`
 
 The cart client is loaded for saved-cart badge hydration. The full side-cart drawer stack is registered only when a shopper toggles the cart, adds to cart, or arrives with an `openSideCart` cookie.

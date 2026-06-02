@@ -39,7 +39,10 @@
         var retailValue = retailInfo ? Number(retailInfo.value || 0) : 0;
         var hasComparePrice = retailValue > 0 && retailValue > unitPrice;
         var isFreeGift = line.isUpsell;
-        var subInfo = product.subscriptionInfo;
+        var subInfo = {
+            interval: line.interval,
+            intervalCount: line.intervalCount
+        };
         var maxQty = SparkCartClient.MAX_QTY_PER_LINE || 15;
 
         var safeTitle = escapeHtml(title);

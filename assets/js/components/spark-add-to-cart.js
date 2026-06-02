@@ -155,6 +155,24 @@
             return 1;
         }
 
+        _getSubscription() {
+            const subscriptionEl = this.querySelector('spark-subscription');
+        
+            if (!subscriptionEl) {
+                return null;
+            }
+        
+            if (subscriptionEl.value !== 'subscribe') {
+                return null;
+            }
+        
+            return {
+                subscriptionOption: 'subscribe',
+                interval: subscriptionEl.interval,
+                intervalCount: subscriptionEl.intervalCount
+            };
+        }
+
         _handleSubmit() {
             var productId = this._getProductId();
             if (!productId) {
@@ -163,12 +181,14 @@
             }
 
             var quantity = this._getQuantity();
+            var subscriptionData = this._getSubscription();
             var self = this;
 
             this._setState('loading');
             this._clearError();
 
-            this._client.addToCart(productId, quantity).then(function(result) {
+            this._client.addToCart(productId, quantity, false, subscriptionData)
+            .then(function(result) {
                 if (result && result.success && result.cart) {
                     self._setState('success');
                     if (window.SparkEvents) {

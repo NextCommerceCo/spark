@@ -98,7 +98,7 @@
         'id pk currency totalExclTax totalExclTaxExclDiscounts totalDiscount numItems numLines',
         'voucherDiscounts { name amount voucher { name code } }',
         'lines {',
-        '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell',
+        '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell interval intervalCount',
         '  attributes { value option }',
         '  product {',
         '    pk title url metadata',
@@ -257,13 +257,22 @@
      * @param {boolean} [isUpsell=false] - Mark as upsell line
      * @returns {Promise<{success, cart}>}
      */
-    SparkCartClient.prototype.addToCart = function(productPk, quantity, isUpsell) {
+    SparkCartClient.prototype.addToCart = function(productPk, quantity, isUpsell, subscriptionData) {
         var self = this;
         quantity = quantity || 1;
 
         function doAdd(cartId) {
-            var lineInput = { productPk: productPk, quantity: quantity };
+            var lineInput = { productPk, quantity };
+    
             if (isUpsell) lineInput.isUpsell = true;
+    
+            if (subscriptionData && subscriptionData.subscriptionOption === 'subscribe') {
+                lineInput.subscription = {
+                    interval: subscriptionData.interval || 'day',
+                    intervalCount: parseInt(subscriptionData.intervalCount) || 30
+                };
+            }
+    
             var input = {
                 cartId: cartId,
                 lines: [lineInput]

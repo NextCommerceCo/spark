@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spark Theme Thumbnail</title>
+<style>
+    :root {
+        --ink: #172033;
+        --muted: #667085;
+        --line: #d9e1ea;
+        --page: #f3f6f9;
+        --panel: #ffffff;
+        --charcoal: #111827;
+        --teal: #0f766e;
+        --amber: #f59e0b;
+        --coral: #f97362;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 600px;
+        height: 450px;
+        margin: 0;
+        overflow: hidden;
+        background: var(--page);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+        position: relative;
+    }
+
+    .brand {
+        position: absolute;
+        top: 30px;
+        left: 138px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .mark {
+        width: 80px;
+        height: 80px;
+        display: grid;
+        place-items: center;
+        background: var(--charcoal);
+    }
+
+    .spark {
+        position: relative;
+        width: 36px;
+        height: 46px;
+        background: var(--amber);
+        clip-path: polygon(58% 0, 14% 53%, 48% 53%, 35% 100%, 86% 39%, 52% 39%);
+    }
+
+    .wordmark {
+        margin-top: -2px;
+        color: var(--ink);
+        font-size: 70px;
+        font-weight: 780;
+        line-height: 1;
+        letter-spacing: 0;
+    }
+
+    .device {
+        position: absolute;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        box-shadow: 0 20px 45px rgba(23, 32, 51, 0.14);
+        overflow: hidden;
+    }
+
+    .device.large {
+        left: 69px;
+        top: 145px;
+        width: 300px;
+        height: 285px;
+    }
+
+    .device.small {
+        left: 380px;
+        top: 145px;
+        width: 136px;
+        height: 255px;
+        box-shadow: 0 18px 34px rgba(23, 32, 51, 0.12);
+    }
+
+    .topline {
+        height: 8px;
+        background: var(--teal);
+    }
+
+    .nav {
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        border-bottom: 1px solid #edf1f5;
+        color: var(--muted);
+        font-size: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .nav .logo {
+        color: var(--charcoal);
+        font-size: 6px;
+        letter-spacing: 0;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 10px;
+    }
+
+    .icons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .dot {
+        width: 4px;
+        height: 4px;
+        border: 1px solid #9aa6b2;
+        border-radius: 50%;
+    }
+
+    .hero {
+        position: relative;
+        height: 95px;
+        padding: 19px 20px;
+        background: var(--charcoal);
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    .hero:after {
+        content: "";
+        position: absolute;
+        right: 24px;
+        top: 18px;
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        border: 14px solid #354154;
+        box-shadow: inset 0 0 0 10px #111827;
+    }
+
+    .eyebrow {
+        width: 32px;
+        height: 4px;
+        margin-bottom: 8px;
+        background: var(--amber);
+    }
+
+    .hero h1 {
+        width: 116px;
+        margin: 0 0 8px;
+        font-size: 13px;
+        line-height: 1.12;
+        letter-spacing: 0;
+    }
+
+    .hero p {
+        width: 118px;
+        margin: 0 0 11px;
+        color: #cbd5e1;
+        font-size: 5px;
+        line-height: 1.5;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 5px;
+    }
+
+    .button {
+        height: 13px;
+        padding: 0 10px;
+        display: grid;
+        place-items: center;
+        background: #ffffff;
+        color: var(--charcoal);
+        font-size: 4px;
+        font-weight: 800;
+    }
+
+    .button.alt {
+        background: var(--coral);
+        color: #ffffff;
+    }
+
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 13px 20px 4px;
+    }
+
+    .category {
+        height: 28px;
+        border: 1px solid #edf1f5;
+        background: #fbfcfd;
+        padding: 8px;
+    }
+
+    .category strong,
+    .product strong {
+        display: block;
+        height: 4px;
+        margin-bottom: 5px;
+        background: #1f2937;
+    }
+
+    .category span,
+    .product span {
+        display: block;
+        height: 3px;
+        width: 45%;
+        background: var(--coral);
+    }
+
+    .feature {
+        height: 86px;
+        margin-top: 10px;
+        padding: 17px 20px;
+        display: grid;
+        grid-template-columns: 1fr 92px;
+        gap: 14px;
+        background: #f7f9fb;
+    }
+
+    .feature h2 {
+        width: 82px;
+        height: 8px;
+        margin: 12px 0 9px;
+        background: var(--charcoal);
+    }
+
+    .feature p {
+        width: 105px;
+        height: 4px;
+        margin: 0 0 11px;
+        background: #9aa6b2;
+        box-shadow: 0 7px 0 #c8d0d9;
+    }
+
+    .bag {
+        width: 72px;
+        height: 68px;
+        margin-left: auto;
+        position: relative;
+        background: #ffffff;
+        border: 1px solid #e1e7ee;
+        box-shadow: 0 14px 30px rgba(23, 32, 51, 0.12);
+    }
+
+    .bag:before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: -16px;
+        width: 28px;
+        height: 24px;
+        border: 4px solid #d1d8e0;
+        border-bottom: 0;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .section-title {
+        height: 5px;
+        width: 58px;
+        margin: 14px auto 10px;
+        background: var(--charcoal);
+    }
+
+    .products {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        padding: 0 20px;
+    }
+
+    .product {
+        min-height: 44px;
+    }
+
+    .photo {
+        height: 32px;
+        margin-bottom: 7px;
+        background: #e9eef3;
+        position: relative;
+    }
+
+    .photo:after {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 8px;
+        width: 24px;
+        height: 16px;
+        background: #ffffff;
+        border: 1px solid #d8e0e8;
+    }
+
+    .small .topline {
+        height: 7px;
+        background: var(--coral);
+    }
+
+    .small .nav {
+        height: 16px;
+        padding: 0 8px;
+    }
+
+    .small .nav-links {
+        display: none;
+    }
+
+    .small .hero {
+        height: 65px;
+        padding: 12px 13px;
+    }
+
+    .small .hero:after {
+        right: 9px;
+        top: 14px;
+        width: 38px;
+        height: 38px;
+        border-width: 8px;
+    }
+
+    .small .hero h1 {
+        width: 60px;
+        font-size: 7px;
+        margin-bottom: 5px;
+    }
+
+    .small .hero p,
+    .small .eyebrow,
+    .small .button.alt {
+        display: none;
+    }
+
+    .small .button {
+        height: 10px;
+        width: 42px;
+        padding: 0;
+    }
+
+    .small .categories {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        padding: 9px 11px 0;
+    }
+
+    .small .category {
+        height: 22px;
+        padding: 6px;
+    }
+
+    .small .feature {
+        height: 57px;
+        margin-top: 8px;
+        padding: 10px 11px;
+        grid-template-columns: 1fr 42px;
+        gap: 8px;
+    }
+
+    .small .feature h2 {
+        width: 42px;
+        height: 5px;
+        margin: 7px 0 7px;
+    }
+
+    .small .feature p {
+        width: 48px;
+        height: 3px;
+        box-shadow: 0 5px 0 #c8d0d9;
+    }
+
+    .small .bag {
+        width: 38px;
+        height: 38px;
+    }
+
+    .small .bag:before {
+        left: 11px;
+        top: -9px;
+        width: 16px;
+        height: 13px;
+        border-width: 2px;
+    }
+
+    .small .section-title {
+        width: 38px;
+        margin: 10px auto 8px;
+    }
+
+    .small .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+        padding: 0 11px;
+    }
+
+    .small .photo {
+        height: 26px;
+    }
+
+    .bottom-rule {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 6px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .bottom-rule span:nth-child(1) {
+        background: var(--teal);
+    }
+
+    .bottom-rule span:nth-child(2) {
+        background: var(--amber);
+    }
+
+    .bottom-rule span:nth-child(3) {
+        background: var(--coral);
+    }
+</style>
+</head>
+<body>
+    <div class="brand">
+        <div class="mark" aria-hidden="true">
+            <div class="spark"></div>
+        </div>
+        <div class="wordmark">Spark</div>
+    </div>
+
+    <section class="device large" aria-label="Spark desktop storefront preview">
+        <div class="topline"></div>
+        <div class="nav">
+            <div class="logo">Spark</div>
+            <div class="nav-links">
+                <span>Shop</span>
+                <span>New</span>
+                <span>Journal</span>
+                <span>Support</span>
+            </div>
+            <div class="icons"><span class="dot"></span><span class="dot"></span></div>
+        </div>
+        <div class="hero">
+            <div class="eyebrow"></div>
+            <h1>Modern commerce starter</h1>
+            <p>Fast storefront sections, clean product grids, and a GraphQL-first cart.</p>
+            <div class="button-row">
+                <div class="button">Shop now</div>
+                <div class="button alt">View cart</div>
+            </div>
+        </div>
+        <div class="categories">
+            <div class="category"><strong></strong><span></span></div>
+            <div class="category"><strong></strong><span></span></div>
+            <div class="category"><strong></strong><span></span></div>
+        </div>
+        <div class="feature">
+            <div>
+                <h2></h2>
+                <p></p>
+                <div class="button alt">Add to cart</div>
+            </div>
+            <div class="bag"></div>
+        </div>
+        <div class="section-title"></div>
+        <div class="products">
+            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+        </div>
+    </section>
+
+    <section class="device small" aria-label="Spark mobile storefront preview">
+        <div class="topline"></div>
+        <div class="nav">
+            <div class="logo">Spark</div>
+            <div class="nav-links"><span>Shop</span></div>
+            <div class="icons"><span class="dot"></span></div>
+        </div>
+        <div class="hero">
+            <div class="eyebrow"></div>
+            <h1>Starter sections for D2C</h1>
+            <div class="button-row">
+                <div class="button">Shop</div>
+                <div class="button alt">Cart</div>
+            </div>
+        </div>
+        <div class="categories">
+            <div class="category"><strong></strong><span></span></div>
+            <div class="category"><strong></strong><span></span></div>
+            <div class="category"><strong></strong><span></span></div>
+            <div class="category"><strong></strong><span></span></div>
+        </div>
+        <div class="feature">
+            <div>
+                <h2></h2>
+                <p></p>
+            </div>
+            <div class="bag"></div>
+        </div>
+        <div class="section-title"></div>
+        <div class="products">
+            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+        </div>
+    </section>
+
+    <div class="bottom-rule" aria-hidden="true"><span></span><span></span><span></span></div>
+</body>
+</html>

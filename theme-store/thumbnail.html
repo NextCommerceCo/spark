@@ -5,18 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spark Theme Thumbnail</title>
 <style>
-    :root {
-        --ink: #172033;
-        --muted: #667085;
-        --line: #d9e1ea;
-        --page: #f3f6f9;
-        --panel: #ffffff;
-        --charcoal: #111827;
-        --teal: #0f766e;
-        --amber: #f59e0b;
-        --coral: #f97362;
-    }
-
     * {
         box-sizing: border-box;
     }
@@ -27,503 +15,363 @@
         height: 450px;
         margin: 0;
         overflow: hidden;
-        background: var(--page);
-        color: var(--ink);
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
-        position: relative;
+        background: #f4f7fa;
+        color: #142033;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .brand {
-        position: absolute;
-        top: 30px;
-        left: 138px;
+    .frame {
+        position: relative;
+        width: 600px;
+        height: 450px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 0, #fff 0, #f7f9fb 54%, #eef3f7 100%);
+    }
+
+    .logo {
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 10px;
+        width: max-content;
+        color: #142033;
     }
 
-    .mark {
-        width: 80px;
-        height: 80px;
-        display: grid;
-        place-items: center;
-        background: var(--charcoal);
-    }
-
-    .spark {
-        position: relative;
-        width: 36px;
-        height: 46px;
-        background: var(--amber);
-        clip-path: polygon(58% 0, 14% 53%, 48% 53%, 35% 100%, 86% 39%, 52% 39%);
+    .bolt-mark {
+        width: 47px;
+        height: 63px;
+        flex: 0 0 auto;
+        display: block;
     }
 
     .wordmark {
-        margin-top: -2px;
-        color: var(--ink);
-        font-size: 70px;
-        font-weight: 780;
-        line-height: 1;
-        letter-spacing: 0;
+        position: relative;
+        color: currentColor;
+        font-size: 58px;
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: -2.4px;
     }
 
-    .device {
+    .wordmark::after {
+        content: "";
         position: absolute;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        box-shadow: 0 20px 45px rgba(23, 32, 51, 0.14);
-        overflow: hidden;
+        left: 18px;
+        right: 12px;
+        bottom: -9px;
+        height: 2px;
+        background: currentColor;
+        border-radius: 999px;
+        opacity: 0.18;
     }
 
-    .device.large {
-        left: 69px;
-        top: 145px;
-        width: 300px;
-        height: 285px;
+    .surface {
+        background: rgb(255 255 255 / 94%);
+        border: 1px solid #dce4ed;
+        box-shadow: 0 22px 60px rgb(25 38 55 / 13%);
     }
 
-    .device.small {
-        left: 380px;
-        top: 145px;
-        width: 136px;
-        height: 255px;
-        box-shadow: 0 18px 34px rgba(23, 32, 51, 0.12);
-    }
-
-    .topline {
-        height: 8px;
-        background: var(--teal);
-    }
-
-    .nav {
-        height: 20px;
+    .top {
+        position: absolute;
+        left: 42px;
+        right: 42px;
+        top: 34px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 14px;
-        border-bottom: 1px solid #edf1f5;
-        color: var(--muted);
-        font-size: 4px;
-        font-weight: 700;
+    }
+
+    .tiny-label {
+        color: #667085;
+        font-size: 8px;
+        font-weight: 760;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
     }
 
-    .nav .logo {
-        color: var(--charcoal);
-        font-size: 6px;
-        letter-spacing: 0;
-    }
-
-    .nav-links {
+    .mock-nav {
+        height: 24px;
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px;
+        border-bottom: 1px solid #e3eaf1;
     }
 
-    .icons {
-        display: flex;
-        gap: 5px;
-    }
-
-    .dot {
-        width: 4px;
-        height: 4px;
-        border: 1px solid #9aa6b2;
+    .mock-nav i {
+        display: block;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
+        background: #cbd3de;
+    }
+
+    .mock-nav strong {
+        width: 34px;
+        height: 4px;
+        margin-left: auto;
+        border-radius: 2px;
+        background: #cbd3de;
     }
 
     .hero {
-        position: relative;
-        height: 95px;
-        padding: 19px 20px;
-        background: var(--charcoal);
-        color: #ffffff;
+        position: absolute;
+        left: 42px;
+        top: 126px;
+        width: 318px;
+        height: 156px;
         overflow: hidden;
     }
 
-    .hero:after {
+    .hero-main {
+        position: relative;
+        height: 132px;
+        background: #121c2f;
+    }
+
+    .hero-main::before {
         content: "";
         position: absolute;
-        right: 24px;
-        top: 18px;
-        width: 76px;
-        height: 76px;
+        left: 28px;
+        top: 30px;
+        width: 112px;
+        height: 10px;
+        border-radius: 5px;
+        background: #fff;
+        box-shadow:
+            0 21px 0 rgb(255 255 255 / 50%),
+            0 47px 0 #0f766e;
+    }
+
+    .hero-main::after {
+        content: "";
+        position: absolute;
+        right: 34px;
+        top: 30px;
+        width: 66px;
+        height: 66px;
+        border: 13px solid #40516a;
         border-radius: 50%;
-        border: 14px solid #354154;
-        box-shadow: inset 0 0 0 10px #111827;
+        box-shadow: inset 0 0 0 14px #121c2f;
     }
 
-    .eyebrow {
-        width: 32px;
-        height: 4px;
-        margin-bottom: 8px;
-        background: var(--amber);
+    .cart {
+        position: absolute;
+        right: 42px;
+        top: 151px;
+        width: 164px;
+        height: 204px;
+        padding: 18px;
     }
 
-    .hero h1 {
-        width: 116px;
-        margin: 0 0 8px;
-        font-size: 13px;
-        line-height: 1.12;
-        letter-spacing: 0;
+    .cart h2 {
+        width: 76px;
+        height: 7px;
+        margin: 0 0 14px;
+        background: #142033;
+        border-radius: 2px;
     }
 
-    .hero p {
-        width: 118px;
-        margin: 0 0 11px;
-        color: #cbd5e1;
-        font-size: 5px;
-        line-height: 1.5;
+    .cart-row {
+        position: relative;
+        height: 44px;
+        border-top: 1px solid #e3eaf1;
     }
 
-    .button-row {
-        display: flex;
-        gap: 5px;
+    .cart-row::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        width: 29px;
+        height: 22px;
+        border-radius: 2px;
+        background: #f0f4f8;
     }
 
-    .button {
-        height: 13px;
-        padding: 0 10px;
+    .cart-row::after {
+        content: "";
+        position: absolute;
+        left: 40px;
+        top: 14px;
+        width: 70px;
+        height: 5px;
+        border-radius: 2px;
+        background: #142033;
+        box-shadow: 0 11px 0 #c9d2de;
+    }
+
+    .meter {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 21px;
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #dde5ee;
+    }
+
+    .meter::before {
+        content: "";
+        display: block;
+        width: 68%;
+        height: 100%;
+        background: #0f766e;
+    }
+
+    .cards {
+        position: absolute;
+        left: 62px;
+        top: 304px;
+        display: grid;
+        grid-template-columns: repeat(3, 92px);
+        gap: 13px;
+    }
+
+    .product-card {
+        height: 102px;
+        background: #fff;
+        border: 1px solid #e1e8ef;
+    }
+
+    .product-art {
+        height: 74px;
         display: grid;
         place-items: center;
-        background: #ffffff;
-        color: var(--charcoal);
-        font-size: 4px;
-        font-weight: 800;
+        background: #f2f5f8;
     }
 
-    .button.alt {
-        background: var(--coral);
-        color: #ffffff;
-    }
-
-    .categories {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        padding: 13px 20px 4px;
-    }
-
-    .category {
-        height: 28px;
-        border: 1px solid #edf1f5;
-        background: #fbfcfd;
-        padding: 8px;
-    }
-
-    .category strong,
-    .product strong {
+    .product-card b {
         display: block;
-        height: 4px;
-        margin-bottom: 5px;
-        background: #1f2937;
+        width: 52px;
+        height: 5px;
+        margin: 9px 10px 0;
+        background: #142033;
+        border-radius: 2px;
     }
 
-    .category span,
-    .product span {
+    .product-card span {
         display: block;
-        height: 3px;
-        width: 45%;
-        background: var(--coral);
-    }
-
-    .feature {
-        height: 86px;
-        margin-top: 10px;
-        padding: 17px 20px;
-        display: grid;
-        grid-template-columns: 1fr 92px;
-        gap: 14px;
-        background: #f7f9fb;
-    }
-
-    .feature h2 {
-        width: 82px;
-        height: 8px;
-        margin: 12px 0 9px;
-        background: var(--charcoal);
-    }
-
-    .feature p {
-        width: 105px;
+        width: 34px;
         height: 4px;
-        margin: 0 0 11px;
-        background: #9aa6b2;
-        box-shadow: 0 7px 0 #c8d0d9;
+        margin: 7px 10px 11px;
+        background: #f97362;
+        border-radius: 2px;
     }
 
-    .bag {
-        width: 72px;
-        height: 68px;
-        margin-left: auto;
-        position: relative;
-        background: #ffffff;
-        border: 1px solid #e1e7ee;
-        box-shadow: 0 14px 30px rgba(23, 32, 51, 0.12);
-    }
-
-    .bag:before {
-        content: "";
+    .settings {
         position: absolute;
-        left: 22px;
-        top: -16px;
-        width: 28px;
-        height: 24px;
-        border: 4px solid #d1d8e0;
-        border-bottom: 0;
-        border-radius: 20px 20px 0 0;
+        left: 256px;
+        top: 291px;
+        width: 150px;
+        height: 82px;
+        padding: 15px;
     }
 
-    .section-title {
-        height: 5px;
-        width: 58px;
-        margin: 14px auto 10px;
-        background: var(--charcoal);
-    }
-
-    .products {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 9px;
-        padding: 0 20px;
-    }
-
-    .product {
-        min-height: 44px;
-    }
-
-    .photo {
-        height: 32px;
-        margin-bottom: 7px;
-        background: #e9eef3;
-        position: relative;
-    }
-
-    .photo:after {
-        content: "";
-        position: absolute;
-        left: 20px;
-        top: 8px;
-        width: 24px;
-        height: 16px;
-        background: #ffffff;
-        border: 1px solid #d8e0e8;
-    }
-
-    .small .topline {
-        height: 7px;
-        background: var(--coral);
-    }
-
-    .small .nav {
-        height: 16px;
-        padding: 0 8px;
-    }
-
-    .small .nav-links {
-        display: none;
-    }
-
-    .small .hero {
-        height: 65px;
-        padding: 12px 13px;
-    }
-
-    .small .hero:after {
-        right: 9px;
-        top: 14px;
-        width: 38px;
-        height: 38px;
-        border-width: 8px;
-    }
-
-    .small .hero h1 {
-        width: 60px;
-        font-size: 7px;
-        margin-bottom: 5px;
-    }
-
-    .small .hero p,
-    .small .eyebrow,
-    .small .button.alt {
-        display: none;
-    }
-
-    .small .button {
-        height: 10px;
-        width: 42px;
-        padding: 0;
-    }
-
-    .small .categories {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 5px;
-        padding: 9px 11px 0;
-    }
-
-    .small .category {
-        height: 22px;
-        padding: 6px;
-    }
-
-    .small .feature {
-        height: 57px;
-        margin-top: 8px;
-        padding: 10px 11px;
-        grid-template-columns: 1fr 42px;
+    .swatches {
+        display: flex;
         gap: 8px;
+        margin-bottom: 13px;
     }
 
-    .small .feature h2 {
-        width: 42px;
+    .swatches i {
+        display: block;
+        width: 23px;
+        height: 23px;
+        border-radius: 5px;
+    }
+
+    .swatches i:nth-child(1) {
+        background: #142033;
+    }
+
+    .swatches i:nth-child(2) {
+        background: #0f766e;
+    }
+
+    .swatches i:nth-child(3) {
+        background: #f5b21b;
+    }
+
+    .swatches i:nth-child(4) {
+        background: #f97362;
+    }
+
+    .settings-line {
+        width: 108px;
         height: 5px;
-        margin: 7px 0 7px;
-    }
-
-    .small .feature p {
-        width: 48px;
-        height: 3px;
-        box-shadow: 0 5px 0 #c8d0d9;
-    }
-
-    .small .bag {
-        width: 38px;
-        height: 38px;
-    }
-
-    .small .bag:before {
-        left: 11px;
-        top: -9px;
-        width: 16px;
-        height: 13px;
-        border-width: 2px;
-    }
-
-    .small .section-title {
-        width: 38px;
-        margin: 10px auto 8px;
-    }
-
-    .small .products {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 7px;
-        padding: 0 11px;
-    }
-
-    .small .photo {
-        height: 26px;
-    }
-
-    .bottom-rule {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 6px;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .bottom-rule span:nth-child(1) {
-        background: var(--teal);
-    }
-
-    .bottom-rule span:nth-child(2) {
-        background: var(--amber);
-    }
-
-    .bottom-rule span:nth-child(3) {
-        background: var(--coral);
+        border-radius: 999px;
+        background: #142033;
+        box-shadow: 0 13px 0 #cbd3de;
     }
 </style>
 </head>
 <body>
-    <div class="brand">
-        <div class="mark" aria-hidden="true">
-            <div class="spark"></div>
+<main class="frame" aria-label="Spark theme thumbnail">
+    <div class="top">
+        <div class="logo" aria-label="Spark">
+            <svg class="bolt-mark" viewBox="0 0 72 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M38 2L10 50H34L23 94L66 36H40L54 2H38Z" fill="#F5B21B"/>
+            </svg>
+            <div class="wordmark">Spark</div>
         </div>
-        <div class="wordmark">Spark</div>
+        <div class="tiny-label">Commerce system</div>
     </div>
 
-    <section class="device large" aria-label="Spark desktop storefront preview">
-        <div class="topline"></div>
-        <div class="nav">
-            <div class="logo">Spark</div>
-            <div class="nav-links">
-                <span>Shop</span>
-                <span>New</span>
-                <span>Journal</span>
-                <span>Support</span>
+    <section class="hero surface" aria-label="Storefront hero preview">
+        <div class="mock-nav"><i></i><i></i><i></i><strong></strong></div>
+        <div class="hero-main"></div>
+    </section>
+
+    <section class="cart surface" aria-label="Cart drawer preview">
+        <h2></h2>
+        <div class="cart-row"></div>
+        <div class="cart-row"></div>
+        <div class="meter"></div>
+    </section>
+
+    <section class="cards" aria-label="Product card previews">
+        <div class="product-card">
+            <div class="product-art">
+                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="42" y="42" width="66" height="58" rx="2" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
+                    <path d="M58 45V34C58 22 66 15 75 15C84 15 92 22 92 34V45" stroke="#C4CCD8" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M54 66H96" stroke="#0F766E" stroke-width="5" stroke-linecap="round"/>
+                </svg>
             </div>
-            <div class="icons"><span class="dot"></span><span class="dot"></span></div>
+            <b></b>
+            <span></span>
         </div>
-        <div class="hero">
-            <div class="eyebrow"></div>
-            <h1>Modern commerce starter</h1>
-            <p>Fast storefront sections, clean product grids, and a GraphQL-first cart.</p>
-            <div class="button-row">
-                <div class="button">Shop now</div>
-                <div class="button alt">View cart</div>
+        <div class="product-card">
+            <div class="product-art">
+                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="67" y="18" width="17" height="20" rx="3" fill="#D8E0EA"/>
+                    <rect x="56" y="36" width="39" height="64" rx="10" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
+                    <rect x="64" y="63" width="23" height="10" rx="2" fill="#F5B21B"/>
+                </svg>
             </div>
+            <b></b>
+            <span></span>
         </div>
-        <div class="categories">
-            <div class="category"><strong></strong><span></span></div>
-            <div class="category"><strong></strong><span></span></div>
-            <div class="category"><strong></strong><span></span></div>
-        </div>
-        <div class="feature">
-            <div>
-                <h2></h2>
-                <p></p>
-                <div class="button alt">Add to cart</div>
+        <div class="product-card">
+            <div class="product-art">
+                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="45" y="38" width="60" height="46" rx="8" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
+                    <path d="M52 82C72 57 96 58 105 82" stroke="#F97362" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M58 51H92" stroke="#CBD3DE" stroke-width="4" stroke-linecap="round"/>
+                </svg>
             </div>
-            <div class="bag"></div>
-        </div>
-        <div class="section-title"></div>
-        <div class="products">
-            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
-            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
-            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
+            <b></b>
+            <span></span>
         </div>
     </section>
 
-    <section class="device small" aria-label="Spark mobile storefront preview">
-        <div class="topline"></div>
-        <div class="nav">
-            <div class="logo">Spark</div>
-            <div class="nav-links"><span>Shop</span></div>
-            <div class="icons"><span class="dot"></span></div>
-        </div>
-        <div class="hero">
-            <div class="eyebrow"></div>
-            <h1>Starter sections for D2C</h1>
-            <div class="button-row">
-                <div class="button">Shop</div>
-                <div class="button alt">Cart</div>
-            </div>
-        </div>
-        <div class="categories">
-            <div class="category"><strong></strong><span></span></div>
-            <div class="category"><strong></strong><span></span></div>
-            <div class="category"><strong></strong><span></span></div>
-            <div class="category"><strong></strong><span></span></div>
-        </div>
-        <div class="feature">
-            <div>
-                <h2></h2>
-                <p></p>
-            </div>
-            <div class="bag"></div>
-        </div>
-        <div class="section-title"></div>
-        <div class="products">
-            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
-            <div class="product"><div class="photo"></div><strong></strong><span></span></div>
-        </div>
+    <section class="settings surface" aria-label="Theme settings preview">
+        <div class="swatches"><i></i><i></i><i></i><i></i></div>
+        <div class="settings-line"></div>
     </section>
-
-    <div class="bottom-rule" aria-hidden="true"><span></span><span></span><span></span></div>
+</main>
 </body>
 </html>

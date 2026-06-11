@@ -98,7 +98,7 @@
         'id pk currency totalExclTax totalExclTaxExclDiscounts totalDiscount numItems numLines',
         'voucherDiscounts { name amount voucher { name code } }',
         'lines {',
-        '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell',
+        '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell interval intervalCount',
         '  attributes { value option }',
         '  product {',
         '    pk title url metadata',
@@ -255,15 +255,34 @@
      * @param {number} productPk - The product ID to add
      * @param {number} [quantity=1] - Quantity to add
      * @param {boolean} [isUpsell=false] - Mark as upsell line
+     * @param {{subscriptionOption: string, interval: string, intervalCount: number|string}|null} [subscriptionData=null]
      * @returns {Promise<{success, cart}>}
      */
-    SparkCartClient.prototype.addToCart = function(productPk, quantity, isUpsell) {
+    SparkCartClient.prototype.addToCart = function(productPk, quantity, isUpsell, subscriptionData) {
         var self = this;
         quantity = quantity || 1;
 
         function doAdd(cartId) {
             var lineInput = { productPk: productPk, quantity: quantity };
+    
             if (isUpsell) lineInput.isUpsell = true;
+    
+            if (subscriptionData && typeof subscriptionData === 'object' && subscriptionData.subscriptionOption === 'subscribe') {
+                var interval = typeof subscriptionData.interval === 'string' ? subscriptionData.interval.trim() : '';
+                var intervalCount = parseInt(subscriptionData.intervalCount, 10);
+                if (!interval || isNaN(intervalCount) || intervalCount <= 0) {
+                    return Promise.resolve({
+                        success: false,
+                        errors: ['Please choose a valid subscription frequency.']
+                    });
+                }
+
+                lineInput.subscription = {
+                    interval: interval,
+                    intervalCount: intervalCount
+                };
+            }
+    
             var input = {
                 cartId: cartId,
                 lines: [lineInput]

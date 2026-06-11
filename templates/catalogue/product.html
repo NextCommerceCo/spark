@@ -29,6 +29,7 @@
 <script type="text/javascript" src="{{ 'js/spark-gallery.js'|asset_url }}"></script>
 <script type="text/javascript" src="{{ 'js/spark-cart.js'|asset_url }}"></script>
 <script type="text/javascript" src="{{ 'js/components/spark-quantity.js'|asset_url }}"></script>
+<script type="text/javascript" src="{{ 'js/components/spark-subscription.js'|asset_url }}"></script>
 <script type="text/javascript" src="{{ 'js/components/spark-add-to-cart.js'|asset_url }}"></script>
 {% endblock component_scripts %}
 
@@ -212,6 +213,20 @@
                             {% endif %}
                         {% endfor %}
 
+                        {% if product.get_interval and interval_count_choices %}
+                            <div class="mb-6">
+                                <spark-subscription 
+                                    id="subscription-selector"
+                                    data-interval="{{ product.get_interval }}"
+                                    data-intervals='[
+                                        {% for value, text in interval_count_choices %}
+                                            ["{{ value|escapejs }}", "{{ text|escapejs }}"]{% if not forloop.last %},{% endif %}
+                                        {% endfor %}
+                                    ]'>
+                                </spark-subscription>
+                            </div>
+                        {% endif %}
+                
                         <button type="submit"
                                 class="btn btn-primary w-full py-3 text-base"
                                 id="add-to-cart-btn"

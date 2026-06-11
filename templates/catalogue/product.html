@@ -220,7 +220,7 @@
                                     data-interval="{{ product.get_interval }}"
                                     data-intervals='[
                                         {% for value, text in interval_count_choices %}
-                                            ["{{ value }}", "{{ text|escapejs }}"]{% if not forloop.last %},{% endif %}
+                                            ["{{ value|escapejs }}", "{{ text|escapejs }}"]{% if not forloop.last %},{% endif %}
                                         {% endfor %}
                                     ]'>
                                 </spark-subscription>

@@ -38,7 +38,13 @@
     const TEMPLATE = document.createElement('template');
     TEMPLATE.innerHTML = `
         <style>
-            :host { display: block; }
+            :host {
+                --spark-subscription-border: var(--border-color, #E2E8F0);
+                --spark-subscription-surface-hover: var(--surface-muted, #F8FAFC);
+                --spark-subscription-muted: var(--muted-color, #64748B);
+                --spark-subscription-success: var(--success-color, #059669);
+                display: block;
+            }
             .subscription-options {
                 display: flex;
                 flex-direction: column;
@@ -49,14 +55,14 @@
                 align-items: flex-start;
                 gap: 12px;
                 padding: 14px 16px;
-                border: 1px solid #E2E8F0;
+                border: 1px solid var(--spark-subscription-border);
                 border-radius: 8px;
                 cursor: pointer;
                 transition: all 150ms ease-out;
             }
             .option:hover {
                 border-color: var(--primary-color, #1E293B);
-                background: #F8FAFC;
+                background: var(--spark-subscription-surface-hover);
             }
             .option input[type="radio"] {
                 margin-top: 4px;
@@ -64,11 +70,13 @@
             }
             .option-content { flex: 1; }
             .option-title { font-weight: 500; }
-            .option-subtitle { font-size: 0.875rem; color: #64748B; margin-top: 2px; }
+            .option-subtitle { font-size: 0.875rem; color: var(--spark-subscription-muted); margin-top: 2px; }
+            .option-subtitle-success { color: var(--spark-subscription-success); }
+            .frequency-wrapper { margin-top: 16px; }
             .frequency {
                 margin-top: 12px;
                 padding: 10px 12px;
-                border: 1px solid #E2E8F0;
+                border: 1px solid var(--spark-subscription-border);
                 border-radius: 6px;
                 width: 100%;
                 font-size: 0.9rem;
@@ -86,13 +94,13 @@
             </label>
 
             <label class="option">
-                <input type="radio" name="subscription_option" value="subscribe">
+                <input type="radio" name="subscription_option" value="subscribe" aria-controls="frequency-wrapper">
                 <div class="option-content">
                     <div class="option-title">Subscribe & Save</div>
-                    <div class="option-subtitle text-emerald-600">Recurring delivery</div>
+                    <div class="option-subtitle option-subtitle-success">Recurring delivery</div>
                     
-                    <div id="frequency-wrapper" class="hidden mt-4">
-                        <select id="interval-select" name="interval_count" class="frequency"></select>
+                    <div id="frequency-wrapper" class="frequency-wrapper hidden">
+                        <select id="interval-select" name="interval_count" class="frequency" aria-label="Delivery frequency"></select>
                     </div>
                 </div>
             </label>
@@ -134,14 +142,22 @@
 
         _loadIntervals() {
             const data = this.getAttribute('data-intervals');
-            const interval = this.getAttribute('data-interval');
-            console.log({ interval })
             if (!data) return;
 
             try {
                 const intervals = JSON.parse(data);
+                if (!Array.isArray(intervals)) {
+                    console.error('Subscription intervals must be an array');
+                    return;
+                }
+
                 this._select.innerHTML = '';
-                intervals.forEach(([value, text]) => {
+                intervals.forEach((entry) => {
+                    if (!Array.isArray(entry) || entry.length < 2 || entry[0] === null || entry[0] === undefined) {
+                        return;
+                    }
+                    const value = entry[0];
+                    const text = entry[1] === null || entry[1] === undefined ? String(value) : entry[1];
                     const opt = document.createElement('option');
                     opt.value = value;
                     opt.textContent = text;

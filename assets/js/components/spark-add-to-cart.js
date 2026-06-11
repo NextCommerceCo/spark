@@ -156,7 +156,7 @@
         }
 
         _getSubscription() {
-            const subscriptionEl = this.querySelector('spark-subscription');
+            var subscriptionEl = this.querySelector('spark-subscription');
         
             if (!subscriptionEl) {
                 return null;

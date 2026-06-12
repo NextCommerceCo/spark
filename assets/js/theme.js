@@ -18,14 +18,6 @@
         var mobileNavLockedBody = false;
         if (!toggleBtn || !mobileNav) return;
 
-        function isBodyLockedByOtherOverlay() {
-            var searchOverlay = document.getElementById('search-overlay');
-            return (
-                document.body.classList.contains('sidecart-open') ||
-                (searchOverlay && searchOverlay.classList.contains('search-overlay-visible'))
-            );
-        }
-
         function openMobileNav() {
             mobileNav.classList.remove('hidden');
             if (!mobileNavLockedBody) {
@@ -37,8 +29,8 @@
 
         function closeMobileNav() {
             mobileNav.classList.add('hidden');
-            // Restore only the body lock owned by mobile nav; search and side cart own their own locks.
-            if (mobileNavLockedBody && !isBodyLockedByOtherOverlay()) {
+            // Restore the inline overflow value that existed before mobile nav opened.
+            if (mobileNavLockedBody) {
                 document.body.style.overflow = mobileNavPreviousOverflow;
             }
             mobileNavLockedBody = false;

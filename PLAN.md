@@ -1,8 +1,8 @@
-# Spark Theme — Dogfooding Plan
+# Spark Theme — Public Roadmap
 
-**Status:** v1.1.1 shipped. Functional, installable, Web Components in place, and ready for deeper dogfooding by a storefront theme developer.
+**Status:** v1.1.1 shipped. Functional, installable, Web Components in place, and ready for deeper storefront validation by theme developers.
 
-**Release posture:** private dogfooding. Spark needs more merchant-store mileage before it should be treated as a public release candidate.
+**Release posture:** public starter theme. Spark is ready for theme developers to clone, inspect, adapt, and install on stores they control. It still needs more merchant-store mileage, testing, and packaging polish before it should be treated as a marketplace-grade release.
 
 **Goal:** make Spark the default starter theme that NEXT ships with, replacing Intro Bootstrap over time and becoming the foundation for Apps, derived themes, and a future theme marketplace.
 
@@ -26,7 +26,7 @@
 
 ## What Needs To Improve
 
-Spark should graduate from "works on a dev store" to "a theme developer can confidently dogfood this on real merchant stores." The main gaps are:
+Spark should graduate from "usable public starter" to "a theme developer can confidently adopt this as the default base for real merchant stores." The main gaps are:
 
 1. More production mileage on real storefront data and devices.
 2. More merchant mileage on side-cart rewards and suggested products now that their implementation rules are localized.
@@ -39,12 +39,12 @@ Spark should graduate from "works on a dev store" to "a theme developer can conf
 
 ## Workstreams
 
-### W1 — Merchant Dogfooding (P0)
+### W1 — Merchant Storefront Validation (P0)
 
 Run Spark on low-risk real stores and fix what only real catalog, cart, currency, and device data will reveal.
 
 - Pilot on at least one low-traffic merchant store.
-- Log all P0/P1 issues found during dogfooding.
+- Log all P0/P1 issues found during merchant-store validation.
 - Stress test parent products, child variants, out-of-stock states, vouchers, subscriptions, free gifts, partial-stock carts, and empty catalog states.
 - Test multi-currency, multi-language, and RTL scenarios where a merchant actually needs them.
 - Verify the cart to platform-checkout handoff on mobile Safari, Android Chrome, tablet, and desktop.
@@ -58,7 +58,7 @@ The side cart is Spark's riskiest custom commerce surface, and its Theme Setting
 - Document `partials/block_cart_progress_wrapper.html` as the extension point for theme developers who need currency-specific reward rules.
 - Avoid hard-coded currency fields in core Spark unless the platform can generate them from the store's enabled currencies.
 - Review suggested product settings, especially `upsell_fallback_slots`, and decide whether that control belongs in merchant settings or should become an implementation detail.
-- Dogfood the free-gift auto-add/remove behavior until it is boringly predictable.
+- Validate the free-gift auto-add/remove behavior until it is boringly predictable.
 - Keep reward logic in `SparkCartRewards` and drawer interaction logic in `<spark-cart-drawer>`.
 
 ### W3 — Performance And Accessibility (P1)
@@ -105,23 +105,23 @@ Spark should be ready if NEXT adds platform-level theme sections, but current Sp
 
 ### W7 — Theme Developer Docs And Release Hygiene (P2)
 
-Public release is not today's goal, but the repo should gradually become easier for a theme developer to understand and dogfood.
+The public repository should stay easy for theme developers to understand, audit, and extend.
 
 - Keep `README.md`, `CLAUDE.md`, `PLAN.md`, and `docs/` accurate as Spark evolves.
 - Add an "Extending Spark" guide for settings, partials, app hooks, and Web Components.
 - Keep Web Component events, attributes, slots, and public APIs documented in `docs/cart-events.md`, `docs/cart-rewards.md`, `docs/cart-drawer-architecture.md`, and future extension docs.
 - Add a DTL pattern catalog for Spark-specific gotchas.
-- Decide the release package shape and license before any public repository or self-serve ZIP release.
+- Decide the marketplace/self-serve release package shape.
 
 ---
 
 ## First Focus Areas
 
-1. **Merchant dogfooding:** get hard miles on real stores and real carts.
+1. **Merchant storefront validation:** get hard miles on real stores and real carts.
 2. **Side cart settings cleanup:** make rewards, thresholds, gifts, and suggested products feel merchant-friendly.
 3. **Performance and accessibility baselines:** establish the numbers and workflows before broadening the theme surface.
 
-W4 through W7 should follow once the dogfooding loop is producing concrete issues.
+W4 through W7 should follow once merchant-store validation is producing concrete issues.
 
 ## Working Agreement
 
@@ -129,11 +129,11 @@ W4 through W7 should follow once the dogfooding loop is producing concrete issue
 - Keep PRs mapped to a workstream when possible.
 - `DESIGN.md` is the source of truth for visual decisions. If a change intentionally violates it, update `DESIGN.md` in the same PR.
 - Rebuild and commit `assets/main.css` with any `css/input.css` source change.
-- After the initial dogfood install, push only changed files with `ntk`.
+- After the initial store install, push only changed files with `ntk`.
 
 ## Open Questions
 
-- Which merchant store is the right next dogfood candidate?
+- Which merchant store is the right next validation candidate?
 - Does the platform need a cleaner setting type for store-aware currency threshold overrides?
 - What is the smallest useful Web Component test harness for Spark?
 - Has the platform team scoped NEXT-native theme section instances for any other theme?

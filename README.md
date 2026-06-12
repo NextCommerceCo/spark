@@ -4,16 +4,17 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 
 **Current version:** 1.1.1
 
-**Release status:** Private dogfooding. Spark is installable on NEXT stores via `ntk`, but it is not yet a public release candidate or self-serve theme package.
+**Release status:** Public starter theme. Spark is installable on NEXT stores via `ntk` and is used for public-facing storefront builds. The theme is ready for theme developers to clone, inspect, adapt, and push to stores they control.
 
 ## Requirements
 
 - [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`) for installing or pushing the theme to a store.
 - [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) only when editing `css/input.css`; fetch it with `make install-tailwind`.
+- For AI-assisted theme work, load the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) from the `skills/` repo. It captures Next Commerce theme conventions, DTL gotchas, Theme Settings rules, `ntk` workflows, and Spark-specific development guidance.
 
 ## Quick Start
 
-The compiled `assets/main.css` is committed to the repo, so NEXT developers can dogfood Spark on a store without a local Tailwind toolchain. Clone the repo, point `ntk` at a store you control, and push.
+The compiled `assets/main.css` is committed to the repo, so NEXT developers can install Spark on a store without a local Tailwind toolchain. Clone the repo, point `ntk` at a store you control, and push.
 
 1. Install ntk and configure your store:
    ```bash
@@ -21,7 +22,7 @@ The compiled `assets/main.css` is committed to the repo, so NEXT developers can 
    ntk init
    ```
 
-2. Push the theme to your store for the initial dogfood install:
+2. Push the theme to your store for the initial install:
    ```bash
    ntk push
    ```
@@ -80,7 +81,7 @@ spark/
 └── templates/       Page templates (18 files including error pages)
 ```
 
-Tracked theme documentation starts at [docs/README.md](docs/README.md). Dogfooding and release-readiness planning currently lives in [PLAN.md](PLAN.md) and [TODOS.md](TODOS.md).
+Tracked theme documentation starts at [docs/README.md](docs/README.md). Current roadmap and follow-up work live in [PLAN.md](PLAN.md) and [TODOS.md](TODOS.md).
 
 ## Features
 
@@ -105,8 +106,10 @@ See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the d
 
 All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, colors, spacing, motion, interaction states, accessibility, and anti-slop rules. Read it before making any UI change.
 
+## Public Repo Notes
+
+The `.gitignore` file is intentionally committed. It documents local files that must stay out of the public repository, including store-specific `config.yml`, downloaded Tailwind binaries, tool session state, OS files, and editor settings.
+
 ## License
 
-Proprietary — Next Commerce.
-
-Public distribution terms are TBD before any public repository or self-serve release package.
+Spark is released under the [MIT License](LICENSE), matching the licensing model used by Intro Bootstrap.

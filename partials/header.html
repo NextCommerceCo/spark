@@ -26,7 +26,8 @@
                     {% if item.level > 0 %}
                         <li class="nav-item has-children">
                             <a href="{{ item.url }}"
-                               class="text-sm font-medium py-2 inline-flex items-center gap-1 hover:bg-slate-100 rounded-md transition-colors"
+                               class="text-sm font-medium py-2 inline-flex items-center gap-1 hover:bg-slate-100 rounded-md transition-colors {% if item.current %}font-semibold underline{% endif %}"
+                               {% if item.current %}aria-current="page"{% endif %}
                                style="color: var(--spark-nav-color);">
                                 {{ item.name }}
                                 {% include 'partials/icons/chevron-down.html' %}
@@ -35,7 +36,8 @@
                                 {% for child in item.items %}
                                     <li>
                                         <a href="{{ child.url }}"
-                                           class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                           class="block px-5 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors {% if child.current %}text-slate-900 font-medium bg-slate-50{% endif %}"
+                                           {% if child.current %}aria-current="page"{% endif %}>
                                             {{ child.name }}
                                         </a>
                                     </li>
@@ -45,7 +47,8 @@
                     {% else %}
                         <li class="nav-item">
                             <a href="{{ item.url }}"
-                               class="text-sm font-medium py-3 px-4 block hover:bg-slate-100 rounded-md transition-colors"
+                               class="text-sm font-medium py-3 px-4 block hover:bg-slate-100 rounded-md transition-colors {% if item.current %}font-semibold underline{% endif %}"
+                               {% if item.current %}aria-current="page"{% endif %}
                                style="color: var(--spark-nav-color);">
                                 {{ item.name }}
                             </a>

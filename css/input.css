@@ -1185,7 +1185,6 @@
 
 .nav-item.has-children {
     padding-bottom: 10px;
-    transform: translateY(5px);
 }
 
 .nav-item:hover > .nav-submenu {

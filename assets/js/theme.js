@@ -11,17 +11,42 @@
     function initMobileNav() {
         const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
         const mobileNav = document.getElementById('mobile-nav');
+        const desktopNavQuery = window.matchMedia('(min-width: 48rem)');
+        var mobileNavPreviousOverflow = '';
+        var mobileNavLockedBody = false;
         if (!toggleBtn || !mobileNav) return;
+
+        function isBodyLockedByOtherOverlay() {
+            var searchOverlay = document.getElementById('search-overlay');
+            return (
+                document.body.classList.contains('sidecart-open') ||
+                (searchOverlay && searchOverlay.classList.contains('search-overlay-visible'))
+            );
+        }
+
+        function openMobileNav() {
+            mobileNav.classList.remove('hidden');
+            if (!mobileNavLockedBody) {
+                mobileNavPreviousOverflow = document.body.style.overflow;
+                mobileNavLockedBody = true;
+            }
+            document.body.style.overflow = 'hidden';
+        }
 
         function closeMobileNav() {
             mobileNav.classList.add('hidden');
-            document.body.style.overflow = '';
+            if (mobileNavLockedBody && !isBodyLockedByOtherOverlay()) {
+                document.body.style.overflow = mobileNavPreviousOverflow;
+            }
+            mobileNavLockedBody = false;
         }
 
         toggleBtn.addEventListener('click', function() {
-            mobileNav.classList.toggle('hidden');
-            document.body.style.overflow =
-                mobileNav.classList.contains('hidden') ? '' : 'hidden';
+            if (mobileNav.classList.contains('hidden')) {
+                openMobileNav();
+            } else {
+                closeMobileNav();
+            }
         });
 
         // Close buttons and backdrop
@@ -29,12 +54,17 @@
             el.addEventListener('click', closeMobileNav);
         });
 
-        // Reset when switching to desktop
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 768) {
+        function handleDesktopNavChange(e) {
+            if (e.matches) {
                 closeMobileNav();
             }
-        });
+        }
+
+        if (desktopNavQuery.addEventListener) {
+            desktopNavQuery.addEventListener('change', handleDesktopNavChange);
+        } else {
+            desktopNavQuery.addListener(handleDesktopNavChange);
+        }
     }
 
     /* ─── Search Overlay ─── */

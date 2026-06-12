@@ -1183,11 +1183,8 @@
     position: relative;
 }
 
-.nav-item.has-children {
-    padding-bottom: 10px;
-}
-
-.nav-item:hover > .nav-submenu {
+.nav-item:hover > .nav-submenu,
+.nav-item:focus-within > .nav-submenu {
     opacity: 1;
     transform: scale(1) translateY(-10px);
     pointer-events: auto;

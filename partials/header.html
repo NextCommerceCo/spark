@@ -32,7 +32,7 @@
                                 {{ item.name }}
                                 {% include 'partials/icons/chevron-down.html' %}
                             </a>
-                            <ul class="nav-submenu absolute left-0 top-full mt-2 w-56 bg-white border border-slate-200 shadow-2xl rounded-2xl py-2">
+                            <ul class="nav-submenu absolute left-0 top-full w-56 bg-white border border-slate-200 shadow-2xl py-2">
                                 {% for child in item.items %}
                                     <li>
                                         <a href="{{ child.url }}"

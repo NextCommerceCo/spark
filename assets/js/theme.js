@@ -8,23 +8,58 @@
 
     /* ─── Mobile Navigation ─── */
 
+    const DESKTOP_NAV_MEDIA_QUERY = '(min-width: 48rem)';
+
     function initMobileNav() {
-        var toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
-        var mobileNav = document.getElementById('mobile-nav');
+        const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
+        const mobileNav = document.getElementById('mobile-nav');
+        const desktopNavQuery = window.matchMedia(DESKTOP_NAV_MEDIA_QUERY);
+        var mobileNavPreviousOverflow = '';
+        var mobileNavLockedBody = false;
         if (!toggleBtn || !mobileNav) return;
 
+        function openMobileNav() {
+            mobileNav.classList.remove('hidden');
+            if (!mobileNavLockedBody) {
+                mobileNavPreviousOverflow = document.body.style.overflow;
+                mobileNavLockedBody = true;
+            }
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileNav() {
+            mobileNav.classList.add('hidden');
+            // Restore the inline overflow value that existed before mobile nav opened.
+            if (mobileNavLockedBody) {
+                document.body.style.overflow = mobileNavPreviousOverflow;
+            }
+            mobileNavLockedBody = false;
+        }
+
         toggleBtn.addEventListener('click', function() {
-            mobileNav.classList.toggle('hidden');
-            document.body.style.overflow = mobileNav.classList.contains('hidden') ? '' : 'hidden';
+            if (mobileNav.classList.contains('hidden')) {
+                openMobileNav();
+            } else {
+                closeMobileNav();
+            }
         });
 
         // Close buttons and backdrop
         mobileNav.querySelectorAll('[data-close="mobile-nav"]').forEach(function(el) {
-            el.addEventListener('click', function() {
-                mobileNav.classList.add('hidden');
-                document.body.style.overflow = '';
-            });
+            el.addEventListener('click', closeMobileNav);
         });
+
+        function handleDesktopNavChange(e) {
+            if (e.matches) {
+                closeMobileNav();
+            }
+        }
+
+        if (desktopNavQuery.addEventListener) {
+            desktopNavQuery.addEventListener('change', handleDesktopNavChange);
+        } else {
+            desktopNavQuery.addListener(handleDesktopNavChange);
+        }
     }
 
     /* ─── Search Overlay ─── */
@@ -209,4 +244,3 @@
     });
 
 })();
-

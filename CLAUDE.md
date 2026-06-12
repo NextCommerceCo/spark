@@ -4,13 +4,14 @@
 Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + vanilla JS. Clean, minimal commerce aesthetic. Intended to replace Intro Bootstrap as the default starter theme and become a product in its own right.
 
 **Current version:** 1.1.1
-**Repo:** `NextCommerceCo/spark` (private during dogfooding)
+**Repo:** `NextCommerceCo/spark` (public starter theme)
 **ntk config:** `config.yml` is gitignored and store-specific. Create it with `ntk init`; never commit store credentials.
+**Companion skill:** Use the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) for AI-assisted Spark, Intro Bootstrap, and custom Next Commerce theme work.
 
 ## Position in the ecosystem
 - **Replaces Intro Bootstrap** as the default starter for new Next Commerce stores.
 - **Apps integration surface** — exposes a stable set of `{% app_hook %}` slots so Apps (Reviews first) can extend the storefront without theme edits. Future Apps should target these surfaces rather than fork the theme.
-- **Docs and planning split** — tracked theme documentation lives in `docs/`. Dogfooding and release-readiness planning lives in `PLAN.md` and `TODOS.md` until the public release surface is finalized.
+- **Docs and planning split** — tracked theme documentation lives in `docs/`. Current roadmap and follow-up work live in `PLAN.md` and `TODOS.md`.
 
 ## Stack
 - **CSS:** Tailwind CSS v4.2.2 (standalone CLI binary `./tailwindcss`, no Node dependency)
@@ -125,7 +126,7 @@ Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated
 - Use ASCII-only: `-` instead of `—`, `->` instead of `→`, `\u2713` instead of `✓`
 
 ## Push Convention
-After the initial dogfood install, only push changed files: `ntk push templates/index.html`
+After the initial store install, only push changed files: `ntk push templates/index.html`
 Do not push the entire theme during normal iteration.
 
 ## Reference Theme

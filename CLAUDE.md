@@ -6,7 +6,7 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 **Current version:** 1.1.1
 **Repo:** `NextCommerceCo/spark` (public starter theme)
 **ntk config:** `config.yml` is gitignored and store-specific. Create it with `ntk init`; never commit store credentials.
-**Companion skill:** Use `../skills/next-theme-dev/SKILL.md` for AI-assisted Spark, Intro Bootstrap, and custom Next Commerce theme work.
+**Companion skill:** Use the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) for AI-assisted Spark, Intro Bootstrap, and custom Next Commerce theme work.
 
 ## Position in the ecosystem
 - **Replaces Intro Bootstrap** as the default starter for new Next Commerce stores.

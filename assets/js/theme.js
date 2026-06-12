@@ -12,23 +12,23 @@
         const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
         const mobileNav = document.getElementById('mobile-nav');
         if (!toggleBtn || !mobileNav) return;
-    
+
         function closeMobileNav() {
             mobileNav.classList.add('hidden');
             document.body.style.overflow = '';
         }
-    
+
         toggleBtn.addEventListener('click', function() {
             mobileNav.classList.toggle('hidden');
             document.body.style.overflow =
                 mobileNav.classList.contains('hidden') ? '' : 'hidden';
         });
-    
+
         // Close buttons and backdrop
         mobileNav.querySelectorAll('[data-close="mobile-nav"]').forEach(function(el) {
             el.addEventListener('click', closeMobileNav);
         });
-    
+
         // Reset when switching to desktop
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 768) {
@@ -219,4 +219,3 @@
     });
 
 })();
-

@@ -1186,13 +1186,14 @@
 .nav-item:hover > .nav-submenu,
 .nav-item:focus-within > .nav-submenu {
     opacity: 1;
-    transform: scale(1) translateY(-10px);
+    transform: scale(1);
     pointer-events: auto;
 }
 
 .nav-submenu {
     opacity: 0;
-    transform: scale(0.95) translateY(-10px);
+    transform: scale(0.98);
+    transform-origin: top left;
     pointer-events: none;
     transition: all 200ms ease-out;
     z-index: 80;

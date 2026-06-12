@@ -8,10 +8,12 @@
 
     /* ─── Mobile Navigation ─── */
 
+    const DESKTOP_NAV_MEDIA_QUERY = '(min-width: 48rem)';
+
     function initMobileNav() {
         const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
         const mobileNav = document.getElementById('mobile-nav');
-        const desktopNavQuery = window.matchMedia('(min-width: 48rem)');
+        const desktopNavQuery = window.matchMedia(DESKTOP_NAV_MEDIA_QUERY);
         var mobileNavPreviousOverflow = '';
         var mobileNavLockedBody = false;
         if (!toggleBtn || !mobileNav) return;
@@ -35,6 +37,7 @@
 
         function closeMobileNav() {
             mobileNav.classList.add('hidden');
+            // Restore only the body lock owned by mobile nav; search and side cart own their own locks.
             if (mobileNavLockedBody && !isBodyLockedByOtherOverlay()) {
                 document.body.style.overflow = mobileNavPreviousOverflow;
             }

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Post-process Tailwind CSS v4 output to be compatible with
+Post-process Tailwind CSS v4 output so generated CSS stays compatible with
 the Next Commerce server-side Sass compiler.
 
-Strips:
-- @property declarations (CSS Houdini — progressive enhancement only)
-- oklch() color functions → hex equivalents
-- color-mix() → pre-computed RGBA values
+Transforms:
+- strip @property, @supports, and @layer wrappers
+- convert oklch() color functions to hex equivalents
+- replace known color-mix() patterns with pre-computed RGBA values
+- rewrite logical properties, :is()/:where(), media range syntax, and
+  scientific-notation lengths
+- fail if unsupported generated CSS remains after the transform
 
 Usage:
   python3 scripts/sass-compat.py assets/main.css
@@ -39,6 +42,11 @@ COLOR_MIX_REPLACEMENTS = {
     "color-mix(in oklab, var(--color-white) 70%, transparent)": "rgba(255,255,255,0.7)",
     "color-mix(in oklab, currentcolor 50%, transparent)": "rgba(128,128,128,0.5)",
 }
+
+SCIENTIFIC_NOTATION_LENGTH = re.compile(
+    r'(\d+(?:\.\d+)?)e[+\-]?\d+px',
+    re.IGNORECASE,
+)
 
 BANNED_GENERATED_PATTERNS = (
     (
@@ -90,7 +98,7 @@ BANNED_GENERATED_PATTERNS = (
     ),
     (
         "scientific notation length",
-        re.compile(r'\d+(?:\.\d+)?e\d+px', re.IGNORECASE),
+        SCIENTIFIC_NOTATION_LENGTH,
         "Replace e-notation lengths with normal px values.",
     ),
 )
@@ -300,6 +308,18 @@ def replace_logical_properties(css):
         r'margin-top:\1;margin-bottom:\1',
         css
     )
+    # border-inline:X -> border-left:X;border-right:X
+    css = re.sub(
+        r'border-inline:([^;}]+)',
+        r'border-left:\1;border-right:\1',
+        css
+    )
+    # border-block:X -> border-top:X;border-bottom:X
+    css = re.sub(
+        r'border-block:([^;}]+)',
+        r'border-top:\1;border-bottom:\1',
+        css
+    )
     # inset:X -> top:X;right:X;bottom:X;left:X
     css = re.sub(
         r'inset:([^;}]+)',
@@ -345,13 +365,13 @@ def replace_is_where_selectors(css):
 def fix_scientific_notation(css):
     """Replace scientific-notation lengths the platform's Sass parser rejects.
 
-    Tailwind v4 emits ``border-radius:3.40282e38px`` (i.e. ``Number.MAX_VALUE``)
-    for utilities like ``rounded-full``. The platform's Sass compiler errors
-    out on the ``e38`` exponent. Cap any e-notation length at 9999px, which
-    behaves identically for border-radius purposes (any value > half the
-    element's diagonal renders as a full pill).
+    Tailwind v4 can emit enormous e-notation values for utilities like
+    ``rounded-full``. The platform's Sass compiler errors out on the exponent.
+    Cap any e-notation length at 9999px, which behaves identically for
+    border-radius purposes (any value > half the element's diagonal renders as
+    a full pill).
     """
-    return re.sub(r'(\d+(?:\.\d+)?)e\d+px', '9999px', css)
+    return SCIENTIFIC_NOTATION_LENGTH.sub('9999px', css)
 
 
 def replace_media_range_syntax(css):
@@ -446,7 +466,7 @@ def print_unsupported_constructs(path, issues):
             file=sys.stderr,
         )
     print(
-        "Run `make css` to regenerate with sass-compat, then rerun `make css-check`.",
+        "Fix the source CSS or add a known-safe sass-compat transform, then rerun `make css-check`.",
         file=sys.stderr,
     )
 

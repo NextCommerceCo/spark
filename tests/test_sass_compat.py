@@ -20,7 +20,10 @@ class SassCompatTests(unittest.TestCase):
         @property --tw-test { syntax: "<color>"; inherits: false; initial-value: #000; }
         @layer components { .card { padding-inline: 1rem; margin-block: 2rem; } }
         :where(.card) { color: oklch(98.4% .003 247.858); }
-        @media (width >= 768px) { .card { border-radius: 3.40282e38px; } }
+        @media (width >= 768px) {
+          .card { border-radius: 3.40282e38px; max-width: 2e+5px; }
+          .pill { border-radius: 1.7e+308px; border-inline: 1px solid red; border-block: 2px solid blue; }
+        }
         """
 
         transformed = sass_compat.transform_css(css)
@@ -31,6 +34,10 @@ class SassCompatTests(unittest.TestCase):
         self.assertIn("margin-top: 2rem", transformed)
         self.assertIn("(min-width:768px)", transformed)
         self.assertIn("9999px", transformed)
+        self.assertIn("border-left: 1px solid red", transformed)
+        self.assertIn("border-top: 2px solid blue", transformed)
+        self.assertNotIn("2e+5px", transformed)
+        self.assertNotIn("1.7e+308px", transformed)
 
     def test_check_mode_rejects_unsupported_css_clearly(self):
         with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:

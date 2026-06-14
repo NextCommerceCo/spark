@@ -15,10 +15,14 @@ dev:
 	@$(TAILWIND) -i css/input.css -o assets/main.css --watch &
 	@ntk watch
 
-# Compile Tailwind once + post-process for Sass compatibility
+# Compile Tailwind once + post-process for Sass compatibility.
+# assets/main.css is updated only after the strict compat pass succeeds.
 css:
-	$(TAILWIND) -i css/input.css -o assets/main.css --minify
-	$(COMPAT) assets/main.css
+	@set -e; \
+	TMP_CSS=$$(mktemp); \
+	trap 'rm -f "$$TMP_CSS"' EXIT; \
+	$(TAILWIND) -i css/input.css -o "$$TMP_CSS" --minify; \
+	$(COMPAT) "$$TMP_CSS" assets/main.css
 
 # Build CSS and fail if generated output still contains platform-unsafe CSS.
 css-check: css

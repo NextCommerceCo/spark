@@ -61,8 +61,29 @@ ntk tailwind --minify  # Production build: compile minified + push
 make release           # Rebuild minified main.css and stage it for commit
 make dev               # Legacy: Run Tailwind watcher + ntk watcher in parallel
 make css               # Legacy: Compile Tailwind once
+make css-check         # Compile CSS, run sass-compat, then scan generated CSS
+make verify-theme      # CSS compatibility check + lightweight tooling tests
 make build             # Legacy: Compile + minify for production
 ```
+
+### CSS Compatibility Verification
+
+Before uploading CSS, run:
+
+```bash
+make css-check
+```
+
+`css-check` rebuilds `assets/main.css`, runs `scripts/sass-compat.py`, and then scans the generated artifact for CSS the platform compiler is known to reject. Run `make verify-theme` before a release or handoff; it includes `css-check` and the regression tests for the compatibility helper.
+
+Known risky generated CSS: `@supports`, `@property`, `@layer`, `oklch()`, `color-mix()`, `:is()` / `:where()`, logical properties (`margin-inline`, `padding-block`, `inset-inline-start`), media range syntax (`width >= 768px`), and scientific-notation lengths (`3.40282e38px`). `sass-compat.py` is intentionally boring: it transforms only known patterns and fails if unsupported CSS remains after the pass.
+
+Troubleshooting split:
+
+- Local Tailwind/build failure: `make css` fails before `assets/main.css` is usable. Fix `css/input.css`, the local `tailwindcss` binary, or command setup.
+- Platform Sass/compiler failure: local build passes but upload/storefront CSS parsing fails. Run `make css-check`; the error should point to the unsupported construct and file.
+- Missing uploaded compiled CSS: template changes appear but styles do not. Rebuild with `make css-check`, then push `assets/main.css` explicitly.
+- CDN/cache issue: pushed CSS is correct but the storefront looks stale. Test the `.29next.store` domain, hard-refresh, or append `?skip_cache=1`.
 
 ## CRITICAL: Tailwind + DTL
 **NEVER construct Tailwind class names dynamically:**

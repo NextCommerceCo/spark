@@ -17,6 +17,7 @@ This directory contains Spark's theme-developer, design-team, and architecture d
 
 | Doc | Purpose |
 | --- | --- |
+| [pdp-customization.md](pdp-customization.md) | PDP redesign preservation checklist, QA runbook, and override-friendly structure guidance. |
 | [pdp-variant-state.md](pdp-variant-state.md) | PDP selected-variant Interface for picker, gallery, price, and add-to-cart adapters. |
 | [cart-events.md](cart-events.md) | Cart event Interface for cart badge, add-to-cart, side cart, and apps. |
 | [cart-rewards.md](cart-rewards.md) | Side-cart reward and upsell rules. |

@@ -51,7 +51,7 @@ These files are not partials, but they are important setting-backed surfaces des
 | --- | --- | --- | --- |
 | `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, critical-path load order, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
 | `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
-| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. Variant behavior is coordinated by `assets/js/spark-variant-state.js`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
+| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. Variant behavior is coordinated by `assets/js/spark-variant-state.js`; custom redesigns should follow `docs/pdp-customization.md`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
 
 ## Utility Partials
 
@@ -91,5 +91,6 @@ Spark now covers the highest-value Intro Bootstrap controls for quick design wor
 Remaining candidates for core Spark:
 
 - A future NEXT theme sections architecture so merchants can reorder section instances, duplicate section types, and compose pages outside the fixed `templates/index.html` include order.
+- Override-friendly PDP partials for gallery, buy box, variant picker, quantity/cart controls, trust strip, size guide, reviews, and related products once repeated custom PDP work justifies the split. Until then, keep `templates/catalogue/product.html` behavior-preserving and use `docs/pdp-customization.md` as the redesign checklist.
 
 See `docs/terminology.md` for NEXT-native vocabulary and `docs/sections-architecture-proposal.md` for the proposed platform contract.

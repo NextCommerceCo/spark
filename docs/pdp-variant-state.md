@@ -4,6 +4,8 @@ Spark exposes PDP selected-variant behavior through `assets/js/spark-variant-sta
 
 The goal is to let theme developers redesign variant pickers without reimplementing child product matching, form action updates, price updates, or gallery image synchronization.
 
+For full PDP redesign work, pair this Interface with `docs/pdp-customization.md`. The customization runbook covers the surrounding preservation checklist for product data, price nodes, add-to-cart forms, quantity, subscription, app hooks, inventory states, sticky CTAs, and QA.
+
 ## Interface
 
 `SparkVariantState` reads:

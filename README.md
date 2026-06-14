@@ -46,8 +46,32 @@ When you change `css/input.css` (or any source that affects the build), run `mak
 | `ntk watch` | Watch mode — auto-compile Tailwind + push changes |
 | `ntk tailwind` | One-shot: compile Tailwind + sass-compat + push CSS |
 | `ntk tailwind --minify` | Production build: compile minified + push |
+| `make css` | Compile Tailwind once and run `scripts/sass-compat.py` |
+| `make css-check` | Run `make css`, then fail if `assets/main.css` still contains unsupported CSS |
+| `make verify-theme` | Run CSS compatibility checks plus lightweight tooling tests |
 | `make release` | Rebuild minified `assets/main.css` and stage it for commit |
 | `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
+
+## CSS Compatibility Verification
+
+Spark authoring CSS can use Tailwind v4 constructs in `css/input.css`, but the storefront platform sees the generated artifact in `assets/main.css`. Before uploading CSS, run:
+
+```bash
+make css-check
+```
+
+That command rebuilds `assets/main.css`, runs `scripts/sass-compat.py`, then scans the generated file for constructs the platform Sass compiler is known to reject. Use `make verify-theme` before a release or handoff; it includes `make css-check` and the regression tests for the compatibility helper.
+
+Known risky generated CSS includes `@supports`, `@property`, `@layer`, `oklch()`, `color-mix()`, `:is()` / `:where()`, logical properties such as `margin-inline`, media range syntax such as `(width >= 768px)`, and scientific-notation lengths such as `3.40282e38px`. `sass-compat.py` only transforms known patterns and fails if unsupported CSS remains.
+
+Avoid dynamic Tailwind class construction in templates. Tailwind scans source files at build time, so classes like `bg-{{ settings.primary_color }}` are never emitted. Use CSS custom properties (`bg-[var(--primary-color)]`) or static conditional classes instead.
+
+Troubleshooting quick read:
+
+- Local Tailwind/build failure: `make css` fails before `assets/main.css` is written. Fix `css/input.css`, missing Tailwind binary, or local command setup.
+- Platform Sass/compiler failure: local build passes but upload/storefront errors mention CSS parsing. Run `make css-check` and inspect any unsupported construct it reports.
+- Missing uploaded compiled CSS: templates changed but styling did not. Rebuild with `make css-check`, then push `assets/main.css` explicitly.
+- CDN/cache issue: pushed CSS is correct but the storefront looks stale. Test the `.29next.store` domain, hard-refresh, or append `?skip_cache=1`.
 
 ## Structure
 
@@ -100,7 +124,7 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Current 
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.
 
-See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/figma-section-library-plan.md](docs/figma-section-library-plan.md) for the Spark Figma section library plan, [docs/performance-load-order.md](docs/performance-load-order.md) for the critical-path loading convention, [docs/pdp-variant-state.md](docs/pdp-variant-state.md) for the PDP variant state Interface, [docs/cart-events.md](docs/cart-events.md) for the cart event Interface, [docs/cart-rewards.md](docs/cart-rewards.md) for side-cart rewards and upsell rules, [docs/cart-drawer-architecture.md](docs/cart-drawer-architecture.md) for the drawer Module split, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
+See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/figma-section-library-plan.md](docs/figma-section-library-plan.md) for the Spark Figma section library plan, [docs/performance-load-order.md](docs/performance-load-order.md) for the critical-path loading convention, [docs/pdp-customization.md](docs/pdp-customization.md) for the PDP redesign preservation checklist and QA runbook, [docs/pdp-variant-state.md](docs/pdp-variant-state.md) for the PDP variant state Interface, [docs/cart-events.md](docs/cart-events.md) for the cart event Interface, [docs/cart-rewards.md](docs/cart-rewards.md) for side-cart rewards and upsell rules, [docs/cart-drawer-architecture.md](docs/cart-drawer-architecture.md) for the drawer Module split, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
 
 ## Design System
 

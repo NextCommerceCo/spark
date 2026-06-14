@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 """
-Post-process Tailwind CSS v4 output to be compatible with
+Post-process Tailwind CSS v4 output so generated CSS stays compatible with
 the Next Commerce server-side Sass compiler.
 
-Strips:
-- @property declarations (CSS Houdini — progressive enhancement only)
-- oklch() color functions → hex equivalents
-- color-mix() → pre-computed RGBA values
+Transforms:
+- strip @property, @supports, and @layer wrappers
+- convert oklch() color functions to hex equivalents
+- replace known color-mix() patterns with pre-computed RGBA values
+- rewrite logical properties, :is()/:where(), media range syntax, and
+  scientific-notation lengths
+- fail if unsupported generated CSS remains after the transform
 
-Usage: python3 scripts/sass-compat.py assets/main.css
+Usage:
+  python3 scripts/sass-compat.py assets/main.css
+  python3 scripts/sass-compat.py --check assets/main.css
 """
 
+import argparse
 import re
 import sys
 
@@ -36,6 +42,66 @@ COLOR_MIX_REPLACEMENTS = {
     "color-mix(in oklab, var(--color-white) 70%, transparent)": "rgba(255,255,255,0.7)",
     "color-mix(in oklab, currentcolor 50%, transparent)": "rgba(128,128,128,0.5)",
 }
+
+SCIENTIFIC_NOTATION_LENGTH = re.compile(
+    r'(\d+(?:\.\d+)?)e[+\-]?\d+px',
+    re.IGNORECASE,
+)
+
+BANNED_GENERATED_PATTERNS = (
+    (
+        "@property",
+        re.compile(r'@property\b'),
+        "Houdini @property rules must be stripped before upload.",
+    ),
+    (
+        "@supports",
+        re.compile(r'@supports\b'),
+        "Feature-query wrappers can fail the platform Sass compiler.",
+    ),
+    (
+        "@layer",
+        re.compile(r'@layer\b'),
+        "Tailwind layer wrappers must be unwrapped before upload.",
+    ),
+    (
+        "oklch()",
+        re.compile(r'oklch\(', re.IGNORECASE),
+        "Convert OKLCH colors to hex or another legacy color format.",
+    ),
+    (
+        "color-mix()",
+        re.compile(r'color-mix\(', re.IGNORECASE),
+        "Only known color-mix patterns are safe to convert.",
+    ),
+    (
+        ":is()/:where()",
+        re.compile(r':(?:is|where)\(', re.IGNORECASE),
+        "Expand modern selector helpers before upload.",
+    ),
+    (
+        "logical property",
+        re.compile(
+            r'\b(?:padding|margin|inset|border)-(?:inline|block)(?:-(?:start|end))?\s*:'
+        ),
+        "Use physical left/right/top/bottom properties in generated CSS.",
+    ),
+    (
+        "inset shorthand",
+        re.compile(r'\binset\s*:'),
+        "Use explicit top/right/bottom/left declarations in generated CSS.",
+    ),
+    (
+        "media range syntax",
+        re.compile(r'\(\s*width\s*[<>]=?'),
+        "Use min-width/max-width media queries.",
+    ),
+    (
+        "scientific notation length",
+        SCIENTIFIC_NOTATION_LENGTH,
+        "Replace e-notation lengths with normal px values.",
+    ),
+)
 
 
 def strip_at_property(css):
@@ -150,6 +216,37 @@ def strip_supports_hyphens(css):
     return css
 
 
+def strip_at_rule_blocks(css, at_rule):
+    """Remove complete at-rule blocks such as @supports {...}.
+
+    Tailwind v4.2 emits feature-query wrappers that are valid browser CSS but
+    can trip the platform Sass parser before the browser ever sees them.
+    """
+    result = []
+    i = 0
+    needle = at_rule
+    while i < len(css):
+        if css.startswith(needle, i):
+            try:
+                brace = css.index('{', i)
+            except ValueError:
+                break
+            i = brace + 1
+            depth = 1
+            while i < len(css) and depth > 0:
+                if css[i] == '{':
+                    depth += 1
+                elif css[i] == '}':
+                    depth -= 1
+                i += 1
+        else:
+            result.append(css[i])
+            i += 1
+    if i < len(css):
+        result.append(css[i:])
+    return ''.join(result)
+
+
 def strip_at_layer(css):
     """Remove @layer wrappers — unwrap their contents.
     Sass can't parse @layer theme{...} or @layer base{...}.
@@ -211,6 +308,18 @@ def replace_logical_properties(css):
         r'margin-top:\1;margin-bottom:\1',
         css
     )
+    # border-inline:X -> border-left:X;border-right:X
+    css = re.sub(
+        r'border-inline:([^;}]+)',
+        r'border-left:\1;border-right:\1',
+        css
+    )
+    # border-block:X -> border-top:X;border-bottom:X
+    css = re.sub(
+        r'border-block:([^;}]+)',
+        r'border-top:\1;border-bottom:\1',
+        css
+    )
     # inset:X -> top:X;right:X;bottom:X;left:X
     css = re.sub(
         r'inset:([^;}]+)',
@@ -220,11 +329,20 @@ def replace_logical_properties(css):
     # padding-inline-start -> padding-left, padding-inline-end -> padding-right
     css = re.sub(r'padding-inline-start:', 'padding-left:', css)
     css = re.sub(r'padding-inline-end:', 'padding-right:', css)
+    css = re.sub(r'padding-block-start:', 'padding-top:', css)
+    css = re.sub(r'padding-block-end:', 'padding-bottom:', css)
     css = re.sub(r'margin-inline-start:', 'margin-left:', css)
     css = re.sub(r'margin-inline-end:', 'margin-right:', css)
-    css = re.sub(r'margin-inline-start:', 'margin-left:', css)
+    css = re.sub(r'margin-block-start:', 'margin-top:', css)
+    css = re.sub(r'margin-block-end:', 'margin-bottom:', css)
+    css = re.sub(r'inset-inline-start:', 'left:', css)
+    css = re.sub(r'inset-inline-end:', 'right:', css)
+    css = re.sub(r'inset-block-start:', 'top:', css)
+    css = re.sub(r'inset-block-end:', 'bottom:', css)
     css = re.sub(r'border-inline-start:', 'border-left:', css)
     css = re.sub(r'border-inline-end:', 'border-right:', css)
+    css = re.sub(r'border-block-start:', 'border-top:', css)
+    css = re.sub(r'border-block-end:', 'border-bottom:', css)
     return css
 
 
@@ -247,13 +365,13 @@ def replace_is_where_selectors(css):
 def fix_scientific_notation(css):
     """Replace scientific-notation lengths the platform's Sass parser rejects.
 
-    Tailwind v4 emits ``border-radius:3.40282e38px`` (i.e. ``Number.MAX_VALUE``)
-    for utilities like ``rounded-full``. The platform's Sass compiler errors
-    out on the ``e38`` exponent. Cap any e-notation length at 9999px, which
-    behaves identically for border-radius purposes (any value > half the
-    element's diagonal renders as a full pill).
+    Tailwind v4 can emit enormous e-notation values for utilities like
+    ``rounded-full``. The platform's Sass compiler errors out on the exponent.
+    Cap any e-notation length at 9999px, which behaves identically for
+    border-radius purposes (any value > half the element's diagonal renders as
+    a full pill).
     """
-    return re.sub(r'(\d+(?:\.\d+)?)e\d+px', '9999px', css)
+    return SCIENTIFIC_NOTATION_LENGTH.sub('9999px', css)
 
 
 def replace_media_range_syntax(css):
@@ -275,23 +393,13 @@ def replace_media_range_syntax(css):
     return css
 
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python3 scripts/sass-compat.py <input.css> [output.css]")
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-    output_file = sys.argv[2] if len(sys.argv) > 2 else input_file
-
-    with open(input_file, 'r') as f:
-        css = f.read()
-
-    original_size = len(css)
-
+def transform_css(css):
+    """Apply the known-safe Spark/Tailwind platform compatibility transforms."""
     css = replace_oklch(css)
     css = replace_color_mix(css)
     css = strip_at_property(css)
     css = strip_supports_hyphens(css)
+    css = strip_at_rule_blocks(css, '@supports')
     css = strip_at_layer(css)
     css = replace_logical_properties(css)
     css = replace_is_where_selectors(css)
@@ -300,13 +408,124 @@ def main():
 
     # Clean up empty lines
     css = re.sub(r'\n{3,}', '\n\n', css)
+    return css
+
+
+def line_number(css, offset):
+    """Return a 1-based line number for a character offset."""
+    return css.count('\n', 0, offset) + 1
+
+
+def snippet_for(css, match):
+    """Return a compact context snippet around a regex match."""
+    start = max(0, match.start() - 48)
+    end = min(len(css), match.end() + 96)
+    snippet = re.sub(r'\s+', ' ', css[start:end]).strip()
+    if start > 0:
+        snippet = '...' + snippet
+    if end < len(css):
+        snippet += '...'
+    return snippet
+
+
+def mask_css_comments(css):
+    """Replace comments with spaces so scanner offsets stay aligned."""
+    return re.sub(r'/\*[\s\S]*?\*/', lambda m: ' ' * len(m.group(0)), css)
+
+
+def find_unsupported_constructs(css):
+    """Return generated CSS constructs the platform compiler is known to reject."""
+    issues = []
+    searchable_css = mask_css_comments(css)
+    for name, pattern, guidance in BANNED_GENERATED_PATTERNS:
+        for match in pattern.finditer(searchable_css):
+            issues.append({
+                "name": name,
+                "line": line_number(css, match.start()),
+                "snippet": snippet_for(css, match),
+                "guidance": guidance,
+            })
+    return issues
+
+
+def print_unsupported_constructs(path, issues):
+    """Print clear failure messages for generated CSS compatibility issues."""
+    print(
+        "{} contains CSS that is unsafe for the platform compiler:".format(path),
+        file=sys.stderr,
+    )
+    for issue in issues[:20]:
+        print(
+            "- line {line}: {name}: {snippet}".format(**issue),
+            file=sys.stderr,
+        )
+        print("  {}".format(issue["guidance"]), file=sys.stderr)
+    if len(issues) > 20:
+        print(
+            "- ...and {} more issue(s).".format(len(issues) - 20),
+            file=sys.stderr,
+        )
+    print(
+        "Fix the source CSS or add a known-safe sass-compat transform, then rerun `make css-check`.",
+        file=sys.stderr,
+    )
+
+
+def parse_args(argv):
+    parser = argparse.ArgumentParser(
+        description="Post-process or verify Spark generated CSS for platform compatibility."
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="scan the CSS and fail if known unsupported generated constructs remain",
+    )
+    parser.add_argument(
+        "--no-strict",
+        action="store_true",
+        help="write transformed CSS even if unsupported constructs remain",
+    )
+    parser.add_argument("input_file")
+    parser.add_argument("output_file", nargs="?")
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv if argv is not None else sys.argv[1:])
+
+    input_file = args.input_file
+    output_file = args.output_file if args.output_file else input_file
+
+    with open(input_file, 'r') as f:
+        css = f.read()
+
+    if args.check:
+        issues = find_unsupported_constructs(css)
+        if issues:
+            print_unsupported_constructs(input_file, issues)
+            return 1
+        print("OK: {} contains no known unsupported CSS constructs.".format(input_file))
+        return 0
+
+    original_size = len(css)
+    css = transform_css(css)
+
+    issues = find_unsupported_constructs(css)
+    if issues and not args.no_strict:
+        print_unsupported_constructs(output_file, issues)
+        print(
+            "sass-compat refused to write CSS because an unsupported construct could not be safely converted.",
+            file=sys.stderr,
+        )
+        return 1
 
     with open(output_file, 'w') as f:
         f.write(css)
 
     final_size = len(css)
     print(f"Processed {input_file}: {original_size} → {final_size} bytes")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

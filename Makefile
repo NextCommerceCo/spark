@@ -5,7 +5,7 @@ TAILWIND = ./tailwindcss
 COMPAT = python3 scripts/sass-compat.py
 TAILWIND_VERSION = v4.2.2
 
-.PHONY: dev build css watch push release install-tailwind
+.PHONY: dev build css css-check verify-theme test watch push release install-tailwind
 
 # Run both Tailwind watcher and ntk watcher in parallel
 dev:
@@ -15,18 +15,34 @@ dev:
 	@$(TAILWIND) -i css/input.css -o assets/main.css --watch &
 	@ntk watch
 
-# Compile Tailwind once + post-process for Sass compatibility
+# Compile Tailwind once + post-process for Sass compatibility.
+# assets/main.css is updated only after the strict compat pass succeeds.
 css:
-	$(TAILWIND) -i css/input.css -o assets/main.css --minify
-	$(COMPAT) assets/main.css
+	@set -e; \
+	TMP_CSS=$$(mktemp); \
+	trap 'rm -f "$$TMP_CSS"' EXIT; \
+	$(TAILWIND) -i css/input.css -o "$$TMP_CSS" --minify; \
+	$(COMPAT) "$$TMP_CSS" assets/main.css
+
+# Build CSS and fail if generated output still contains platform-unsafe CSS.
+css-check: css
+	$(COMPAT) --check assets/main.css
 
 # Build for production (compile + minify + sass-compat)
-build: css
+build: css-check
 	@echo "Build complete. Push with: ntk push assets/main.css"
 
 # Build + push CSS to store
-push: css
+push: css-check
 	ntk push assets/main.css
+
+# Lightweight local regression tests for theme tooling.
+test:
+	python3 -m unittest discover -s tests
+
+# Full pre-upload verification for generated theme artifacts.
+verify-theme: css-check test
+	@echo "Theme verification complete."
 
 # Watch Tailwind only (useful when running ntk watch separately)
 watch:
@@ -35,7 +51,7 @@ watch:
 # Production release: rebuild main.css and stage it for commit.
 # Run this before committing CSS source changes so the committed
 # main.css stays in sync with css/input.css.
-release: css
+release: css-check
 	@git add assets/main.css
 	@echo "main.css rebuilt and staged. Commit it with your CSS source changes."
 

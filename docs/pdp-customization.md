@@ -10,8 +10,9 @@ Keep these surfaces working unless the task explicitly removes them:
 
 | Surface | Required markup or behavior | Why it matters |
 | --- | --- | --- |
-| Product data JSON | `{{ product.data|json_script:"product-data" }}` in `extrascripts` | `SparkVariantState` needs child products, purchase info, images, and attributes. |
+| Product data JSON | `{{ product.data|json_script:"product-data" }}` in `extrascripts`, before inline variant initialization | `SparkVariantState` needs child products, purchase info, images, and attributes after PDP component scripts have loaded. |
 | Variant controls | Real controls named `attr_<code>` using values from `variant_form` | Child-product matching depends on form names and option values, not the visual labels. |
+| Purchase info session | `{% purchase_info_for_product request product as session %}` before price and availability branches | `session.price` and `session.availability` are the source for initial price, compare-at, and sold-out state. |
 | Price bindings | Visible price node with `data-price`; compare-at node with `data-price-retail` | Variant changes update these nodes from child `purchase_info`. |
 | Add-to-cart form | `id="add-to-cart"`, POST action to `{% url 'cart:add' pk=product.pk %}`, CSRF token, hidden cart fields, submit button | No-JS fallback, GraphQL enhancement, and variant form-action updates all rely on this form. |
 | Quantity | Real `quantity` field or `<spark-quantity name="quantity">` inside the form | Cart line quantity must submit through both fallback POST and GraphQL enhancement. |
@@ -26,6 +27,8 @@ Missing product data, variant controls, price bindings, the add-to-cart form, CS
 ## Implementation Pattern
 
 Start from the existing Spark PDP and wrap or restyle behavior-critical controls instead of replacing them with purely decorative markup.
+
+Keep PDP component scripts in `component_scripts` and the product data JSON plus initialization script in `extrascripts`. In `layouts/base.html`, `component_scripts` run before `extrascripts`; the product template relies on that order so `SparkVariantState` exists before the inline initializer reads `#product-data`.
 
 Variant pickers can be dropdowns, radios, swatches, or custom buttons. The visual layer is flexible; the form controls are not. Every picker option must drive a real input/select name from `field.html_name` and a value from `field.field.choices`.
 
@@ -47,7 +50,11 @@ Keep price nodes addressable:
 
 ```django
 <span data-price>{{ session.price.price|currency:session.price.currency }}</span>
-<del data-price-retail{% if not compare_price %} hidden{% endif %}>...</del>
+{% if session.price.price_retail > session.price.price %}
+    <del data-price-retail>{{ session.price.price_retail|currency:session.price.currency }}</del>
+{% else %}
+    <del data-price-retail hidden></del>
+{% endif %}
 ```
 
 Keep the cart form intact and let Spark enhance it:
@@ -61,6 +68,8 @@ Keep the cart form intact and let Spark enhance it:
             {{ field }}
         {% elif field.name == 'quantity' %}
             <spark-quantity name="quantity" value="1" min="1" max="{{ max_cart_quantity_per_line|default:15 }}"></spark-quantity>
+        {% else %}
+            {{ field }}
         {% endif %}
     {% endfor %}
     <button type="submit" id="add-to-cart-btn">{% t "store.catalogue.add_to_cart" %}</button>
@@ -100,7 +109,7 @@ Run this console audit as a quick smoke check:
     retailPriceNode: !!document.querySelector('[data-price-retail]'),
     addToCartForm: !!form,
     csrf: !!(form && form.querySelector('[name="csrfmiddlewaretoken"]')),
-    quantity: !!(form && form.querySelector('[name="quantity"], spark-quantity')),
+    quantity: !!(form && form.querySelector('[name="quantity"], spark-quantity[name="quantity"]')),
     submitButton: !!(form && form.querySelector('button[type="submit"]')),
     subscription: !!document.querySelector('spark-subscription'),
     stickyCta: !!document.getElementById('sticky-atc'),
@@ -137,6 +146,7 @@ Spark's current PDP is one template plus helper scripts. When repeated custom PD
 | `partials/product_variant_picker.html` | `variant_form` controls named `attr_*` plus visual picker variants. |
 | `partials/product_cart_form.html` | `cart_form`, quantity, subscription, CSRF, and submit button. |
 | `partials/product_trust_strip.html` | Trust, guarantees, shipping notes, and merchant proof points. |
+| `partials/product_description.html` | Product description content and `product_description_placement` layout behavior. |
 | `partials/product_size_guide.html` | Size guide content, ideally backed by product/category metadata or settings. |
 | `partials/product_reviews.html` | Native reviews and app review hooks. |
 | `partials/product_related.html` | Recommended and related products. |

@@ -1,12 +1,12 @@
 /**
- * Spark Theme — Core JavaScript
+ * Spark Theme - Core JavaScript
  * No jQuery, no frameworks. Self-contained vanilla JS.
  */
 
 (function() {
     'use strict';
 
-    /* ─── Mobile Navigation ─── */
+    /* Mobile Navigation */
 
     const DESKTOP_NAV_MEDIA_QUERY = '(min-width: 48rem)';
 
@@ -62,7 +62,7 @@
         }
     }
 
-    /* ─── Search Overlay ─── */
+    /* Search Overlay */
 
     function initSearchOverlay() {
         var overlay = document.getElementById('search-overlay');
@@ -105,7 +105,7 @@
         });
     }
 
-    /* ─── Side Cart ─── */
+    /* Side Cart */
 
     function initSideCart() {
         // Cart icon click dispatches toggle event (handled in side_cart.html)
@@ -121,7 +121,7 @@
         });
     }
 
-    /* ─── Product Variant & Cart ─── */
+    /* Product Variant & Cart */
 
     window.theme = window.theme || {};
     theme.product = {
@@ -199,7 +199,7 @@
         });
     }
 
-    /* ─── Announcement Bar Dismiss ─── */
+    /* Announcement Bar Dismiss */
 
     function initAnnouncementBar() {
         var dismissBtn = document.querySelector('[data-dismiss="announcement-bar"]');
@@ -224,7 +224,7 @@
         } catch(e) {}
     }
 
-    /* ─── Reduced Motion ─── */
+    /* Reduced Motion */
 
     function respectReducedMotion() {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -232,7 +232,7 @@
         }
     }
 
-    /* ─── Init ─── */
+    /* Init */
 
     document.addEventListener('DOMContentLoaded', function() {
         initMobileNav();

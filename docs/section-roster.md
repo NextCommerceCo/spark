@@ -372,7 +372,7 @@ sections in this roster. A representative premium D2C reference set
 covering home, about, multiple PDP layouts, technology / explainer
 pages, and membership pages composes from Tier 0 + Tier 1 only — no
 bespoke partial work needed once Tier 1 ships. Concrete page
-compositions are tracked separately as private merchant briefs and
+compositions are tracked separately as merchant-specific briefs and
 are not part of this public roster.
 
 ## Open decisions from `figma-section-library-plan.md`, resolved

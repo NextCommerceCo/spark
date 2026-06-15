@@ -21,6 +21,7 @@ The compiled `assets/main.css` is committed to the repo, so NEXT developers can 
    pip install next-theme-kit
    ntk init
    ```
+   `ntk init` writes a local `config.yml` with your API key, store domain, and theme id. That file is gitignored. If you prefer to create it by hand, copy `config.example.yml` to `config.yml` and replace the placeholder values.
 
 2. Push the theme to your store for the initial install:
    ```bash
@@ -133,6 +134,8 @@ All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, co
 ## Public Repo Notes
 
 The `.gitignore` file is intentionally committed. It documents local files that must stay out of the public repository, including store-specific `config.yml`, downloaded Tailwind binaries, tool session state, OS files, and editor settings.
+
+See [SECURITY.md](SECURITY.md) for private vulnerability reporting and secrets-handling guidance.
 
 ## License
 

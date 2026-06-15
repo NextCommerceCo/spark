@@ -18,8 +18,8 @@
     }
 
     body {
-        background: #f4f7fa;
-        color: #142033;
+        background: #eef3f7;
+        color: #172033;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -28,350 +28,226 @@
         width: 600px;
         height: 450px;
         overflow: hidden;
-        background: radial-gradient(circle at 50% 0, #fff 0, #f7f9fb 54%, #eef3f7 100%);
+        background:
+            radial-gradient(circle at 20% 10%, rgb(255 255 255 / 88%), transparent 38%),
+            linear-gradient(180deg, #f7fafc 0%, #e9f0f5 100%);
     }
 
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: max-content;
-        color: #142033;
-    }
-
-    .bolt-mark {
-        width: 47px;
-        height: 63px;
-        flex: 0 0 auto;
-        display: block;
-    }
-
-    .wordmark {
-        position: relative;
-        color: currentColor;
-        font-size: 58px;
-        font-weight: 800;
-        line-height: 0.9;
-        letter-spacing: -2.4px;
-    }
-
-    .wordmark::after {
-        content: "";
+    .theme-shot {
         position: absolute;
-        left: 18px;
-        right: 12px;
-        bottom: -9px;
-        height: 2px;
-        background: currentColor;
-        border-radius: 999px;
-        opacity: 0.18;
+        left: 43px;
+        top: 26px;
+        width: 514px;
+        height: 386px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #d9e2eb;
+        border-radius: 8px;
+        box-shadow: 0 28px 70px rgb(24 38 57 / 18%);
     }
 
-    .surface {
-        background: rgb(255 255 255 / 94%);
-        border: 1px solid #dce4ed;
-        box-shadow: 0 22px 60px rgb(25 38 55 / 13%);
-    }
-
-    .top {
+    .store {
         position: absolute;
-        left: 42px;
-        right: 42px;
-        top: 34px;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 0%;
+    }
+
+    .store-chrome {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 42%);
+    }
+
+    .spark-nav {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 42px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 0 18px 0 17px;
+        background: rgb(255 255 255 / 92%);
+        border-bottom: 1px solid rgb(23 32 51 / 8%);
+        backdrop-filter: blur(10px);
     }
 
-    .tiny-label {
-        color: #667085;
-        font-size: 8px;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #143522;
+        font-size: 11px;
+        font-weight: 760;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
     }
 
-    .mock-nav {
-        height: 24px;
+    .bolt {
+        width: 15px;
+        height: 21px;
+        background: #f5b21b;
+        clip-path: polygon(56% 0, 10% 54%, 45% 54%, 32% 100%, 90% 37%, 53% 37%);
+    }
+
+    .nav-links {
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding: 0 12px;
-        border-bottom: 1px solid #e3eaf1;
+        gap: 17px;
+        color: rgb(20 32 51 / 64%);
+        font-size: 7px;
+        font-weight: 720;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
     }
 
-    .mock-nav i {
-        display: block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #cbd3de;
-    }
-
-    .mock-nav strong {
-        width: 34px;
-        height: 4px;
-        margin-left: auto;
-        border-radius: 2px;
-        background: #cbd3de;
-    }
-
-    .hero {
-        position: absolute;
-        left: 42px;
-        top: 126px;
-        width: 318px;
-        height: 156px;
-        overflow: hidden;
-    }
-
-    .hero-main {
-        position: relative;
-        height: 132px;
-        background: #121c2f;
-    }
-
-    .hero-main::before {
-        content: "";
-        position: absolute;
-        left: 28px;
-        top: 30px;
-        width: 112px;
-        height: 10px;
-        border-radius: 5px;
-        background: #fff;
-        box-shadow:
-            0 21px 0 rgb(255 255 255 / 50%),
-            0 47px 0 #0f766e;
-    }
-
-    .hero-main::after {
-        content: "";
-        position: absolute;
-        right: 34px;
-        top: 30px;
-        width: 66px;
-        height: 66px;
-        border: 13px solid #40516a;
-        border-radius: 50%;
-        box-shadow: inset 0 0 0 14px #121c2f;
-    }
-
-    .cart {
-        position: absolute;
-        right: 42px;
-        top: 151px;
-        width: 164px;
-        height: 204px;
-        padding: 18px;
-    }
-
-    .cart h2 {
-        width: 76px;
-        height: 7px;
-        margin: 0 0 14px;
-        background: #142033;
-        border-radius: 2px;
-    }
-
-    .cart-row {
-        position: relative;
-        height: 44px;
-        border-top: 1px solid #e3eaf1;
-    }
-
-    .cart-row::before {
-        content: "";
-        position: absolute;
-        top: 12px;
-        width: 29px;
-        height: 22px;
-        border-radius: 2px;
-        background: #f0f4f8;
-    }
-
-    .cart-row::after {
-        content: "";
-        position: absolute;
-        left: 40px;
-        top: 14px;
-        width: 70px;
-        height: 5px;
-        border-radius: 2px;
-        background: #142033;
-        box-shadow: 0 11px 0 #c9d2de;
-    }
-
-    .meter {
-        position: absolute;
-        left: 18px;
-        right: 18px;
-        bottom: 21px;
-        height: 8px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: #dde5ee;
-    }
-
-    .meter::before {
-        content: "";
-        display: block;
-        width: 68%;
-        height: 100%;
-        background: #0f766e;
-    }
-
-    .cards {
-        position: absolute;
-        left: 62px;
-        top: 304px;
-        display: grid;
-        grid-template-columns: repeat(3, 92px);
-        gap: 13px;
-    }
-
-    .product-card {
-        height: 102px;
-        background: #fff;
-        border: 1px solid #e1e8ef;
-    }
-
-    .product-art {
-        height: 74px;
-        display: grid;
-        place-items: center;
-        background: #f2f5f8;
-    }
-
-    .product-card b {
-        display: block;
-        width: 52px;
-        height: 5px;
-        margin: 9px 10px 0;
-        background: #142033;
-        border-radius: 2px;
-    }
-
-    .product-card span {
-        display: block;
-        width: 34px;
-        height: 4px;
-        margin: 7px 10px 11px;
-        background: #f97362;
-        border-radius: 2px;
-    }
-
-    .settings {
-        position: absolute;
-        left: 256px;
-        top: 291px;
-        width: 150px;
-        height: 82px;
-        padding: 15px;
-    }
-
-    .swatches {
+    .nav-icons {
         display: flex;
-        gap: 8px;
-        margin-bottom: 13px;
+        align-items: center;
+        gap: 9px;
     }
 
-    .swatches i {
+    .nav-icons i {
         display: block;
-        width: 23px;
-        height: 23px;
+        width: 10px;
+        height: 10px;
+        border: 1.4px solid #172033;
+        border-radius: 50%;
+        opacity: 0.78;
+    }
+
+    .nav-icons i:nth-child(2) {
+        width: 9px;
+        height: 11px;
+        border-radius: 5px 5px 3px 3px;
+    }
+
+    .hero-copy {
+        position: absolute;
+        left: 24px;
+        top: 92px;
+        width: 168px;
+        padding: 16px 17px 15px;
+        background: rgb(255 255 255 / 83%);
+        border: 1px solid rgb(255 255 255 / 70%);
+        box-shadow: 0 18px 42px rgb(24 38 57 / 12%);
+        backdrop-filter: blur(12px);
+    }
+
+    .eyebrow {
+        width: 54px;
+        height: 5px;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: #143522;
+    }
+
+    .headline {
+        width: 124px;
+        height: 9px;
+        border-radius: 999px;
+        background: #172033;
+        box-shadow:
+            0 15px 0 #172033,
+            0 30px 0 rgb(23 32 51 / 38%);
+    }
+
+    .cta {
+        width: 66px;
+        height: 19px;
+        margin-top: 47px;
+        border-radius: 999px;
+        background: #143522;
+    }
+
+    .collection-strip {
+        position: absolute;
+        left: 21px;
+        right: 21px;
+        bottom: 18px;
+        height: 86px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .collection {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgb(255 255 255 / 60%);
+        background: rgb(255 255 255 / 70%);
+        box-shadow: 0 14px 32px rgb(24 38 57 / 10%);
+        backdrop-filter: blur(12px);
+    }
+
+    .collection::before {
+        content: "";
+        position: absolute;
+        left: 13px;
+        right: 13px;
+        top: 15px;
+        height: 40px;
         border-radius: 5px;
+        background:
+            linear-gradient(145deg, rgb(255 255 255 / 80%), rgb(224 213 198 / 80%)),
+            #f5efe8;
     }
 
-    .swatches i:nth-child(1) {
-        background: #142033;
-    }
-
-    .swatches i:nth-child(2) {
-        background: #0f766e;
-    }
-
-    .swatches i:nth-child(3) {
-        background: #f5b21b;
-    }
-
-    .swatches i:nth-child(4) {
-        background: #f97362;
-    }
-
-    .settings-line {
-        width: 108px;
+    .collection::after {
+        content: "";
+        position: absolute;
+        left: 13px;
+        bottom: 13px;
+        width: 55px;
         height: 5px;
         border-radius: 999px;
-        background: #142033;
-        box-shadow: 0 13px 0 #cbd3de;
+        background: #172033;
+        box-shadow: 0 10px 0 #d5bfa5;
+    }
+
+    .store-depth {
+        position: absolute;
+        left: 88px;
+        right: 88px;
+        bottom: 11px;
+        height: 5px;
+        border-radius: 0 0 999px 999px;
+        background: rgb(112 128 144 / 20%);
+        filter: blur(3px);
     }
 </style>
 </head>
 <body>
-<main class="frame" aria-label="Spark theme thumbnail">
-    <div class="top">
-        <div class="logo" aria-label="Spark">
-            <svg class="bolt-mark" viewBox="0 0 72 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M38 2L10 50H34L23 94L66 36H40L54 2H38Z" fill="#F5B21B"/>
-            </svg>
-            <div class="wordmark">Spark</div>
-        </div>
-        <div class="tiny-label">Commerce system</div>
-    </div>
+<main class="frame" aria-label="Spark theme store thumbnail">
+    <section class="theme-shot" aria-label="Realistic Spark demo storefront">
+        <img class="store" src="source-wellness.jpg" alt="">
+        <div class="store-chrome"></div>
 
-    <section class="hero surface" aria-label="Storefront hero preview">
-        <div class="mock-nav"><i></i><i></i><i></i><strong></strong></div>
-        <div class="hero-main"></div>
-    </section>
+        <nav class="spark-nav" aria-label="Demo storefront navigation">
+            <div class="brand"><span class="bolt"></span><span>Spark</span></div>
+            <div class="nav-links"><span>Shop</span><span>Rituals</span><span>Journal</span></div>
+            <div class="nav-icons"><i></i><i></i></div>
+        </nav>
 
-    <section class="cart surface" aria-label="Cart drawer preview">
-        <h2></h2>
-        <div class="cart-row"></div>
-        <div class="cart-row"></div>
-        <div class="meter"></div>
-    </section>
+        <div class="hero-copy" aria-hidden="true">
+            <div class="eyebrow"></div>
+            <div class="headline"></div>
+            <div class="cta"></div>
+        </div>
 
-    <section class="cards" aria-label="Product card previews">
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="42" y="42" width="66" height="58" rx="2" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <path d="M58 45V34C58 22 66 15 75 15C84 15 92 22 92 34V45" stroke="#C4CCD8" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M54 66H96" stroke="#0F766E" stroke-width="5" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <b></b>
-            <span></span>
-        </div>
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="67" y="18" width="17" height="20" rx="3" fill="#D8E0EA"/>
-                    <rect x="56" y="36" width="39" height="64" rx="10" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <rect x="64" y="63" width="23" height="10" rx="2" fill="#F5B21B"/>
-                </svg>
-            </div>
-            <b></b>
-            <span></span>
-        </div>
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="45" y="38" width="60" height="46" rx="8" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <path d="M52 82C72 57 96 58 105 82" stroke="#F97362" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M58 51H92" stroke="#CBD3DE" stroke-width="4" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <b></b>
-            <span></span>
+        <div class="collection-strip" aria-hidden="true">
+            <div class="collection"></div>
+            <div class="collection"></div>
+            <div class="collection"></div>
+            <div class="collection"></div>
         </div>
     </section>
-
-    <section class="settings surface" aria-label="Theme settings preview">
-        <div class="swatches"><i></i><i></i><i></i><i></i></div>
-        <div class="settings-line"></div>
-    </section>
+    <div class="store-depth" aria-hidden="true"></div>
 </main>
 </body>
 </html>

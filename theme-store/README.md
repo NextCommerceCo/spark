@@ -5,7 +5,10 @@ This directory contains the source and rendered asset used for Spark's listing i
 | File | Purpose |
 | --- | --- |
 | `thumbnail.html` | Source markup for the dashboard thumbnail. |
-| `source-gadget.jpg` | Source product image used by `thumbnail.html`. Keep this committed so the thumbnail is reproducible from a fresh clone. |
+| `source-gadget.jpg` | Original generated product image. Keep this committed so the thumbnail crops are reproducible from a fresh clone. |
+| `source-gadget-wide.jpg` | Cropped source for the wide hero product image. |
+| `source-gadget-front.jpg` | Cropped source for the product-front tile. |
+| `source-gadget-shelf.jpg` | Cropped source for the shelf/product tile. |
 | `theme-spark-thumb.png` | Rendered `600x450` dashboard thumbnail. |
 
 When changing `thumbnail.html` or `source-gadget.jpg`, regenerate `theme-spark-thumb.png` at `600x450` and commit all changed source assets with the rendered PNG.

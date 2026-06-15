@@ -18,9 +18,9 @@
     }
 
     body {
-        background: #f4f7fa;
-        color: #142033;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #edf6ff;
+        color: #071532;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     .frame {
@@ -28,350 +28,292 @@
         width: 600px;
         height: 450px;
         overflow: hidden;
-        background: radial-gradient(circle at 50% 0, #fff 0, #f7f9fb 54%, #eef3f7 100%);
+        background:
+            radial-gradient(circle at 50% -10%, rgb(255 255 255 / 92%), transparent 44%),
+            linear-gradient(135deg, #f8fcff 0%, #e7f4ff 46%, #d3e9ff 100%);
     }
 
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: max-content;
-        color: #142033;
-    }
-
-    .bolt-mark {
-        width: 47px;
-        height: 63px;
-        flex: 0 0 auto;
-        display: block;
-    }
-
-    .wordmark {
-        position: relative;
-        color: currentColor;
-        font-size: 58px;
-        font-weight: 800;
-        line-height: 0.9;
-        letter-spacing: -2.4px;
-    }
-
-    .wordmark::after {
+    .frame::before {
         content: "";
         position: absolute;
-        left: 18px;
-        right: 12px;
-        bottom: -9px;
-        height: 2px;
-        background: currentColor;
-        border-radius: 999px;
-        opacity: 0.18;
+        inset: 0;
+        background:
+            linear-gradient(90deg, rgb(51 102 252 / 9%) 1px, transparent 1px),
+            linear-gradient(180deg, rgb(51 102 252 / 8%) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: linear-gradient(180deg, rgb(0 0 0 / 70%), transparent 72%);
     }
 
-    .surface {
-        background: rgb(255 255 255 / 94%);
-        border: 1px solid #dce4ed;
-        box-shadow: 0 22px 60px rgb(25 38 55 / 13%);
-    }
-
-    .top {
+    .theme-shot {
         position: absolute;
-        left: 42px;
-        right: 42px;
-        top: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        left: 40px;
+        top: 24px;
+        width: 520px;
+        height: 392px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #b9d8ff;
+        border-radius: 8px;
+        box-shadow:
+            0 28px 70px rgb(10 32 78 / 18%),
+            0 0 0 8px rgb(255 255 255 / 38%);
     }
 
-    .tiny-label {
-        color: #667085;
-        font-size: 8px;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+    .promo {
+        height: 18px;
+        display: grid;
+        place-items: center;
+        color: #083b9a;
+        background: #d9f0ff;
+        border-bottom: 1px solid #b9d8ff;
+        font-size: 6px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
     }
 
-    .mock-nav {
-        height: 24px;
+    .nav {
+        height: 44px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 0 20px;
+        border-bottom: 1px solid #deebfb;
+        background: #fff;
+    }
+
+    .brand,
+    .spark-logo {
         display: flex;
         align-items: center;
-        gap: 6px;
-        padding: 0 12px;
-        border-bottom: 1px solid #e3eaf1;
+        color: #071532;
     }
 
-    .mock-nav i {
+    .brand {
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .spark-logo {
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .bolt {
         display: block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #cbd3de;
+        flex: 0 0 auto;
+        width: 17px;
+        height: 23px;
+        background: linear-gradient(180deg, #6bc7ff 0%, #3366fc 68%, #234ee8 100%);
+        clip-path: polygon(56% 0, 10% 54%, 45% 54%, 32% 100%, 90% 37%, 53% 37%);
     }
 
-    .mock-nav strong {
-        width: 34px;
-        height: 4px;
-        margin-left: auto;
-        border-radius: 2px;
-        background: #cbd3de;
+    .spark-logo .bolt {
+        width: 30px;
+        height: 41px;
+    }
+
+    .wordmark {
+        color: #071532;
+        font-size: 50px;
+        line-height: 0.9;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+    }
+
+    .links {
+        display: flex;
+        gap: 28px;
+        color: #10234d;
+        font-size: 7px;
+        font-weight: 700;
+    }
+
+    .icons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .icons i {
+        display: block;
+        width: 12px;
+        height: 12px;
+        border: 1.6px solid #10234d;
+        border-radius: 50%;
+    }
+
+    .icons i:nth-child(2) {
+        width: 10px;
+        border-radius: 6px 6px 3px 3px;
     }
 
     .hero {
-        position: absolute;
-        left: 42px;
-        top: 126px;
-        width: 318px;
-        height: 156px;
-        overflow: hidden;
-    }
-
-    .hero-main {
-        position: relative;
-        height: 132px;
-        background: #121c2f;
-    }
-
-    .hero-main::before {
-        content: "";
-        position: absolute;
-        left: 28px;
-        top: 30px;
-        width: 112px;
-        height: 10px;
-        border-radius: 5px;
-        background: #fff;
-        box-shadow:
-            0 21px 0 rgb(255 255 255 / 50%),
-            0 47px 0 #0f766e;
-    }
-
-    .hero-main::after {
-        content: "";
-        position: absolute;
-        right: 34px;
-        top: 30px;
-        width: 66px;
-        height: 66px;
-        border: 13px solid #40516a;
-        border-radius: 50%;
-        box-shadow: inset 0 0 0 14px #121c2f;
-    }
-
-    .cart {
-        position: absolute;
-        right: 42px;
-        top: 151px;
-        width: 164px;
-        height: 204px;
-        padding: 18px;
-    }
-
-    .cart h2 {
-        width: 76px;
-        height: 7px;
-        margin: 0 0 14px;
-        background: #142033;
-        border-radius: 2px;
-    }
-
-    .cart-row {
-        position: relative;
-        height: 44px;
-        border-top: 1px solid #e3eaf1;
-    }
-
-    .cart-row::before {
-        content: "";
-        position: absolute;
-        top: 12px;
-        width: 29px;
-        height: 22px;
-        border-radius: 2px;
-        background: #f0f4f8;
-    }
-
-    .cart-row::after {
-        content: "";
-        position: absolute;
-        left: 40px;
-        top: 14px;
-        width: 70px;
-        height: 5px;
-        border-radius: 2px;
-        background: #142033;
-        box-shadow: 0 11px 0 #c9d2de;
-    }
-
-    .meter {
-        position: absolute;
-        left: 18px;
-        right: 18px;
-        bottom: 21px;
-        height: 8px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: #dde5ee;
-    }
-
-    .meter::before {
-        content: "";
-        display: block;
-        width: 68%;
-        height: 100%;
-        background: #0f766e;
-    }
-
-    .cards {
-        position: absolute;
-        left: 62px;
-        top: 304px;
         display: grid;
-        grid-template-columns: repeat(3, 92px);
-        gap: 13px;
+        grid-template-columns: 1fr 228px;
+        gap: 20px;
+        height: 330px;
+        padding: 28px 28px 0;
     }
 
-    .product-card {
-        height: 102px;
-        background: #fff;
-        border: 1px solid #e1e8ef;
+    .hero-copy {
+        padding-top: 6px;
     }
 
-    .product-art {
-        height: 74px;
-        display: grid;
-        place-items: center;
-        background: #f2f5f8;
+    h1 {
+        max-width: 100%;
+        margin: 0;
+        color: #071532;
+        font-size: 24px;
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -0.035em;
     }
 
-    .product-card b {
-        display: block;
-        width: 52px;
-        height: 5px;
-        margin: 9px 10px 0;
-        background: #142033;
-        border-radius: 2px;
+    .lead {
+        width: 225px;
+        margin: 13px 0 15px;
+        color: #466286;
+        font-size: 10px;
+        line-height: 1.35;
+        font-weight: 600;
     }
 
-    .product-card span {
-        display: block;
-        width: 34px;
-        height: 4px;
-        margin: 7px 10px 11px;
-        background: #f97362;
-        border-radius: 2px;
-    }
-
-    .settings {
-        position: absolute;
-        left: 256px;
-        top: 291px;
-        width: 150px;
-        height: 82px;
-        padding: 15px;
-    }
-
-    .swatches {
+    .cta-row {
         display: flex;
-        gap: 8px;
-        margin-bottom: 13px;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 15px;
     }
 
-    .swatches i {
+    .cta {
+        min-width: 118px;
+        height: 31px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #234ee8;
+        border-radius: 7px;
+        background: #3366fc;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        box-shadow:
+            inset 0 3px 4px rgb(104 166 255 / 58%),
+            0 10px 24px rgb(51 102 252 / 28%);
+    }
+
+    .tag {
+        color: #234ee8;
+        font-size: 8px;
+        line-height: 1.2;
+        font-weight: 800;
+    }
+
+    .hero-visual {
+        padding-top: 10px;
+    }
+
+    .image-stack {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        overflow: hidden;
+        border-radius: 7px;
+    }
+
+    .image-stack .wide {
+        grid-column: 1 / -1;
+        height: 134px;
+    }
+
+    .image-stack .half {
+        height: 92px;
+    }
+
+    .image-stack img {
         display: block;
-        width: 23px;
-        height: 23px;
-        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        background: #eef6ff;
     }
 
-    .swatches i:nth-child(1) {
-        background: #142033;
+    .next-panel {
+        margin-top: 12px;
+        padding: 11px 12px;
+        border: 1px solid #cfe3ff;
+        border-radius: 7px;
+        background: linear-gradient(135deg, #f7fbff, #edf6ff);
     }
 
-    .swatches i:nth-child(2) {
-        background: #0f766e;
+    .next-panel b {
+        display: block;
+        margin-bottom: 4px;
+        color: #083b9a;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
 
-    .swatches i:nth-child(3) {
-        background: #f5b21b;
+    .next-panel span {
+        display: block;
+        color: #466286;
+        font-size: 8px;
+        line-height: 1.35;
+        font-weight: 600;
     }
 
-    .swatches i:nth-child(4) {
-        background: #f97362;
-    }
-
-    .settings-line {
-        width: 108px;
+    .shadow {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        bottom: 12px;
         height: 5px;
         border-radius: 999px;
-        background: #142033;
-        box-shadow: 0 13px 0 #cbd3de;
+        background: rgb(58 94 140 / 18%);
+        filter: blur(3px);
     }
 </style>
 </head>
 <body>
 <main class="frame" aria-label="Spark theme thumbnail">
-    <div class="top">
-        <div class="logo" aria-label="Spark">
-            <svg class="bolt-mark" viewBox="0 0 72 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M38 2L10 50H34L23 94L66 36H40L54 2H38Z" fill="#F5B21B"/>
-            </svg>
-            <div class="wordmark">Spark</div>
-        </div>
-        <div class="tiny-label">Commerce system</div>
-    </div>
+    <section class="theme-shot" aria-label="Spark storefront theme preview">
+        <div class="promo">Built for NEXT stores</div>
+        <nav class="nav" aria-label="Demo storefront navigation">
+            <div class="brand"><span class="bolt"></span><span>Spark</span></div>
+            <div class="links"><span>Home</span><span>Shop</span><span>Support</span></div>
+            <div class="icons"><i></i><i></i></div>
+        </nav>
 
-    <section class="hero surface" aria-label="Storefront hero preview">
-        <div class="mock-nav"><i></i><i></i><i></i><strong></strong></div>
-        <div class="hero-main"></div>
-    </section>
-
-    <section class="cart surface" aria-label="Cart drawer preview">
-        <h2></h2>
-        <div class="cart-row"></div>
-        <div class="cart-row"></div>
-        <div class="meter"></div>
-    </section>
-
-    <section class="cards" aria-label="Product card previews">
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="42" y="42" width="66" height="58" rx="2" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <path d="M58 45V34C58 22 66 15 75 15C84 15 92 22 92 34V45" stroke="#C4CCD8" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M54 66H96" stroke="#0F766E" stroke-width="5" stroke-linecap="round"/>
-                </svg>
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="spark-logo"><span class="bolt"></span><span class="wordmark">Spark</span></div>
+                <h1>The latest NEXT theme tuned for high performance ecommerce.</h1>
+                <p class="lead">A polished storefront foundation with fast sections, clean product pages, and native cart flows.</p>
+                <div class="cta-row">
+                    <span class="cta">Launch faster</span>
+                    <span class="tag">NEXT<br>optimized</span>
+                </div>
             </div>
-            <b></b>
-            <span></span>
-        </div>
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="67" y="18" width="17" height="20" rx="3" fill="#D8E0EA"/>
-                    <rect x="56" y="36" width="39" height="64" rx="10" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <rect x="64" y="63" width="23" height="10" rx="2" fill="#F5B21B"/>
-                </svg>
-            </div>
-            <b></b>
-            <span></span>
-        </div>
-        <div class="product-card">
-            <div class="product-art">
-                <svg viewBox="0 0 150 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="45" y="38" width="60" height="46" rx="8" fill="#fff" stroke="#D7DEE8" stroke-width="2"/>
-                    <path d="M52 82C72 57 96 58 105 82" stroke="#F97362" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M58 51H92" stroke="#CBD3DE" stroke-width="4" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <b></b>
-            <span></span>
-        </div>
-    </section>
 
-    <section class="settings surface" aria-label="Theme settings preview">
-        <div class="swatches"><i></i><i></i><i></i><i></i></div>
-        <div class="settings-line"></div>
+            <div class="hero-visual">
+                <div class="image-stack">
+                    <div class="wide"><img src="source-gadget-wide.jpg" alt=""></div>
+                    <div class="half product-front"><img src="source-gadget-front.jpg" alt=""></div>
+                    <div class="half product-shelf"><img src="source-gadget-shelf.jpg" alt=""></div>
+                </div>
+                <div class="next-panel">
+                    <b>Built for NEXT</b>
+                    <span>Theme store ready, fast by default, and designed for real catalogs.</span>
+                </div>
+            </div>
+        </section>
     </section>
+    <div class="shadow" aria-hidden="true"></div>
 </main>
 </body>
 </html>

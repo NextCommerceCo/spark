@@ -7,7 +7,7 @@
 **Effort:** S (once platform variable identified)
 **What:** Investigate whether the platform provides a context variable for preview/editor mode vs live rendering. If so, suppress dashed-border placeholder boxes (hero, featured products, featured categories) on the live storefront while keeping them visible in the theme editor.
 **Why:** Placeholders guide merchants during setup but would look unprofessional to real customers if a section toggle is on but content is empty.
-**Depends on:** Platform documentation or Alex confirming what context variables are available in DTL templates (e.g., `request.is_preview`, `theme.editor_mode`, etc.)
+**Depends on:** Platform documentation or platform-team confirmation of what context variables are available in DTL templates (e.g., `request.is_preview`, `theme.editor_mode`, etc.)
 
 ### Theme Marketplace Foundation
 **Priority:** P3

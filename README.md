@@ -87,6 +87,7 @@ spark/
 │       ├── spark-cart.js              GraphQL cart client
 │       ├── spark-events.js            Shared DOM event contract helpers
 │       ├── spark-gallery.js           PDP image gallery
+│       ├── spark-membership-pricing.js Customer-metadata member price presentation
 │       ├── spark-platform.js          Core platform JS (replaces jQuery)
 │       ├── spark-variant-state.js     PDP selected variant state
 │       ├── theme.js                   Theme utilities
@@ -121,6 +122,7 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Current 
 - **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
 - **Sale badges** — automatic on product cards when `compare_at_price > price`.
 - **Review app hooks** — template surfaces (`{% app_hook %}`) for product cards, PDP rating summary, full reviews module, home/collection review feeds, and global social proof. Apps render into Spark without theme edits.
+- **Membership price presentation** — optional client-side member price display driven by logged-in customer metadata, designed to pair with platform-side checkout discounts.
 - **Critical-path load order** — metadata, LCP preloads, CSS, body content, ordered theme JS, footer app hooks, and tracking are explicitly separated in `layouts/base.html`.
 - **Delight package** — skeleton loading, image optimization, cart badge animation, keyboard navigation, contrast auto-detection, print stylesheet.
 - **Merchant-configurable** — brand colors, fonts, navigation, footer, social links, payment icons, and more via Theme Settings.

@@ -22,6 +22,11 @@
         return SparkCartClient.formatMoney(amount || 0, currency);
     }
 
+    function amountOrFallback(value, fallback) {
+        if (value === null || typeof value === 'undefined' || value === '') return fallback;
+        return value;
+    }
+
     function createCartItemEl(line, currency, doc) {
         var item = doc.createElement('div');
         item.className = 'spark-drawer-item';
@@ -33,11 +38,15 @@
         var url = product.url || '#';
         var attrs = line.attributes || [];
         var variant = attrs.map(function(a) { return a.option + ': ' + a.value; }).join(', ');
-        var price = money(line.linePriceExclTaxInclDiscounts || line.linePriceExclTax || 0, currency);
+        var linePrice = Number(line.linePriceExclTax || 0);
+        var discountedLinePrice = Number(amountOrFallback(line.linePriceExclTaxInclDiscounts, line.linePriceExclTax || 0));
+        var hasLineDiscount = linePrice > 0 && discountedLinePrice < linePrice;
+        var price = money(discountedLinePrice, currency);
         var unitPrice = Number(line.unitPriceExclTax || 0);
         var retailInfo = product.purchaseInfo ? product.purchaseInfo.priceRetail : null;
         var retailValue = retailInfo ? Number(retailInfo.value || 0) : 0;
-        var hasComparePrice = retailValue > 0 && retailValue > unitPrice;
+        var compareValue = hasLineDiscount ? linePrice : retailValue * line.quantity;
+        var hasComparePrice = hasLineDiscount || (retailValue > 0 && retailValue > unitPrice);
         var isFreeGift = line.isUpsell;
         var subInfo = {
             interval: line.interval,
@@ -73,7 +82,7 @@
         }
 
         html += '<div class="spark-drawer-item-price">' +
-            (hasComparePrice ? '<span class="spark-drawer-item-compare">' + money(retailValue * line.quantity, currency) + '</span> ' : '') +
+            (hasComparePrice ? '<span class="spark-drawer-item-compare">' + money(compareValue, currency) + '</span> ' : '') +
             '<span' + (isFreeGift ? ' class="spark-drawer-item-free"' : '') + '>' + (isFreeGift ? 'FREE' : price) + '</span>' +
             '</div>' +
             '</div>';
@@ -100,6 +109,16 @@
     function voucherHtml(cart, currency, labels) {
         labels = labels || {};
         var html = '<div class="spark-drawer-voucher">';
+        var offers = cart.offerDiscounts || [];
+        for (var j = 0; j < offers.length; j++) {
+            var offer = offers[j];
+            var offerName = escapeHtml(offer.name || offer.description || 'Discount');
+            html += '<div class="spark-drawer-voucher-applied">' +
+                '<span class="spark-drawer-voucher-tag">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ' +
+                offerName + ' (-' + money(offer.amount, currency) + ')' +
+                '</span></div>';
+        }
         var vouchers = cart.voucherDiscounts || [];
         for (var i = 0; i < vouchers.length; i++) {
             var vc = vouchers[i];

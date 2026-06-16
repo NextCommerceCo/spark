@@ -149,14 +149,20 @@
 
                 {# Price #}
                 {% purchase_info_for_product request product as session %}
-                <div class="mt-4">
+                <div class="mt-4"
+                     data-spark-membership-price
+                     data-spark-membership-layout="pdp"
+                     data-spark-membership-variant-price
+                     data-base-price="{{ session.price.price }}"
+                     data-currency="{{ session.price.currency }}"
+                     data-product-id="{{ product.pk }}">
                     {% if session.price.exists %}
                         {% if session.price.price_retail > session.price.price %}
                             <del class="text-sm text-slate-400" data-price-retail>{{ session.price.price_retail|currency:session.price.currency }}</del>
                         {% else %}
                             <del class="text-sm text-slate-400" data-price-retail hidden></del>
                         {% endif %}
-                        <span class="text-lg text-slate-800 font-medium" data-price>
+                        <span class="text-lg text-slate-800 font-medium" data-price data-spark-public-price>
                             {{ session.price.price|currency:session.price.currency }}
                         </span>
                     {% endif %}
@@ -352,7 +358,15 @@
         <div class="sticky-atc-info">
             <span class="sticky-atc-title">{{ product.get_title }}</span>
             {% if session.price.exists %}
-                <span class="sticky-atc-price">{{ session.price.price|currency:session.price.currency }}</span>
+                <span class="sticky-atc-price"
+                      data-spark-membership-price
+                      data-spark-membership-layout="sticky"
+                      data-spark-membership-variant-price
+                      data-base-price="{{ session.price.price }}"
+                      data-currency="{{ session.price.currency }}"
+                      data-product-id="{{ product.pk }}">
+                    <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
+                </span>
             {% endif %}
         </div>
         <button type="button" class="btn btn-primary sticky-atc-btn" id="sticky-atc-btn">

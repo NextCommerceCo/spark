@@ -23,8 +23,13 @@
                     {% endif %}
                     {% purchase_info_for_product request product as session %}
                     {% if session.price.exists %}
-                        <p class="text-lg font-semibold text-slate-800 mb-6">
-                            {{ session.price.price|currency:session.price.currency }}
+                        <p class="text-lg font-semibold text-slate-800 mb-6"
+                           data-spark-membership-price
+                           data-spark-membership-layout="featured"
+                           data-base-price="{{ session.price.price }}"
+                           data-currency="{{ session.price.currency }}"
+                           data-product-id="{{ product.pk }}">
+                            <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
                             {% if session.price.price_retail > session.price.price %}
                                 <span class="text-slate-400 text-sm font-normal line-through ml-2">{{ session.price.price_retail|currency:session.price.currency }}</span>
                             {% endif %}

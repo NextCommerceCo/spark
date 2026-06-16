@@ -181,6 +181,20 @@
         </script>
         <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
+        {% if settings.enable_membership_pricing %}
+            <script>
+            window.SparkMembershipPricingConfig = {
+                enabled: true,
+                graphqlUrl: "{% url 'storefrontapi:graphql' %}",
+                discountPercent: "{{ settings.membership_discount_percent|default:"25"|escapejs }}",
+                statusMetadataKey: "{{ settings.membership_status_metadata_key|default:"uvbrite_member_status"|escapejs }}",
+                activeStatusValue: "{{ settings.membership_active_status_value|default:"active"|escapejs }}",
+                label: "{{ settings.membership_label|default:"Member price"|escapejs }}",
+                detailText: "{{ settings.membership_detail_text|default:"Applied at checkout"|escapejs }}"
+            };
+            </script>
+            <script type="text/javascript" src="{{ 'js/spark-membership-pricing.js'|asset_url }}"></script>
+        {% endif %}
     {% endblock %}
 
     {% block component_scripts %}{% endblock component_scripts %}

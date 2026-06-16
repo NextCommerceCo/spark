@@ -96,6 +96,7 @@
 
     var CART_FIELDS = [
         'id pk currency totalExclTax totalExclTaxExclDiscounts totalDiscount numItems numLines',
+        'offerDiscounts { name description amount }',
         'voucherDiscounts { name amount voucher { name code } }',
         'lines {',
         '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell interval intervalCount',

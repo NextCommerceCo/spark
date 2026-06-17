@@ -157,6 +157,55 @@
         margin-top: 0.25rem;
     }
 
+    /* Membership price presentation */
+    [data-spark-membership-price][data-membership-active="true"] [data-spark-public-price] {
+        color: #94A3B8;
+        font-weight: 400;
+        text-decoration-line: line-through;
+    }
+
+    .spark-member-price {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.375rem;
+        margin-top: 0.25rem;
+        color: #1E293B;
+    }
+
+    .spark-member-price-label {
+        color: var(--primary-color);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .spark-member-price-value {
+        font-weight: 700;
+    }
+
+    .spark-member-price-detail {
+        color: #64748B;
+        font-size: 0.75rem;
+        font-weight: 400;
+    }
+
+    .product-card .spark-member-price,
+    [data-spark-membership-layout="sticky"] .spark-member-price {
+        gap: 0.25rem;
+        margin-top: 0.125rem;
+    }
+
+    .product-card .spark-member-price-label,
+    [data-spark-membership-layout="sticky"] .spark-member-price-label {
+        font-size: 0.6875rem;
+    }
+
+    [data-spark-membership-layout="sticky"][data-membership-active="true"] {
+        display: block;
+        line-height: 1.25;
+    }
+
     /* Product grid */
     .product-grid {
         display: grid;

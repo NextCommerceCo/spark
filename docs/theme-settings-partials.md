@@ -35,7 +35,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
-| `partials/product_card.html` | Product Pages > Product Images / Product Cards | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. | `product_media_fit`, `product_card_border` |
+| `partials/product_card.html` | Product Pages > Product Images / Product Cards / Membership Pricing | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. Member price rendering is enabled by the global membership pricing script. | `product_media_fit`, `product_card_border`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label` |
 | `partials/recommended_products.html` | Product Pages > Recommended Products | PDP recommended product section. | `show_recommended`, `recommended_products_header`, `recommended_products_header_size`, `recommended_products_header_align`, `recommended_products_columns`, `recommended_products_bg_color`, `recommended_products_card_bg` |
 | `partials/side_cart.html` | Side Cart > General | Cart drawer shell and web component slots. | `cart_header_title`, `sidecart_open_on_add`, `gift_product`, `enable_upsells` |
 | `partials/block_cart_progress_wrapper.html` | Side Cart > Rewards Progress | Default reward threshold selector and theme-developer extension point. | `usd_goal_1`, `usd_goal_2` |
@@ -49,9 +49,9 @@ These files are not partials, but they are important setting-backed surfaces des
 
 | File | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
-| `layouts/base.html` | Advanced / Theme Styles / Navigation | Global document shell, critical-path load order, typography variables, custom CSS, account-only routing, and announcement placement. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement` |
+| `layouts/base.html` | Advanced / Theme Styles / Navigation / Membership Pricing | Global document shell, critical-path load order, typography variables, custom CSS, account-only routing, announcement placement, and optional membership pricing bootstrapping. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label`, `membership_detail_text` |
 | `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
-| `templates/catalogue/product.html` | Product Pages | Product detail layout, gallery behavior, variant selector, reviews, and page-scoped CSS. Variant behavior is coordinated by `assets/js/spark-variant-state.js`; custom redesigns should follow `docs/pdp-customization.md`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker` |
+| `templates/catalogue/product.html` | Product Pages / Membership Pricing | Product detail layout, gallery behavior, variant selector, reviews, page-scoped CSS, and member price surfaces for the PDP and sticky add-to-cart bar. Variant behavior is coordinated by `assets/js/spark-variant-state.js`; custom redesigns should follow `docs/pdp-customization.md`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label`, `membership_detail_text` |
 
 ## Utility Partials
 

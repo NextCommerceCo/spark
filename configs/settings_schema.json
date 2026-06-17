@@ -813,6 +813,54 @@
                 "help_text": "Add a subtle border around product cards in grids."
             }
         ],
+        "Membership Pricing": [
+            {
+                "name": "enable_membership_pricing",
+                "label": "Enable Membership Price Presentation",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Show member pricing when the logged-in customer metadata matches the configured active member value. Requires a matching checkout discount configured outside the theme."
+            },
+            {
+                "name": "membership_discount_percent",
+                "label": "Membership Discount Percent",
+                "type": "number",
+                "default": 25,
+                "help_text": "Percentage discount to present on storefront prices for active members."
+            },
+            {
+                "name": "membership_status_metadata_key",
+                "label": "Status Metadata Key",
+                "type": "text",
+                "default": "uvbrite_member_status",
+                "help_text": "Customer metadata key used to identify active members.",
+                "max_length": 100
+            },
+            {
+                "name": "membership_active_status_value",
+                "label": "Active Status Value",
+                "type": "text",
+                "default": "active",
+                "help_text": "Metadata value that qualifies a logged-in customer for member pricing.",
+                "max_length": 100
+            },
+            {
+                "name": "membership_label",
+                "label": "Member Price Label",
+                "type": "text",
+                "default": "Member price",
+                "help_text": "Short label shown beside the member price.",
+                "max_length": 80
+            },
+            {
+                "name": "membership_detail_text",
+                "label": "Member Price Detail",
+                "type": "text",
+                "default": "Applied at checkout",
+                "help_text": "Optional detail shown on larger price surfaces.",
+                "max_length": 120
+            }
+        ],
         "Product Reviews": [
             {
                 "name": "product_reviews",

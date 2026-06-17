@@ -31,9 +31,14 @@
     {% endif %}
     <div class="product-title text-slate-800 group-hover:text-slate-600">{{ product.get_title }}</div>
     {% app_hook 'product_card_rating_summary' %}
-    <div class="product-price">
+    <div class="product-price"
+         data-spark-membership-price
+         data-spark-membership-layout="card"
+         data-base-price="{{ session.price.price }}"
+         data-currency="{{ session.price.currency }}">
         {% if session.price.exists %}
-            {{ session.price.price|currency:session.price.currency }}
+            {# Public price is separate so member pricing can strike it without changing retail compare-at. #}
+            <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
             {% if session.price.price_retail > session.price.price %}
                 <span class="text-slate-400 text-xs line-through ml-1">
                     {{ session.price.price_retail|currency:session.price.currency }}

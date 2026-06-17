@@ -14,12 +14,18 @@
     var QUERY_ME = 'query SparkMembershipPricingMe { me { id pk metadata } }';
     var CSRF_COOKIE = 'csrftoken';
     var SURFACE_SELECTOR = '[data-spark-membership-price]';
+    var OBSERVER_DEBOUNCE_MS = 100;
+    var ERROR_RETRY_DELAY_MS = 30000;
     var state = {
         status: 'idle',
         active: false,
         user: null
     };
     var observer = null;
+    var observerScheduled = false;
+    var observerTimer = null;
+    var pendingSurfaces = [];
+    var lastRefreshAttemptAt = 0;
 
     function getCookie(name) {
         var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -65,7 +71,7 @@
         if (parts.length === 2) {
             if (parts[1].length === 3 && parts[0].length <= 3) return parts[0] + parts[1];
             if (parts[1].length <= 2) return parts[0] + '.' + parts[1];
-            return parts.join('');
+            return NaN;
         }
         if (parts.length > 2) {
             var allThousandsGroups = true;
@@ -109,6 +115,9 @@
             credentials: 'same-origin',
             body: JSON.stringify({ query: QUERY_ME, variables: {} })
         }).then(function(response) {
+            if (!response.ok) {
+                throw new Error('Membership GraphQL request failed: ' + response.status);
+            }
             return response.json();
         }).then(function(json) {
             if (json.errors && json.errors.length) {
@@ -250,15 +259,50 @@
 
     function renderAddedSurfaces(surfaces) {
         if (!surfaces.length) return;
-        if (state.status === 'idle' || state.status === 'error') {
+        if (state.status === 'idle' || shouldRetryAfterError()) {
             refresh();
             return;
         }
-        if (state.status === 'checking') return;
+        if (state.status === 'checking' || state.status === 'error') return;
 
         for (var i = 0; i < surfaces.length; i++) {
             renderSurface(surfaces[i]);
         }
+    }
+
+    function currentTime() {
+        return Date.now ? Date.now() : new Date().getTime();
+    }
+
+    function shouldRetryAfterError() {
+        return state.status === 'error' && currentTime() - lastRefreshAttemptAt >= ERROR_RETRY_DELAY_MS;
+    }
+
+    function flushPendingSurfaces() {
+        var surfaces = pendingSurfaces;
+        pendingSurfaces = [];
+        observerScheduled = false;
+        observerTimer = null;
+        renderAddedSurfaces(surfaces);
+    }
+
+    function scheduleAddedSurfaces(surfaces) {
+        if (!surfaces.length) return;
+        for (var i = 0; i < surfaces.length; i++) {
+            pendingSurfaces.push(surfaces[i]);
+        }
+        if (observerScheduled) return;
+
+        observerScheduled = true;
+        var scheduleTimer = function() {
+            observerTimer = setTimeout(flushPendingSurfaces, OBSERVER_DEBOUNCE_MS);
+        };
+
+        if (window.requestAnimationFrame) {
+            window.requestAnimationFrame(scheduleTimer);
+            return;
+        }
+        scheduleTimer();
     }
 
     function startObserver() {
@@ -272,7 +316,7 @@
                     collectSurfaces(added[j], surfaces);
                 }
             }
-            renderAddedSurfaces(surfaces);
+            scheduleAddedSurfaces(surfaces);
         });
         observer.observe(document.body, {
             childList: true,
@@ -328,6 +372,7 @@
             user: null
         };
         setDocumentState(state);
+        lastRefreshAttemptAt = currentTime();
 
         return requestMe().then(function(data) {
             var user = data.me || null;

@@ -146,7 +146,10 @@ function createEnvironment(options = {}) {
         document: document,
         fetch: function() {
             fetchCount += 1;
+            if (options.rejectFetch) return Promise.reject(new Error('fetch failed'));
             return Promise.resolve({
+                ok: true,
+                status: 200,
                 json: function() {
                     return Promise.resolve({
                         data: {
@@ -161,10 +164,16 @@ function createEnvironment(options = {}) {
             this.detail = eventInit ? eventInit.detail : undefined;
         },
         Intl: Intl,
+        Date: Date,
         MutationObserver: MutationObserver,
         Promise: Promise,
+        setTimeout: setTimeout,
+        clearTimeout: clearTimeout,
         window: {
             MutationObserver: MutationObserver,
+            requestAnimationFrame: options.withAnimationFrame ? function(callback) {
+                return setTimeout(callback, 0);
+            } : undefined,
             SparkMembershipPricingConfig: {
                 enabled: true,
                 graphqlUrl: '/api/graphql/',
@@ -201,7 +210,7 @@ function memberBlock(surface) {
 
 async function settle() {
     await new Promise(function(resolve) {
-        setImmediate(resolve);
+        setTimeout(resolve, 150);
     });
 }
 
@@ -221,7 +230,7 @@ async function testActiveMemberPricing() {
 }
 
 async function testLocalizedAmountParsingAndArrayMetadata() {
-    const surface = createSurface('EUR 1.299,00', { layout: 'card' });
+    const surface = createSurface('EUR 1.299,00', { layout: 'card', currency: 'EUR' });
     const env = createEnvironment({
         metadata: { uvbrite_member_status: ['inactive', 'active'] },
         surfaces: [surface]
@@ -231,7 +240,7 @@ async function testLocalizedAmountParsingAndArrayMetadata() {
     await api.refresh();
 
     assert.equal(surface.getAttribute('data-membership-active'), 'true');
-    assert.equal(memberBlock(surface).querySelector('.spark-member-price-value').textContent, '$974.25');
+    assert.equal(memberBlock(surface).querySelector('.spark-member-price-value').textContent, '€974.25');
 }
 
 async function testInactiveMemberDoesNotRenderPricing() {
@@ -268,9 +277,72 @@ async function testDynamicSurfaceTriggersRefresh() {
     assert.equal(memberBlock(surface).querySelector('.spark-member-price-value').textContent, '$974.25');
 }
 
+async function testAmbiguousAmountDoesNotRenderPricing() {
+    const surface = createSurface('1,2345', { layout: 'pdp' });
+    const env = createEnvironment({
+        metadata: { uvbrite_member_status: 'active' },
+        surfaces: [surface]
+    });
+    const api = runModule(env);
+
+    await api.refresh();
+
+    assert.equal(surface.getAttribute('data-membership-active'), null);
+    assert.equal(memberBlock(surface), null);
+}
+
+async function testDynamicSurfaceMutationsAreCoalesced() {
+    const env = createEnvironment({
+        metadata: { uvbrite_member_status: 'active' },
+        readyState: 'complete',
+        withAnimationFrame: true,
+        withObserver: true
+    });
+    runModule(env);
+
+    const firstSurface = createSurface('1299.00', { layout: 'featured' });
+    const secondSurface = createSurface('299.00', { layout: 'card' });
+    env.body.appendChild(firstSurface);
+    env.body.appendChild(secondSurface);
+
+    env.getObserverCallback()([{ addedNodes: [firstSurface] }]);
+    env.getObserverCallback()([{ addedNodes: [secondSurface] }]);
+    await settle();
+
+    assert.equal(env.getFetchCount(), 1);
+    assert.equal(firstSurface.getAttribute('data-membership-active'), 'true');
+    assert.equal(secondSurface.getAttribute('data-membership-active'), 'true');
+}
+
+async function testDynamicSurfaceBacksOffAfterError() {
+    const env = createEnvironment({
+        rejectFetch: true,
+        readyState: 'complete',
+        withObserver: true
+    });
+    runModule(env);
+
+    const firstSurface = createSurface('1299.00', { layout: 'featured' });
+    env.body.appendChild(firstSurface);
+    env.getObserverCallback()([{ addedNodes: [firstSurface] }]);
+    await settle();
+
+    const secondSurface = createSurface('299.00', { layout: 'card' });
+    env.body.appendChild(secondSurface);
+    env.getObserverCallback()([{ addedNodes: [secondSurface] }]);
+    await settle();
+
+    assert.equal(env.getFetchCount(), 1);
+    assert.equal(firstSurface.getAttribute('data-membership-active'), null);
+    assert.equal(secondSurface.getAttribute('data-membership-active'), null);
+}
+
 (async function main() {
     await testActiveMemberPricing();
     await testLocalizedAmountParsingAndArrayMetadata();
     await testInactiveMemberDoesNotRenderPricing();
     await testDynamicSurfaceTriggersRefresh();
+    await testAmbiguousAmountDoesNotRenderPricing();
+    await testDynamicSurfaceMutationsAreCoalesced();
+    await testDynamicSurfaceBacksOffAfterError();
 })();

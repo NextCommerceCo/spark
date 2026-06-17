@@ -182,10 +182,11 @@
         <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
         {% if settings.enable_membership_pricing %}
+            {% url 'storefrontapi:graphql' as membership_graphql_url %}
             <script>
             window.SparkMembershipPricingConfig = {
                 enabled: true,
-                graphqlUrl: "{% url 'storefrontapi:graphql' %}",
+                graphqlUrl: "{{ membership_graphql_url|default:'/api/graphql/'|escapejs }}",
                 discountPercent: "{{ settings.membership_discount_percent|default:"25"|escapejs }}",
                 statusMetadataKey: "{{ settings.membership_status_metadata_key|default:"uvbrite_member_status"|escapejs }}",
                 activeStatusValue: "{{ settings.membership_active_status_value|default:"active"|escapejs }}",

@@ -92,13 +92,22 @@
     function formatMoney(amount, currency) {
         currency = currency || 'USD';
         try {
-            return new Intl.NumberFormat('en-US', {
+            return new Intl.NumberFormat(getDisplayLocale(), {
                 style: 'currency',
                 currency: currency
             }).format(amount);
         } catch (e) {
             return currency + ' ' + Number(amount).toFixed(2);
         }
+    }
+
+    function getDisplayLocale() {
+        if (config.locale) return config.locale;
+        if (document.documentElement && document.documentElement.getAttribute('lang')) {
+            return document.documentElement.getAttribute('lang');
+        }
+        if (window.navigator && window.navigator.language) return window.navigator.language;
+        return 'en-US';
     }
 
     function requestMe() {

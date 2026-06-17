@@ -27,8 +27,7 @@
                            data-spark-membership-price
                            data-spark-membership-layout="featured"
                            data-base-price="{{ session.price.price }}"
-                           data-currency="{{ session.price.currency }}"
-                           data-product-id="{{ product.pk }}">
+                           data-currency="{{ session.price.currency }}">
                             <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
                             {% if session.price.price_retail > session.price.price %}
                                 <span class="text-slate-400 text-sm font-normal line-through ml-2">{{ session.price.price_retail|currency:session.price.currency }}</span>

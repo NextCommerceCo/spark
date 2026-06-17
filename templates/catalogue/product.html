@@ -154,8 +154,7 @@
                      data-spark-membership-layout="pdp"
                      data-spark-membership-variant-price
                      data-base-price="{{ session.price.price }}"
-                     data-currency="{{ session.price.currency }}"
-                     data-product-id="{{ product.pk }}">
+                     data-currency="{{ session.price.currency }}">
                     {% if session.price.exists %}
                         {% if session.price.price_retail > session.price.price %}
                             <del class="text-sm text-slate-400" data-price-retail>{{ session.price.price_retail|currency:session.price.currency }}</del>
@@ -363,8 +362,7 @@
                       data-spark-membership-layout="sticky"
                       data-spark-membership-variant-price
                       data-base-price="{{ session.price.price }}"
-                      data-currency="{{ session.price.currency }}"
-                      data-product-id="{{ product.pk }}">
+                      data-currency="{{ session.price.currency }}">
                     <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
                 </span>
             {% endif %}

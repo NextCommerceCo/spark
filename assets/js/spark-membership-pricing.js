@@ -13,11 +13,13 @@
 
     var QUERY_ME = 'query SparkMembershipPricingMe { me { id pk metadata } }';
     var CSRF_COOKIE = 'csrftoken';
+    var SURFACE_SELECTOR = '[data-spark-membership-price]';
     var state = {
-        status: 'checking',
+        status: 'idle',
         active: false,
         user: null
     };
+    var observer = null;
 
     function getCookie(name) {
         var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -38,7 +40,47 @@
     function parseAmount(value) {
         if (typeof value === 'number') return value;
         if (value === null || typeof value === 'undefined') return NaN;
-        return Number(String(value).replace(/[^0-9.-]/g, ''));
+
+        var cleaned = String(value).trim().replace(/\s/g, '').replace(/[^0-9,.-]/g, '');
+        if (!cleaned) return NaN;
+        if (/^-?\d+$/.test(cleaned)) return Number(cleaned);
+
+        var lastComma = cleaned.lastIndexOf(',');
+        var lastDot = cleaned.lastIndexOf('.');
+        if (lastComma !== -1 && lastDot !== -1) {
+            var decimalSeparator = lastComma > lastDot ? ',' : '.';
+            var thousandsSeparator = decimalSeparator === ',' ? '.' : ',';
+            cleaned = cleaned.split(thousandsSeparator).join('').replace(decimalSeparator, '.');
+            return Number(cleaned);
+        }
+
+        if (lastComma !== -1) return Number(normalizeSingleSeparatorAmount(cleaned, ','));
+        if (/^-?\d+\.\d{1,2}$/.test(cleaned)) return Number(cleaned);
+        if (lastDot !== -1) return Number(normalizeSingleSeparatorAmount(cleaned, '.'));
+        return Number(cleaned);
+    }
+
+    function normalizeSingleSeparatorAmount(value, separator) {
+        var parts = value.split(separator);
+        if (parts.length === 2) {
+            if (parts[1].length === 3 && parts[0].length <= 3) return parts[0] + parts[1];
+            if (parts[1].length <= 2) return parts[0] + '.' + parts[1];
+            return parts.join('');
+        }
+        if (parts.length > 2) {
+            var allThousandsGroups = true;
+            for (var i = 1; i < parts.length; i++) {
+                if (parts[i].length !== 3) {
+                    allThousandsGroups = false;
+                    break;
+                }
+            }
+            if (allThousandsGroups) return parts.join('');
+
+            var decimalPart = parts.pop();
+            return parts.join('') + '.' + decimalPart;
+        }
+        return value;
     }
 
     function formatMoney(amount, currency) {
@@ -185,10 +227,57 @@
     }
 
     function renderAll() {
-        var surfaces = document.querySelectorAll('[data-spark-membership-price]');
+        var surfaces = document.querySelectorAll(SURFACE_SELECTOR);
         for (var i = 0; i < surfaces.length; i++) {
             renderSurface(surfaces[i]);
         }
+    }
+
+    function hasSurfaces() {
+        return !!document.querySelector(SURFACE_SELECTOR);
+    }
+
+    function collectSurfaces(node, surfaces) {
+        if (!node || node.nodeType !== 1) return;
+        if (node.matches && node.matches(SURFACE_SELECTOR)) surfaces.push(node);
+
+        if (!node.querySelectorAll) return;
+        var nested = node.querySelectorAll(SURFACE_SELECTOR);
+        for (var i = 0; i < nested.length; i++) {
+            surfaces.push(nested[i]);
+        }
+    }
+
+    function renderAddedSurfaces(surfaces) {
+        if (!surfaces.length) return;
+        if (state.status === 'idle' || state.status === 'error') {
+            refresh();
+            return;
+        }
+        if (state.status === 'checking') return;
+
+        for (var i = 0; i < surfaces.length; i++) {
+            renderSurface(surfaces[i]);
+        }
+    }
+
+    function startObserver() {
+        if (observer || !window.MutationObserver || !document.body) return;
+
+        observer = new MutationObserver(function(records) {
+            var surfaces = [];
+            for (var i = 0; i < records.length; i++) {
+                var added = records[i].addedNodes || [];
+                for (var j = 0; j < added.length; j++) {
+                    collectSurfaces(added[j], surfaces);
+                }
+            }
+            renderAddedSurfaces(surfaces);
+        });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
 
     function readPriceObject(price) {
@@ -214,7 +303,7 @@
             if (price.currency) surface.setAttribute('data-currency', price.currency);
 
             var publicPrice = surface.querySelector('[data-spark-public-price]');
-            if (publicPrice && price.format) {
+            if (publicPrice && price.format && !publicPrice.hasAttribute('data-price')) {
                 publicPrice.textContent = price.format;
             }
             renderSurface(surface);
@@ -222,6 +311,17 @@
     }
 
     function refresh() {
+        if (!hasSurfaces()) {
+            state = {
+                status: 'idle',
+                active: false,
+                user: null
+            };
+            setDocumentState(state);
+            dispatchState();
+            return Promise.resolve(state);
+        }
+
         state = {
             status: 'checking',
             active: false,
@@ -261,9 +361,14 @@
         }
     };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', refresh);
-    } else {
+    function init() {
+        startObserver();
         refresh();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 })();

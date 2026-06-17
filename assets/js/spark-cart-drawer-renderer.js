@@ -19,12 +19,14 @@
     }
 
     function money(amount, currency) {
-        return SparkCartClient.formatMoney(amount || 0, currency);
+        var parsed = Number(amount);
+        return SparkCartClient.formatMoney(isFinite(parsed) ? parsed : 0, currency);
     }
 
-    function amountOrFallback(value, fallback) {
+    function numberOrFallback(value, fallback) {
         if (value === null || typeof value === 'undefined' || value === '') return fallback;
-        return value;
+        var parsed = Number(value);
+        return isFinite(parsed) ? parsed : fallback;
     }
 
     function createCartItemEl(line, currency, doc) {
@@ -38,13 +40,15 @@
         var url = product.url || '#';
         var attrs = line.attributes || [];
         var variant = attrs.map(function(a) { return a.option + ': ' + a.value; }).join(', ');
-        var linePrice = Number(line.linePriceExclTax || 0);
-        var discountedLinePrice = Number(amountOrFallback(line.linePriceExclTaxInclDiscounts, line.linePriceExclTax || 0));
+        var linePrice = numberOrFallback(line.linePriceExclTax, 0);
+        var discountedLinePrice = numberOrFallback(line.linePriceExclTaxInclDiscounts, linePrice);
+        // A 100% line discount renders as $0.00 with the original line total struck through.
         var hasLineDiscount = linePrice > 0 && discountedLinePrice < linePrice;
         var price = money(discountedLinePrice, currency);
-        var unitPrice = Number(line.unitPriceExclTax || 0);
+        var unitPrice = numberOrFallback(line.unitPriceExclTax, 0);
         var retailInfo = product.purchaseInfo ? product.purchaseInfo.priceRetail : null;
-        var retailValue = retailInfo ? Number(retailInfo.value || 0) : 0;
+        var retailValue = retailInfo ? numberOrFallback(retailInfo.value, 0) : 0;
+        // Line discounts compare against the pre-discount line total; retail compares unit price x quantity.
         var compareValue = hasLineDiscount ? linePrice : retailValue * line.quantity;
         var hasComparePrice = hasLineDiscount || (retailValue > 0 && retailValue > unitPrice);
         var isFreeGift = line.isUpsell;
@@ -112,11 +116,14 @@
         var offers = cart.offerDiscounts || [];
         for (var j = 0; j < offers.length; j++) {
             var offer = offers[j];
-            var offerName = escapeHtml(offer.name || offer.description || 'Discount');
+            var offerAmount = numberOrFallback(offer.amount, 0);
+            if (offerAmount <= 0) continue;
+
+            var offerName = escapeHtml(offer.name || offer.description || labels.discountText || 'Discount');
             html += '<div class="spark-drawer-voucher-applied">' +
                 '<span class="spark-drawer-voucher-tag">' +
                 '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ' +
-                offerName + ' (-' + money(offer.amount, currency) + ')' +
+                offerName + ' (-' + money(offerAmount, currency) + ')' +
                 '</span></div>';
         }
         var vouchers = cart.voucherDiscounts || [];

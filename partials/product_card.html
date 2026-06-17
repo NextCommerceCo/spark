@@ -35,9 +35,9 @@
          data-spark-membership-price
          data-spark-membership-layout="card"
          data-base-price="{{ session.price.price }}"
-         data-currency="{{ session.price.currency }}"
-         data-product-id="{{ product.pk }}">
+         data-currency="{{ session.price.currency }}">
         {% if session.price.exists %}
+            {# Public price is separate so member pricing can strike it without changing retail compare-at. #}
             <span data-spark-public-price>{{ session.price.price|currency:session.price.currency }}</span>
             {% if session.price.price_retail > session.price.price %}
                 <span class="text-slate-400 text-xs line-through ml-1">

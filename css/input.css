@@ -202,10 +202,8 @@
     }
 
     [data-spark-membership-layout="sticky"][data-membership-active="true"] {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: 0.375rem;
+        display: block;
+        line-height: 1.25;
     }
 
     /* Product grid */

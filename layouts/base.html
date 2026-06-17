@@ -185,7 +185,7 @@
             <script>
             window.SparkMembershipPricingConfig = {
                 enabled: true,
-                graphqlUrl: "{% url 'storefrontapi:graphql' %}",
+                graphqlUrl: "/api/graphql/",
                 discountPercent: "{{ settings.membership_discount_percent|default:"25"|escapejs }}",
                 statusMetadataKey: "{{ settings.membership_status_metadata_key|default:"uvbrite_member_status"|escapejs }}",
                 activeStatusValue: "{{ settings.membership_active_status_value|default:"active"|escapejs }}",
@@ -193,7 +193,7 @@
                 detailText: "{{ settings.membership_detail_text|default:"Applied at checkout"|escapejs }}"
             };
             </script>
-            <script type="text/javascript" src="{{ 'js/spark-membership-pricing.js'|asset_url }}"></script>
+            <script type="text/javascript" src="{{ 'js/spark-membership-pricing.js'|asset_url }}" defer></script>
         {% endif %}
     {% endblock %}
 

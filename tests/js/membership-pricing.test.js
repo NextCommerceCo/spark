@@ -106,6 +106,7 @@ function createSurface(basePrice, options = {}) {
 function createEnvironment(options = {}) {
     let fetchCount = 0;
     let observerCallback = null;
+    let now = options.now || 0;
     const body = new FakeElement('body');
     const documentElement = new FakeElement('html');
     const metadata = options.metadata || null;
@@ -146,6 +147,8 @@ function createEnvironment(options = {}) {
         document: document,
         fetch: function() {
             fetchCount += 1;
+            if (options.throwFetchSync) throw new Error('fetch unavailable');
+            if (options.advanceBeforeReject) now += options.advanceBeforeReject;
             if (options.rejectFetch) return Promise.reject(new Error('fetch failed'));
             return Promise.resolve({
                 ok: true,
@@ -164,16 +167,17 @@ function createEnvironment(options = {}) {
             this.detail = eventInit ? eventInit.detail : undefined;
         },
         Intl: Intl,
-        Date: Date,
+        Date: options.useFakeTime ? {
+            now: function() {
+                return now;
+            }
+        } : Date,
         MutationObserver: MutationObserver,
         Promise: Promise,
         setTimeout: setTimeout,
         clearTimeout: clearTimeout,
         window: {
             MutationObserver: MutationObserver,
-            requestAnimationFrame: options.withAnimationFrame ? function(callback) {
-                return setTimeout(callback, 0);
-            } : undefined,
             SparkMembershipPricingConfig: {
                 enabled: true,
                 graphqlUrl: '/api/graphql/',
@@ -194,6 +198,9 @@ function createEnvironment(options = {}) {
         },
         getObserverCallback: function() {
             return observerCallback;
+        },
+        advanceTime: function(ms) {
+            now += ms;
         }
     };
 }
@@ -240,7 +247,7 @@ async function testLocalizedAmountParsingAndArrayMetadata() {
     await api.refresh();
 
     assert.equal(surface.getAttribute('data-membership-active'), 'true');
-    assert.equal(memberBlock(surface).querySelector('.spark-member-price-value').textContent, '€974.25');
+    assert.equal(memberBlock(surface).querySelector('.spark-member-price-value').textContent, '\u20ac974.25');
 }
 
 async function testInactiveMemberDoesNotRenderPricing() {
@@ -295,7 +302,6 @@ async function testDynamicSurfaceMutationsAreCoalesced() {
     const env = createEnvironment({
         metadata: { uvbrite_member_status: 'active' },
         readyState: 'complete',
-        withAnimationFrame: true,
         withObserver: true
     });
     runModule(env);
@@ -337,6 +343,52 @@ async function testDynamicSurfaceBacksOffAfterError() {
     assert.equal(secondSurface.getAttribute('data-membership-active'), null);
 }
 
+async function testBackoffUsesCompletedAttemptTime() {
+    const env = createEnvironment({
+        advanceBeforeReject: 25000,
+        rejectFetch: true,
+        readyState: 'complete',
+        useFakeTime: true,
+        withObserver: true
+    });
+    runModule(env);
+
+    const firstSurface = createSurface('1299.00', { layout: 'featured' });
+    env.body.appendChild(firstSurface);
+    env.getObserverCallback()([{ addedNodes: [firstSurface] }]);
+    await settle();
+
+    env.advanceTime(6000);
+    const secondSurface = createSurface('299.00', { layout: 'card' });
+    env.body.appendChild(secondSurface);
+    env.getObserverCallback()([{ addedNodes: [secondSurface] }]);
+    await settle();
+
+    assert.equal(env.getFetchCount(), 1);
+
+    env.advanceTime(25000);
+    const thirdSurface = createSurface('199.00', { layout: 'card' });
+    env.body.appendChild(thirdSurface);
+    env.getObserverCallback()([{ addedNodes: [thirdSurface] }]);
+    await settle();
+
+    assert.equal(env.getFetchCount(), 2);
+}
+
+async function testRefreshHandlesSynchronousRequestFailure() {
+    const surface = createSurface('1299.00', { layout: 'pdp' });
+    const env = createEnvironment({
+        surfaces: [surface],
+        throwFetchSync: true
+    });
+    const api = runModule(env);
+
+    const state = await api.refresh();
+
+    assert.equal(state.status, 'error');
+    assert.equal(surface.getAttribute('data-membership-active'), null);
+}
+
 (async function main() {
     await testActiveMemberPricing();
     await testLocalizedAmountParsingAndArrayMetadata();
@@ -345,4 +397,6 @@ async function testDynamicSurfaceBacksOffAfterError() {
     await testAmbiguousAmountDoesNotRenderPricing();
     await testDynamicSurfaceMutationsAreCoalesced();
     await testDynamicSurfaceBacksOffAfterError();
+    await testBackoffUsesCompletedAttemptTime();
+    await testRefreshHandlesSynchronousRequestFailure();
 })();

@@ -23,7 +23,6 @@
     };
     var observer = null;
     var observerScheduled = false;
-    var observerTimer = null;
     var pendingSurfaces = [];
     var lastRefreshAttemptAt = 0;
 
@@ -291,7 +290,6 @@
         var surfaces = pendingSurfaces;
         pendingSurfaces = [];
         observerScheduled = false;
-        observerTimer = null;
         renderAddedSurfaces(surfaces);
     }
 
@@ -303,15 +301,7 @@
         if (observerScheduled) return;
 
         observerScheduled = true;
-        var scheduleTimer = function() {
-            observerTimer = setTimeout(flushPendingSurfaces, OBSERVER_DEBOUNCE_MS);
-        };
-
-        if (window.requestAnimationFrame) {
-            window.requestAnimationFrame(scheduleTimer);
-            return;
-        }
-        scheduleTimer();
+        setTimeout(flushPendingSurfaces, OBSERVER_DEBOUNCE_MS);
     }
 
     function startObserver() {
@@ -381,9 +371,9 @@
             user: null
         };
         setDocumentState(state);
-        lastRefreshAttemptAt = currentTime();
 
-        return requestMe().then(function(data) {
+        return Promise.resolve().then(requestMe).then(function(data) {
+            lastRefreshAttemptAt = currentTime();
             var user = data.me || null;
             state.user = user;
             state.active = !!(user && metadataMatches(user.metadata));
@@ -393,6 +383,7 @@
             dispatchState();
             return state;
         }).catch(function() {
+            lastRefreshAttemptAt = currentTime();
             state = {
                 status: 'error',
                 active: false,

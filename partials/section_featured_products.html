@@ -7,7 +7,8 @@
             {% include "partials/product_grid.html" with products=settings.featured_products columns=settings.featured_products_columns card_bg=settings.featured_products_card_bg %}
             {% if settings.featured_products_cta_url %}
                 <div class="flex justify-center mt-8">
-                    {% include "partials/cta_button.html" with href=settings.featured_products_cta_url label=settings.featured_products_cta_text|default:"View All" style=settings.featured_products_cta_style outline=settings.featured_products_cta_outline %}
+                    {% t "homepage.cta.view_all" as default_view_all %}
+                    {% include "partials/cta_button.html" with href=settings.featured_products_cta_url label=settings.featured_products_cta_text|default:default_view_all style=settings.featured_products_cta_style outline=settings.featured_products_cta_outline %}
                 </div>
             {% endif %}
         </div>
@@ -28,7 +29,7 @@
             </div>
             {% endfor %}
         </div>
-        <p class="text-center text-xs text-slate-300 mt-6">Featured Products &middot; Settings &rarr; Homepage &rarr; Featured Products</p>
+        <p class="text-center text-xs text-slate-300 mt-6">{% t "homepage.placeholder.featured_products" %}</p>
     </section>
     {% endif %}
 {% endif %}

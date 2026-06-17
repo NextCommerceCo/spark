@@ -10,7 +10,8 @@
                 <p class="text-base md:text-lg mb-8 opacity-90">{{ settings.promo_banner_subheading }}</p>
             {% endif %}
             {% if settings.promo_banner_cta_url %}
-                {% include "partials/cta_button.html" with href=settings.promo_banner_cta_url label=settings.promo_banner_cta_text|default:"Shop Now" style=settings.promo_banner_cta_style outline=settings.promo_banner_cta_outline outline_color=settings.promo_banner_text_color|default:"#ffffff" %}
+                {% t "homepage.cta.shop_now" as default_shop_now %}
+                {% include "partials/cta_button.html" with href=settings.promo_banner_cta_url label=settings.promo_banner_cta_text|default:default_shop_now style=settings.promo_banner_cta_style outline=settings.promo_banner_cta_outline outline_color=settings.promo_banner_text_color|default:"#ffffff" %}
             {% endif %}
         </div>
     </section>
@@ -21,7 +22,7 @@
             <div class="h-3 w-32 bg-slate-100 rounded mx-auto mb-6"></div>
             <div class="h-8 w-28 bg-slate-100 rounded mx-auto"></div>
         </div>
-        <p class="text-center text-xs text-slate-300 mt-4">Promo Banner &middot; Settings &rarr; Homepage &rarr; Promo Banner &rarr; Heading</p>
+        <p class="text-center text-xs text-slate-300 mt-4">{% t "homepage.placeholder.promo_banner" %}</p>
     </section>
     {% endif %}
 {% endif %}

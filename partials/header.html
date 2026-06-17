@@ -131,7 +131,7 @@
 </header>
 
 {# Search overlay #}
-<div id="search-overlay" class="search-overlay" role="dialog" aria-label="Search" aria-modal="true">
+<div id="search-overlay" class="search-overlay" role="dialog" aria-label="{% t 'navigation.search' %}" aria-modal="true">
     <div class="search-overlay-backdrop" data-close="search-overlay"></div>
     <div class="search-overlay-content">
         <form action="{% url 'search:search' %}" method="get" class="search-overlay-form">
@@ -144,10 +144,10 @@
                    autocapitalize="off"
                    spellcheck="false"
                    class="search-overlay-input" />
-            <button type="submit" class="search-overlay-submit" aria-label="Search">
+            <button type="submit" class="search-overlay-submit" aria-label="{% t 'global.button.search' %}">
                 {% include 'partials/icons/search.html' %}
             </button>
-            <button type="button" class="search-overlay-close" data-close="search-overlay" aria-label="Close search">
+            <button type="button" class="search-overlay-close" data-close="search-overlay" aria-label="{% t 'store.search.close_search' %}">
                 {% include 'partials/icons/close.html' %}
             </button>
         </form>

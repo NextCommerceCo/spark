@@ -3,7 +3,8 @@
     {% if settings.on_sale_products|length > 0 %}
     <section class="py-12 md:py-16" {% if settings.on_sale_bg_color %}style="background-color: {{ settings.on_sale_bg_color }};"{% endif %}>
         <div class="container">
-            {% include "partials/section_heading.html" with heading=settings.on_sale_header|default:"On Sale" size=settings.on_sale_header_size align=settings.on_sale_header_align %}
+            {% t "homepage.heading.on_sale" as default_on_sale %}
+            {% include "partials/section_heading.html" with heading=settings.on_sale_header|default:default_on_sale size=settings.on_sale_header_size align=settings.on_sale_header_align %}
             {% include "partials/product_grid.html" with products=settings.on_sale_products columns=settings.on_sale_columns card_bg=settings.on_sale_card_bg %}
         </div>
     </section>
@@ -21,7 +22,7 @@
                 {% endfor %}
             </div>
         </div>
-        <p class="text-center text-xs text-slate-300 mt-4">On Sale &middot; Settings &rarr; Homepage &rarr; On Sale &rarr; Products</p>
+        <p class="text-center text-xs text-slate-300 mt-4">{% t "homepage.placeholder.on_sale" %}</p>
     </section>
     {% endif %}
 {% endif %}

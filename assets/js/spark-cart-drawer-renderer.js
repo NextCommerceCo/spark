@@ -29,7 +29,18 @@
         return isFinite(parsed) ? parsed : fallback;
     }
 
-    function createCartItemEl(line, currency, doc) {
+    function label(labels, key, fallback) {
+        return labels && labels[key] ? labels[key] : fallback;
+    }
+
+    function formatTemplate(template, values) {
+        return String(template || '').replace(/\{([a-zA-Z0-9_]+)\}/g, function(match, key) {
+            return Object.prototype.hasOwnProperty.call(values, key) ? values[key] : match;
+        });
+    }
+
+    function createCartItemEl(line, currency, doc, labels) {
+        labels = labels || {};
         var item = doc.createElement('div');
         item.className = 'spark-drawer-item';
         item.setAttribute('data-line-id', line.pk);
@@ -62,24 +73,37 @@
         var safeVariant = escapeHtml(variant);
         var safeUrl = escapeHtml(url);
 
+        var frequencyText = '';
+        if (subInfo && subInfo.interval) {
+            frequencyText = formatTemplate(label(labels, 'frequencyTemplate', 'Every {count} {interval}'), {
+                count: subInfo.intervalCount || '',
+                interval: String(subInfo.interval || '').toLowerCase()
+            });
+        }
+
+        var freeText = label(labels, 'freeText', 'Free');
+        var removeLabel = formatTemplate(label(labels, 'removeItemLabel', 'Remove {title}'), {
+            title: title
+        });
+
         var html = '<div class="spark-drawer-item-image">' +
             (image ? '<img src="' + escapeHtml(image) + '" alt="' + safeTitle + '" width="80" height="80" loading="lazy" />' : '') +
             '</div>' +
             '<div class="spark-drawer-item-details">' +
             '<a href="' + safeUrl + '" class="spark-drawer-item-title">' + safeTitle + '</a>' +
             (safeVariant ? '<div class="spark-drawer-item-variant">' + safeVariant + '</div>' : '') +
-            (subInfo && subInfo.interval ? '<div class="spark-drawer-item-sub">Every ' + subInfo.intervalCount + ' ' + subInfo.interval.toLowerCase() + (subInfo.intervalCount > 1 ? 's' : '') + '</div>' : '') +
+            (frequencyText ? '<div class="spark-drawer-item-sub">' + escapeHtml(frequencyText) + '</div>' : '') +
             '<div class="spark-drawer-item-bottom">';
 
         if (isFreeGift) {
-            html += '<span class="spark-drawer-item-free">FREE</span>';
+            html += '<span class="spark-drawer-item-free">' + escapeHtml(freeText) + '</span>';
         } else {
             html += '<div class="spark-drawer-item-qty">' +
-                '<button class="spark-drawer-qty-btn" data-action="decrease" aria-label="Decrease quantity"' +
+                '<button class="spark-drawer-qty-btn" data-action="decrease" aria-label="' + escapeHtml(label(labels, 'decreaseQuantityLabel', 'Decrease quantity')) + '"' +
                 (line.quantity <= 1 ? ' disabled' : '') +
                 '>&minus;</button>' +
-                '<span class="spark-drawer-qty-val" aria-label="Quantity">' + line.quantity + '</span>' +
-                '<button class="spark-drawer-qty-btn" data-action="increase" aria-label="Increase quantity"' +
+                '<span class="spark-drawer-qty-val" aria-label="' + escapeHtml(label(labels, 'quantityLabel', 'Quantity')) + '">' + line.quantity + '</span>' +
+                '<button class="spark-drawer-qty-btn" data-action="increase" aria-label="' + escapeHtml(label(labels, 'increaseQuantityLabel', 'Increase quantity')) + '"' +
                 (line.quantity >= maxQty ? ' disabled' : '') +
                 '>+</button>' +
                 '</div>';
@@ -87,12 +111,12 @@
 
         html += '<div class="spark-drawer-item-price">' +
             (hasComparePrice ? '<span class="spark-drawer-item-compare">' + money(compareValue, currency) + '</span> ' : '') +
-            '<span' + (isFreeGift ? ' class="spark-drawer-item-free"' : '') + '>' + (isFreeGift ? 'FREE' : price) + '</span>' +
+            '<span' + (isFreeGift ? ' class="spark-drawer-item-free"' : '') + '>' + (isFreeGift ? escapeHtml(freeText) : price) + '</span>' +
             '</div>' +
             '</div>';
 
         if (!isFreeGift) {
-            html += '<button class="spark-drawer-item-remove" data-action="remove" aria-label="Remove ' + safeTitle + '">' +
+            html += '<button class="spark-drawer-item-remove" data-action="remove" aria-label="' + escapeHtml(removeLabel) + '">' +
                 '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
                 '</button>';
         }
@@ -102,10 +126,10 @@
         return item;
     }
 
-    function createItemsFragment(lines, currency, doc) {
+    function createItemsFragment(lines, currency, doc, labels) {
         var frag = doc.createDocumentFragment();
         for (var i = 0; i < lines.length; i++) {
-            frag.appendChild(createCartItemEl(lines[i], currency, doc));
+            frag.appendChild(createCartItemEl(lines[i], currency, doc, labels));
         }
         return frag;
     }
@@ -136,7 +160,7 @@
                 '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ' +
                 vcode + ' (-' + money(vc.amount, currency) + ')' +
                 '</span>' +
-                '<button class="spark-drawer-voucher-remove" data-action="remove-voucher" data-voucher-id="' + vid + '" aria-label="Remove voucher">' +
+                '<button class="spark-drawer-voucher-remove" data-action="remove-voucher" data-voucher-id="' + vid + '" aria-label="' + escapeHtml(label(labels, 'removeVoucherLabel', 'Remove voucher')) + '">' +
                 '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
                 '</button></div>';
         }
@@ -162,8 +186,8 @@
             html += '<div class="spark-drawer-total-row discount"><span>' + escapeHtml(labels.discountText) + '</span><span>-' + money(totalDiscount, currency) + '</span></div>';
         }
 
-        html += '<div class="spark-drawer-total-row"><span>Shipping</span><span style="color:#94A3B8;font-size:12px;">' + escapeHtml(labels.shippingText) + '</span></div>' +
-            '<div class="spark-drawer-total-row grand"><span>Total</span><span>' + money(total, currency) + '</span></div>' +
+        html += '<div class="spark-drawer-total-row"><span>' + escapeHtml(label(labels, 'shippingLabel', 'Shipping')) + '</span><span style="color:#94A3B8;font-size:12px;">' + escapeHtml(labels.shippingText) + '</span></div>' +
+            '<div class="spark-drawer-total-row grand"><span>' + escapeHtml(label(labels, 'totalLabel', 'Total')) + '</span><span>' + money(total, currency) + '</span></div>' +
             '</div>' +
             '<a href="' + escapeHtml(labels.checkoutUrl) + '" class="spark-drawer-checkout">' + escapeHtml(labels.checkoutText) + '</a>' +
             '<button class="spark-drawer-continue" data-action="close">' + escapeHtml(labels.continueCta) + '</button>';

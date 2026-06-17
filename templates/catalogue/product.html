@@ -35,7 +35,7 @@
 
 {% block breadcrumbs %}
 <div class="container py-3">
-    <nav aria-label="breadcrumb">
+    <nav aria-label="{% t 'navigation.breadcrumb' %}">
         <ol class="flex items-center gap-2 text-xs text-slate-400">
             <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
             <li>/</li>
@@ -59,7 +59,7 @@
                          data-layout="{{ settings.product_gallery_layout|default:'bottom' }}"
                          tabindex="0"
                          role="region"
-                         aria-label="Product images">
+                         aria-label="{% t 'store.catalogue.product_images' %}">
 
                         {# Main image with nav arrows #}
                         <div class="spark-gallery-main relative">
@@ -75,14 +75,14 @@
                             {% if images|length > 1 %}
                                 <button type="button"
                                         class="spark-gallery-prev"
-                                        aria-label="Previous image">
+                                        aria-label="{% t 'store.catalogue.previous_image' %}">
                                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                                     </svg>
                                 </button>
                                 <button type="button"
                                         class="spark-gallery-next"
-                                        aria-label="Next image">
+                                        aria-label="{% t 'store.catalogue.next_image' %}">
                                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                                     </svg>
@@ -101,9 +101,9 @@
                                             {% if forloop.first %}aria-current="true"{% endif %}
                                             data-full="{{ full_thumb.url }}"
                                             data-index="{{ forloop.counter0 }}"
-                                            aria-label="View image {{ forloop.counter }}">
+                                            aria-label="{% t 'store.catalogue.view_image' with count=forloop.counter %}">
                                         <img src="{{ small_thumb.url }}"
-                                             alt="{{ product.get_title }} - image {{ forloop.counter }}"
+                                             alt="{% t 'store.catalogue.product_image_alt' with title=product.get_title count=forloop.counter %}"
                                              width="120"
                                              height="120"
                                              class="w-full h-full object-cover"
@@ -223,6 +223,11 @@
                                 <spark-subscription 
                                     id="subscription-selector"
                                     data-interval="{{ product.get_interval }}"
+                                    data-one-time-title="{% t 'store.catalogue.one_time_purchase' %}"
+                                    data-one-time-subtitle="{% t 'store.catalogue.one_time_subtitle' %}"
+                                    data-subscribe-title="{% t 'store.catalogue.subscribe_save' %}"
+                                    data-subscribe-subtitle="{% t 'store.catalogue.recurring_delivery' %}"
+                                    data-frequency-label="{% t 'store.catalogue.delivery_frequency' %}"
                                     data-intervals='[
                                         {% for value, text in interval_count_choices %}
                                             ["{{ value|escapejs }}", "{{ text|escapejs }}"]{% if not forloop.last %},{% endif %}
@@ -236,7 +241,14 @@
                                 class="btn btn-primary w-full py-3 text-base"
                                 id="add-to-cart-btn"
                                 data-loading-text='{% t "store.catalogue.add_to_cart_loading" %}'
-                                data-disabled-text='{% t "store.catalogue.product_unavailable" %}'>
+                                data-disabled-text='{% t "store.catalogue.product_unavailable" %}'
+                                data-success-text='{% t "store.catalogue.added_to_cart" %}'
+                                data-error-product-not-found='{% t "store.catalogue.product_not_found" %}'
+                                data-error-add-to-cart='{% t "store.catalogue.add_to_cart_error" %}'
+                                data-error-generic='{% t "global.error.generic_try_again" %}'
+                                data-error-connection='{% t "global.error.connection_try_again" %}'
+                                data-error-unavailable='{% t "store.catalogue.product_unavailable" %}'
+                                data-error-subscription-frequency='{% t "store.catalogue.subscription_frequency_error" %}'>
                             {% t "store.catalogue.add_to_cart" %}
                         </button>
                     </form>
@@ -279,7 +291,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                 </svg>
                 <p class="text-slate-600 font-medium mb-1">{% t "store.catalogue.no_reviews" %}</p>
-                <p class="text-sm text-slate-400 mb-4">Be the first to share your experience</p>
+                <p class="text-sm text-slate-400 mb-4">{% t "store.catalogue.no_reviews_add" %}</p>
                 {% if product|is_review_permitted:user %}
                     <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview"
                        class="btn btn-primary">

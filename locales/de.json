@@ -6,7 +6,9 @@
             "close": "Schliessen",
             "save": "Sparen",
             "save_loading": "Speichern...",
-            "go_back": "Geh zurück"
+            "go_back": "Geh zurück",
+            "learn_more": "Mehr erfahren",
+            "dismiss": "Ausblenden"
         },
         "error": {
             "please_check_error": "<strong>Ups! Wir haben einige Fehler gefunden</strong> - bitte überprüfen Sie die folgenden Fehlermeldungen und versuchen Sie es erneut",
@@ -16,7 +18,12 @@
             "404_message": "Es tut uns leid, aber die von Ihnen gesuchte Seite kann nicht gefunden werden.",
             "500": "500 Interner Serverfehler",
             "500_heading": "Tut mir leid, du bist es nicht, wir sind es.",
-            "500_message": "Wir wurden über das Problem informiert, bitte versuchen Sie es später noch einmal."
+            "500_message": "Wir wurden über das Problem informiert, bitte versuchen Sie es später noch einmal.",
+            "generic_try_again": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+            "connection_try_again": "Verbindungsproblem. Bitte versuchen Sie es erneut."
+        },
+        "confirm": {
+            "delete": "Möchten Sie wirklich löschen?"
         }
     },
     "navigation": {
@@ -37,7 +44,8 @@
             "support": "Unterstützung",
             "dashboard": "Armaturenbrett",
             "logout": "Abmelden",
-            "login_or_register": "Einloggen oder Registrieren"
+            "login_or_register": "Einloggen oder Registrieren",
+            "welcome": "Willkommen zurück"
         },
         "footer": {
             "about_us": "Über uns",
@@ -52,7 +60,13 @@
         },
         "pagination": {
             "next": "Weiter"
-        }
+        },
+        "search": "Suche",
+        "cart": "Warenkorb",
+        "menu": {
+            "toggle": "Menü"
+        },
+        "breadcrumb": "Breadcrumb"
     },
     "tables": {
         "heading": {
@@ -74,7 +88,8 @@
             "add_coupon": "Gutschein hinzufügen",
             "add_coupon_loading": "Hinzufügen...",
             "reload": "Nachladen",
-            "reload_loading": "Aktualisiere..."
+            "reload_loading": "Aktualisiere...",
+            "add": "Hinzufügen"
         }
     },
     "order": {
@@ -105,14 +120,18 @@
             "quantity": "Menge",
             "price": "Preis",
             "subscription_total": "Abonnement insgesamt",
-            "subscription_renewal_message": "Ihr Abonnement wird jedes Mal erneuert"
+            "subscription_renewal_message": "Ihr Abonnement wird jedes Mal erneuert",
+            "coupon_code": "Gutscheincode",
+            "empty_hint": "Fügen Sie Artikel hinzu, um loszulegen"
         }
     },
     "store": {
         "blog": {
             "title": "Bloggen",
             "no_posts": "Es wurden noch keine Beiträge erstellt.",
-            "search_not_found": "Es wurden <strong>0</strong> Ergebnisse gefunden."
+            "search_not_found": "Es wurden <strong>0</strong> Ergebnisse gefunden.",
+            "all_categories": "Alle Kategorien",
+            "category_filter": "Nach Kategorie filtern"
         },
         "catalogue": {
             "filters": "Filter",
@@ -137,7 +156,24 @@
             "customer_reviews": "Bewertungen von Kunden",
             "see_all_reviews": "Alle Bewertungen ansehen",
             "write_a_review": "Schreibe eine Rezension",
-            "recommended_products_header": "Kunden, die diesen Artikel angesehen haben, kauften auch"
+            "recommended_products_header": "Kunden, die diesen Artikel angesehen haben, kauften auch",
+            "apply_filters": "Filter anwenden",
+            "description": "Beschreibung",
+            "filter_reset": "Zurücksetzen",
+            "product_images": "Produktbilder",
+            "previous_image": "Vorheriges Bild",
+            "next_image": "Nächstes Bild",
+            "one_time_purchase": "Einmaliger Kauf",
+            "one_time_subtitle": "Einmal kaufen, keine Verpflichtung",
+            "recurring_delivery": "Wiederkehrende Lieferung",
+            "delivery_frequency": "Lieferhäufigkeit",
+            "added_to_cart": "Hinzugefügt",
+            "product_not_found": "Produkt nicht gefunden",
+            "add_to_cart_error": "Konnte nicht zum Warenkorb hinzugefügt werden",
+            "subscription_frequency_error": "Bitte wählen Sie eine gültige Abonnementfrequenz.",
+            "view_image": "Bild {{ count }} ansehen",
+            "select_variant": "Variante auswählen",
+            "product_image_alt": "{{ title }} - Bild {{ count }}"
         },
         "review": {
             "reviews": "Bewertungen",
@@ -155,7 +191,10 @@
         },
         "search": {
             "products_matching": "Produkte entsprechen {{ q }}",
-            "search_not_found": "Es wurden 0 Ergebnisse gefunden."
+            "search_not_found": "Es wurden 0 Ergebnisse gefunden.",
+            "search_placeholder": "Produkte suchen",
+            "suggestion": "Suchen Sie Produkte nach Name, Beschreibung oder Kategorie.",
+            "close_search": "Suche schließen"
         },
         "support": {
             "title": "Unterstützung",
@@ -198,7 +237,56 @@
             "proceed_to_checkout": "Gehen Sie zur Kasse",
             "have_a_coupon": "Haben Sie einen Coupon?",
             "coupon_code": "Coupon-Code",
-            "apply_coupon": "Gutschein anwenden"
+            "apply_coupon": "Gutschein anwenden",
+            "close_cart": "Warenkorb schließen",
+            "frequency_template": "Alle {count} {interval}",
+            "decrease_quantity": "Menge verringern",
+            "increase_quantity": "Menge erhöhen",
+            "remove_item": "{title} entfernen",
+            "remove_voucher": "Gutschein entfernen",
+            "invalid_coupon_code": "Ungültiger Gutscheincode",
+            "shipping_progress_message": "Sie sind {amount} vom KOSTENLOSEN Versand entfernt",
+            "gift_progress_message": "Sie sind {amount} von einem KOSTENLOSEN Geschenk entfernt",
+            "final_progress_message": "Sie haben alle Prämien freigeschaltet"
+        }
+    },
+    "footer": {
+        "support": "Support",
+        "help": "Hilfezentrum",
+        "rights": "Alle Rechte vorbehalten."
+    },
+    "pagination": {
+        "label": "Seitennummerierung",
+        "previous": "Zurück",
+        "next": "Weiter"
+    },
+    "product": {
+        "no_image": "Kein Bild"
+    },
+    "catalogue": {
+        "continue_shopping": "Weiter einkaufen"
+    },
+    "membership": {
+        "price_label": "Mitgliederpreis",
+        "applied_at_checkout": "An der Kasse angewendet"
+    },
+    "homepage": {
+        "cta": {
+            "shop_now": "Jetzt kaufen",
+            "view_all": "Alle anzeigen",
+            "view_product": "Produkt ansehen"
+        },
+        "heading": {
+            "on_sale": "Im Angebot"
+        },
+        "placeholder": {
+            "hero_image": "Hero-Bild",
+            "hero_image_path": "Einstellungen > Homepage > Hero-Bild",
+            "featured_products": "Ausgewählte Produkte - Einstellungen > Homepage > Ausgewählte Produkte",
+            "featured_categories": "Ausgewählte Kategorien - Einstellungen > Homepage > Ausgewählte Kategorien",
+            "promo_banner": "Promo-Banner - Einstellungen > Homepage > Promo-Banner > Überschrift",
+            "on_sale": "Im Angebot - Einstellungen > Homepage > Im Angebot > Produkte",
+            "featured_product": "Ausgewähltes Produkt - Einstellungen > Homepage > Ausgewähltes Produkt"
         }
     }
 }

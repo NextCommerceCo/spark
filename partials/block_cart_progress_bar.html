@@ -20,22 +20,22 @@
     {# Messages (slotted into shadow DOM) #}
     <div data-shipping slot="messages"
          data-value="{{ first_value }}"
-         data-message-template="{{ settings.step_1_message|default:'You are {amount} away from FREE shipping' }}"
+         data-message-template="{% if settings.step_1_message %}{{ settings.step_1_message }}{% else %}{% t 'side_cart.default.shipping_progress_message' %}{% endif %}"
          class="spark-progress-msg">
-      <span class="js-message-text">{{ settings.step_1_message|default:"You are {amount} away from FREE shipping" }}</span>
+      <span class="js-message-text">{% if settings.step_1_message %}{{ settings.step_1_message }}{% else %}{% t 'side_cart.default.shipping_progress_message' %}{% endif %}</span>
     </div>
     {% if settings.gift_product %}
     <div data-gift slot="messages"
          data-value="{{ second_value }}"
          data-gift-id="{{ settings.gift_product.children.first.pk }}"
-         data-message-template="{{ settings.step_2_message|default:'You are {amount} away from a FREE gift!' }}"
+         data-message-template="{% if settings.step_2_message %}{{ settings.step_2_message }}{% else %}{% t 'side_cart.default.gift_progress_message' %}{% endif %}"
          class="spark-progress-msg">
-      <span class="js-message-text">{{ settings.step_2_message|default:"You are {amount} away from a FREE gift!" }}</span>
+      <span class="js-message-text">{% if settings.step_2_message %}{{ settings.step_2_message }}{% else %}{% t 'side_cart.default.gift_progress_message' %}{% endif %}</span>
     </div>
     {% endif %}
     <div data-final-goal slot="messages"
          class="spark-progress-msg">
-      <span class="js-message-text">{{ settings.final_step_message|default:"You have unlocked all rewards!" }}</span>
+      <span class="js-message-text">{% if settings.final_step_message %}{{ settings.final_step_message }}{% else %}{% t 'side_cart.default.final_progress_message' %}{% endif %}</span>
     </div>
 
     {# Step markers (slotted into progress track) #}

@@ -6,7 +6,9 @@
             "close": "Stäng",
             "save": "Spara",
             "save_loading": "Sparar...",
-            "go_back": "Gå tillbaka"
+            "go_back": "Gå tillbaka",
+            "learn_more": "Learn more",
+            "dismiss": "Dismiss"
         },
         "error": {
             "please_check_error": "<strong>Hoppsan! Vi hittade några fel</strong> - kontrollera felmeddelandena nedan och försök igen",
@@ -16,7 +18,12 @@
             "404_message": "Vi är ledsna, men sidan du letar efter kan inte hittas.",
             "500": "500 Internt serverfel",
             "500_heading": "Förlåt, det är inte du, det är vi.",
-            "500_message": "Vi har blivit underrättade om problemet, försök igen senare."
+            "500_message": "Vi har blivit underrättade om problemet, försök igen senare.",
+            "generic_try_again": "Something went wrong - please try again",
+            "connection_try_again": "Connection issue - please try again"
+        },
+        "confirm": {
+            "delete": "Are you sure you want to delete?"
         }
     },
     "navigation": {
@@ -37,7 +44,8 @@
             "support": "Support",
             "dashboard": "Instrumentpanel",
             "logout": "Utloggning",
-            "login_or_register": "Logga in eller registrera dig"
+            "login_or_register": "Logga in eller registrera dig",
+            "welcome": "Welcome back"
         },
         "footer": {
             "about_us": "Om oss",
@@ -52,7 +60,13 @@
         },
         "pagination": {
             "next": "Nästa"
-        }
+        },
+        "search": "Sök",
+        "cart": "Varukorg",
+        "menu": {
+            "toggle": "Menu"
+        },
+        "breadcrumb": "Breadcrumb"
     },
     "tables": {
         "heading": {
@@ -74,7 +88,8 @@
             "add_coupon": "Lägg till kupong",
             "add_coupon_loading": "Lägger till...",
             "reload": "Ladda om",
-            "reload_loading": "Uppdaterar..."
+            "reload_loading": "Uppdaterar...",
+            "add": "Lägg till"
         }
     },
     "order": {
@@ -105,14 +120,18 @@
             "quantity": "Antal",
             "price": "Pris",
             "subscription_total": "Prenumeration Totalt",
-            "subscription_renewal_message": "Din prenumeration förnyas varje"
+            "subscription_renewal_message": "Din prenumeration förnyas varje",
+            "coupon_code": "Coupon code",
+            "empty_hint": "Add items to get started"
         }
     },
     "store": {
         "blog": {
             "title": "blogg",
             "no_posts": "Inga inlägg har skapats ännu.",
-            "search_not_found": "Hittade <strong>0</strong> resultat."
+            "search_not_found": "Hittade <strong>0</strong> resultat.",
+            "all_categories": "All categories",
+            "category_filter": "Filter by category"
         },
         "catalogue": {
             "filters": "Filtrera",
@@ -137,7 +156,24 @@
             "customer_reviews": "Kundrecensioner",
             "see_all_reviews": "Se alla recensioner",
             "write_a_review": "Skriv en recension",
-            "recommended_products_header": "Kunder som tittade på denna artikel köpte också"
+            "recommended_products_header": "Kunder som tittade på denna artikel köpte också",
+            "apply_filters": "Apply filters",
+            "description": "Description",
+            "filter_reset": "Reset",
+            "product_images": "Product images",
+            "previous_image": "Previous image",
+            "next_image": "Next image",
+            "one_time_purchase": "One-time purchase",
+            "one_time_subtitle": "Buy once, no commitment",
+            "recurring_delivery": "Recurring delivery",
+            "delivery_frequency": "Delivery frequency",
+            "added_to_cart": "Added",
+            "product_not_found": "Product not found",
+            "add_to_cart_error": "Could not add to cart",
+            "subscription_frequency_error": "Please choose a valid subscription frequency.",
+            "view_image": "View image {{ count }}",
+            "select_variant": "Select variant",
+            "product_image_alt": "{{ title }} - image {{ count }}"
         },
         "review": {
             "reviews": "Recensioner",
@@ -155,7 +191,10 @@
         },
         "search": {
             "products_matching": "Produkter som matchar {{ q }}",
-            "search_not_found": "Hittade 0 resultat."
+            "search_not_found": "Hittade 0 resultat.",
+            "search_placeholder": "Search products",
+            "suggestion": "Search for products by name, description, or category.",
+            "close_search": "Close search"
         },
         "support": {
             "title": "Support",
@@ -198,7 +237,56 @@
             "proceed_to_checkout": "Fortsätt till kassan",
             "have_a_coupon": "Har du en kupong?",
             "coupon_code": "Kupong Kod",
-            "apply_coupon": "Tillämpa kupong"
+            "apply_coupon": "Tillämpa kupong",
+            "close_cart": "Close varukorg",
+            "frequency_template": "Every {count} {interval}",
+            "decrease_quantity": "Decrease quantity",
+            "increase_quantity": "Increase quantity",
+            "remove_item": "Remove {title}",
+            "remove_voucher": "Remove voucher",
+            "invalid_coupon_code": "Invalid coupon code",
+            "shipping_progress_message": "You are {amount} away from FREE shipping",
+            "gift_progress_message": "You are {amount} away from a FREE gift!",
+            "final_progress_message": "You have unlocked all rewards!"
+        }
+    },
+    "footer": {
+        "support": "Support",
+        "help": "Help Center",
+        "rights": "All Rights Reserved."
+    },
+    "pagination": {
+        "label": "Pagination",
+        "previous": "Previous",
+        "next": "Next"
+    },
+    "product": {
+        "no_image": "No image"
+    },
+    "catalogue": {
+        "continue_shopping": "Fortsätt handla"
+    },
+    "membership": {
+        "price_label": "Member price",
+        "applied_at_checkout": "Applied at checkout"
+    },
+    "homepage": {
+        "cta": {
+            "shop_now": "Shop now",
+            "view_all": "View all",
+            "view_product": "View product"
+        },
+        "heading": {
+            "on_sale": "On sale"
+        },
+        "placeholder": {
+            "hero_image": "Hero image",
+            "hero_image_path": "Settings > Homepage > Hero Image",
+            "featured_products": "Featured Products - Settings > Homepage > Featured Products",
+            "featured_categories": "Featured Categories - Settings > Homepage > Featured Categories",
+            "promo_banner": "Promo Banner - Settings > Homepage > Promo Banner > Heading",
+            "on_sale": "On Sale - Settings > Homepage > On Sale > Products",
+            "featured_product": "Featured Product - Settings > Homepage > Featured Product"
         }
     }
 }

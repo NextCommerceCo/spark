@@ -128,8 +128,8 @@
         productObject: null,
         variantState: null,
         messages: {
-            addToCart: 'Add to cart',
-            unavailable: 'Unavailable'
+            addToCart: window.SparkI18n && window.SparkI18n.addToCart ? window.SparkI18n.addToCart : 'Add to cart',
+            unavailable: window.SparkI18n && window.SparkI18n.unavailable ? window.SparkI18n.unavailable : 'Unavailable'
         },
         init: function(options) {
             options = options || {};

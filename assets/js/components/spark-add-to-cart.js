@@ -96,6 +96,7 @@
             this._form = null;
             this._button = null;
             this._originalText = '';
+            this._labels = {};
             this._state = 'idle'; // idle | loading | success | error
         }
 
@@ -110,6 +111,7 @@
             if (this._button) {
                 this._originalText = this._button.textContent.trim();
             }
+            this._labels = this._readLabels();
 
             // Initialize cart client
             var graphqlUrl = this.getAttribute('graphql-url') || '/api/graphql/';
@@ -173,16 +175,37 @@
             };
         }
 
+        _readLabels() {
+            var btn = this._button;
+            function attr(name, fallback) {
+                return btn ? (btn.getAttribute(name) || fallback) : fallback;
+            }
+            return {
+                success: attr('data-success-text', 'Added'),
+                productNotFound: attr('data-error-product-not-found', 'Product not found'),
+                addError: attr('data-error-add-to-cart', 'Could not add to cart'),
+                generic: attr('data-error-generic', 'Something went wrong - please try again'),
+                connection: attr('data-error-connection', 'Connection issue - please try again'),
+                unavailable: attr('data-error-unavailable', 'This item is unavailable'),
+                subscriptionFrequency: attr('data-error-subscription-frequency', 'Please choose a valid subscription frequency.')
+            };
+        }
+
         _handleSubmit() {
             var productId = this._getProductId();
             if (!productId) {
-                this._showError('Product not found');
+                this._showError(this._labels.productNotFound);
                 return;
             }
 
             var quantity = this._getQuantity();
             var subscriptionData = this._getSubscription();
             var self = this;
+
+            if (subscriptionData && !subscriptionData.intervalCount) {
+                this._showError(this._labels.subscriptionFrequency);
+                return;
+            }
 
             this._setState('loading');
             this._clearError();
@@ -211,7 +234,7 @@
                     }, SUCCESS_DURATION);
                 } else {
                     self._setState('error');
-                    var errorMsg = 'Could not add to cart';
+                    var errorMsg = self._labels.addError;
                     if (result && result.errors && result.errors.length) {
                         errorMsg = result.errors.join('. ');
                     }
@@ -219,13 +242,13 @@
                 }
             }).catch(function(err) {
                 self._setState('error');
-                var msg = 'Something went wrong -please try again';
+                var msg = self._labels.generic;
                 if (err.message) {
                     if (err.message.toLowerCase().indexOf('timeout') !== -1) {
-                        msg = 'Connection issue -please try again';
+                        msg = self._labels.connection;
                     } else if (err.message.toLowerCase().indexOf('unavailable') !== -1 ||
                                err.message.toLowerCase().indexOf('out of stock') !== -1) {
-                        msg = 'This item is unavailable';
+                        msg = self._labels.unavailable;
                     } else if (err.graphqlErrors) {
                         msg = err.message;
                     }
@@ -247,7 +270,7 @@
 
                 case 'success':
                     this._button.disabled = false;
-                    this._button.textContent = '\u2713 Added';
+                    this._button.textContent = this._labels.success;
                     this._button.style.backgroundColor = SUCCESS_COLOR;
                     this._button.style.borderColor = SUCCESS_COLOR;
                     break;

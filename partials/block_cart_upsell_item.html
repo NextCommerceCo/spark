@@ -53,7 +53,7 @@
         {# Variant select + Add button #}
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
             {% if product.children.all|length > 1 %}
-                <select data-upsell-variant-select aria-label="Select variant"
+                <select data-upsell-variant-select aria-label="{% t 'store.catalogue.select_variant' %}"
                         style="font-size:12px;padding:4px 8px;border:1px solid #E2E8F0;color:#1E293B;max-width:100px;">
                     {% for child in product.children.all %}
                         {% purchase_info_for_product request child as child_session %}

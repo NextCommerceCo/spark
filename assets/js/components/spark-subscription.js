@@ -88,16 +88,16 @@
             <label class="option">
                 <input type="radio" name="subscription_option" value="one-time" checked>
                 <div class="option-content">
-                    <div class="option-title">One-time purchase</div>
-                    <div class="option-subtitle">Buy once, no commitment</div>
+                    <div class="option-title" data-label="one-time-title">One-time purchase</div>
+                    <div class="option-subtitle" data-label="one-time-subtitle">Buy once, no commitment</div>
                 </div>
             </label>
 
             <label class="option">
                 <input type="radio" name="subscription_option" value="subscribe" aria-controls="frequency-wrapper">
                 <div class="option-content">
-                    <div class="option-title">Subscribe & Save</div>
-                    <div class="option-subtitle option-subtitle-success">Recurring delivery</div>
+                    <div class="option-title" data-label="subscribe-title">Subscribe & Save</div>
+                    <div class="option-subtitle option-subtitle-success" data-label="subscribe-subtitle">Recurring delivery</div>
                     
                     <div id="frequency-wrapper" class="frequency-wrapper hidden">
                         <select id="interval-select" name="interval_count" class="frequency" aria-label="Delivery frequency"></select>
@@ -120,8 +120,31 @@
             this._wrapper = this.shadowRoot.getElementById('frequency-wrapper');
             this._select = this.shadowRoot.getElementById('interval-select');
 
+            this._applyLabels();
             this._bindEvents();
             this._loadIntervals();
+        }
+
+        _label(name, fallback) {
+            return this.getAttribute('data-' + name) || fallback;
+        }
+
+        _applyLabels() {
+            const labels = {
+                'one-time-title': this._label('one-time-title', 'One-time purchase'),
+                'one-time-subtitle': this._label('one-time-subtitle', 'Buy once, no commitment'),
+                'subscribe-title': this._label('subscribe-title', 'Subscribe & Save'),
+                'subscribe-subtitle': this._label('subscribe-subtitle', 'Recurring delivery')
+            };
+
+            Object.keys(labels).forEach((name) => {
+                const el = this.shadowRoot.querySelector('[data-label="' + name + '"]');
+                if (el) el.textContent = labels[name];
+            });
+
+            if (this._select) {
+                this._select.setAttribute('aria-label', this._label('frequency-label', 'Delivery frequency'));
+            }
         }
 
         _bindEvents() {

@@ -6,7 +6,9 @@
             "close": "Cerrar",
             "save": "Guardar",
             "save_loading": "Guardando...",
-            "go_back": "Regresar"
+            "go_back": "Regresar",
+            "learn_more": "Más información",
+            "dismiss": "Descartar"
         },
         "error": {
             "please_check_error": "<strong>¡Vaya! Encontramos algunos errores</strong> . Comprueba los mensajes de error a continuación e inténtalo de nuevo",
@@ -16,7 +18,12 @@
             "404_message": "Lo sentimos pero la página que estás buscando no se encuentra.",
             "500": "Error de servidor interno 500",
             "500_heading": "Lo siento, no eres tú, somos nosotros.",
-            "500_message": "Se nos ha notificado el problema. Inténtalo de nuevo más tarde."
+            "500_message": "Se nos ha notificado el problema. Inténtalo de nuevo más tarde.",
+            "generic_try_again": "Algo salió mal. Inténtalo de nuevo.",
+            "connection_try_again": "Problema de conexión. Inténtalo de nuevo."
+        },
+        "confirm": {
+            "delete": "¿Seguro que quieres eliminarlo?"
         }
     },
     "navigation": {
@@ -37,7 +44,8 @@
             "support": "Soporte",
             "dashboard": "Salpicadero",
             "logout": "Cerrar sesión",
-            "login_or_register": "Iniciar sesión o registrarse"
+            "login_or_register": "Iniciar sesión o registrarse",
+            "welcome": "Bienvenido de nuevo"
         },
         "footer": {
             "about_us": "Acerca de nosotros",
@@ -52,7 +60,13 @@
         },
         "pagination": {
             "next": "Próximo"
-        }
+        },
+        "search": "Buscar",
+        "cart": "Carrito",
+        "menu": {
+            "toggle": "Menú"
+        },
+        "breadcrumb": "Ruta de navegación"
     },
     "tables": {
         "heading": {
@@ -74,7 +88,8 @@
             "add_coupon": "Añadir cupón",
             "add_coupon_loading": "Añadiendo...",
             "reload": "Recargar",
-            "reload_loading": "Actualizando..."
+            "reload_loading": "Actualizando...",
+            "add": "Añadir"
         }
     },
     "order": {
@@ -105,14 +120,18 @@
             "quantity": "Cant.",
             "price": "Precio",
             "subscription_total": "Total de suscripciones",
-            "subscription_renewal_message": "Su suscripción se renovará cada"
+            "subscription_renewal_message": "Su suscripción se renovará cada",
+            "coupon_code": "Código de cupón",
+            "empty_hint": "Añade artículos para empezar"
         }
     },
     "store": {
         "blog": {
             "title": "Blog",
             "no_posts": "No se han creado publicaciones todavía.",
-            "search_not_found": "Encontraron <strong>0</strong> resultados."
+            "search_not_found": "Encontraron <strong>0</strong> resultados.",
+            "all_categories": "Todas las categorías",
+            "category_filter": "Filtrar por categoría"
         },
         "catalogue": {
             "filters": "Filtros",
@@ -137,7 +156,24 @@
             "customer_reviews": "Opiniones de clientes",
             "see_all_reviews": "Ver todas las reseñas",
             "write_a_review": "Escribe una reseña",
-            "recommended_products_header": "Los clientes que vieron este artículo también compraron"
+            "recommended_products_header": "Los clientes que vieron este artículo también compraron",
+            "apply_filters": "Aplicar filtros",
+            "description": "Descripción",
+            "filter_reset": "Restablecer",
+            "product_images": "Imágenes del producto",
+            "previous_image": "Imagen anterior",
+            "next_image": "Imagen siguiente",
+            "one_time_purchase": "Compra única",
+            "one_time_subtitle": "Compra una vez, sin compromiso",
+            "recurring_delivery": "Entrega recurrente",
+            "delivery_frequency": "Frecuencia de entrega",
+            "added_to_cart": "Añadido",
+            "product_not_found": "Producto no encontrado",
+            "add_to_cart_error": "No se pudo añadir al carrito",
+            "subscription_frequency_error": "Elige una frecuencia de suscripción válida.",
+            "view_image": "Ver imagen {{ count }}",
+            "select_variant": "Seleccionar variante",
+            "product_image_alt": "{{ title }} - imagen {{ count }}"
         },
         "review": {
             "reviews": "Opiniones",
@@ -155,7 +191,10 @@
         },
         "search": {
             "products_matching": "Productos que corresponden {{ q }}",
-            "search_not_found": "Encontré 0 resultados."
+            "search_not_found": "Encontré 0 resultados.",
+            "search_placeholder": "Buscar productos",
+            "suggestion": "Busca productos por nombre, descripción o categoría.",
+            "close_search": "Cerrar búsqueda"
         },
         "support": {
             "title": "Soporte",
@@ -198,7 +237,56 @@
             "proceed_to_checkout": "Proceder a la compra",
             "have_a_coupon": "¿Tienes un cupón?",
             "coupon_code": "Código de cupón",
-            "apply_coupon": "Aplicar cupón"
+            "apply_coupon": "Aplicar cupón",
+            "close_cart": "Cerrar carrito",
+            "frequency_template": "Cada {count} {interval}",
+            "decrease_quantity": "Reducir cantidad",
+            "increase_quantity": "Aumentar cantidad",
+            "remove_item": "Eliminar {title}",
+            "remove_voucher": "Eliminar cupón",
+            "invalid_coupon_code": "Código de cupón no válido",
+            "shipping_progress_message": "Te faltan {amount} para obtener envío GRATIS",
+            "gift_progress_message": "Te faltan {amount} para obtener un regalo GRATIS",
+            "final_progress_message": "Has desbloqueado todas las recompensas"
+        }
+    },
+    "footer": {
+        "support": "Soporte",
+        "help": "Centro de ayuda",
+        "rights": "Todos los derechos reservados."
+    },
+    "pagination": {
+        "label": "Paginación",
+        "previous": "Anterior",
+        "next": "Siguiente"
+    },
+    "product": {
+        "no_image": "Sin imagen"
+    },
+    "catalogue": {
+        "continue_shopping": "Continuar comprando"
+    },
+    "membership": {
+        "price_label": "Precio para miembros",
+        "applied_at_checkout": "Aplicado al finalizar la compra"
+    },
+    "homepage": {
+        "cta": {
+            "shop_now": "Comprar ahora",
+            "view_all": "Ver todo",
+            "view_product": "Ver producto"
+        },
+        "heading": {
+            "on_sale": "En oferta"
+        },
+        "placeholder": {
+            "hero_image": "Imagen principal",
+            "hero_image_path": "Configuración > Inicio > Imagen principal",
+            "featured_products": "Productos destacados - Configuración > Inicio > Productos destacados",
+            "featured_categories": "Categorías destacadas - Configuración > Inicio > Categorías destacadas",
+            "promo_banner": "Banner promocional - Configuración > Inicio > Banner promocional > Encabezado",
+            "on_sale": "En oferta - Configuración > Inicio > En oferta > Productos",
+            "featured_product": "Producto destacado - Configuración > Inicio > Producto destacado"
         }
     }
 }

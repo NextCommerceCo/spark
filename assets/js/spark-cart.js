@@ -272,9 +272,10 @@
                 var interval = typeof subscriptionData.interval === 'string' ? subscriptionData.interval.trim() : '';
                 var intervalCount = parseInt(subscriptionData.intervalCount, 10);
                 if (!interval || isNaN(intervalCount) || intervalCount <= 0) {
+                    var messages = window.SparkI18n || {};
                     return Promise.resolve({
                         success: false,
-                        errors: ['Please choose a valid subscription frequency.']
+                        errors: [messages.subscriptionFrequencyError || 'Please choose a valid subscription frequency.']
                     });
                 }
 

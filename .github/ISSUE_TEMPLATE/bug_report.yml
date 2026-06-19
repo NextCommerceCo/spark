@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible Spark theme issue.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a Spark issue. Do not include API keys, customer data, merchant credentials, or exploit details.
+  - type: input
+    id: version
+    attributes:
+      label: Spark version or commit
+      description: Use the README version, Git tag, or commit SHA.
+      placeholder: "1.1.1 or add24e9"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the smallest safe reproduction you can share.
+      placeholder: |
+        1. Clone Spark at ...
+        2. Configure ...
+        3. Run ...
+        4. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options:
+        - Theme Settings
+        - Homepage section partial
+        - Product detail page
+        - Cart or side cart
+        - App hook
+        - CSS build or compatibility
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Verification
+      description: Paste relevant local command output.
+      placeholder: |
+        python3 -m unittest discover -s tests
+        python3 scripts/sass-compat.py --check assets/main.css

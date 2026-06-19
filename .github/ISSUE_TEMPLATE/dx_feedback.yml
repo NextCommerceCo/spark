@@ -1,0 +1,49 @@
+name: Developer experience feedback
+description: Share friction from installing, extending, debugging, or contributing to Spark.
+title: "[DX]: "
+labels:
+  - dx
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for onboarding friction, unclear docs, confusing errors, missing examples, or extension pain. Do not include secrets or merchant-specific private data.
+  - type: dropdown
+    id: journey_stage
+    attributes:
+      label: Journey stage
+      options:
+        - Discover
+        - Install
+        - Local verification
+        - Store install
+        - Extending the theme
+        - Debugging
+        - Upgrade or release
+        - Contributing
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What were you trying to do?
+      description: Describe your goal and the docs, commands, or files you used.
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: Where did you lose time?
+      description: Include confusing copy, missing next steps, unclear errors, or decisions the docs forced you to guess.
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: What would have helped?
+      description: A command, example, screenshot, doc page, warning, or default behavior.
+  - type: input
+    id: time_lost
+    attributes:
+      label: Time lost
+      placeholder: "About 10 minutes"

@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 <div class="container py-3">
-    <nav aria-label="breadcrumb">
+    <nav aria-label="{% t 'navigation.breadcrumb' %}">
         <ol class="flex items-center gap-2 text-xs text-slate-400">
             <li><a href="{{ homepage_url }}" class="hover:text-slate-600">{% t "navigation.main.home" %}</a></li>
             <li>/</li>
@@ -48,7 +48,7 @@
                     <p class="text-sm text-slate-500">{% t "store.search.suggestion" with link=search_url %}</p>
                 {% endif %}
             {% else %}
-                <p class="text-slate-500">Search for products by name, description, or category.</p>
+                <p class="text-slate-500">{% t "store.search.suggestion" %}</p>
             {% endif %}
         </div>
     {% endif %}

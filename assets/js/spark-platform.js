@@ -70,7 +70,8 @@
         document.addEventListener('click', function(e) {
             var el = e.target.closest(':not(form)[data-delete-id]');
             if (!el) return;
-            if (!confirm('Are you sure you want to delete?')) {
+            var messages = window.SparkI18n || {};
+            if (!confirm(messages.deleteConfirm || 'Are you sure you want to delete?')) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
                 return;

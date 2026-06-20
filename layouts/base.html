@@ -170,6 +170,10 @@
     {% block scripts %}
         <script type="text/javascript" src="{{ 'js/spark-events.js'|asset_url }}"></script>
         <script>
+        {% t 'store.catalogue.add_to_cart' as spark_i18n_add_to_cart %}
+        {% t 'store.catalogue.product_unavailable' as spark_i18n_unavailable %}
+        {% t 'global.confirm.delete' as spark_i18n_delete_confirm %}
+        {% t 'store.catalogue.subscription_frequency_error' as spark_i18n_subscription_frequency_error %}
         window.SparkCartAssets = {
             cart: "{{ 'js/spark-cart.js'|asset_url|escapejs }}",
             cartRewards: "{{ 'js/spark-cart-rewards.js'|asset_url|escapejs }}",
@@ -178,20 +182,28 @@
             upsellItem: "{{ 'js/components/spark-upsell-item.js'|asset_url|escapejs }}",
             cartDrawer: "{{ 'js/components/spark-cart-drawer.js'|asset_url|escapejs }}"
         };
+        window.SparkI18n = {
+            addToCart: "{{ spark_i18n_add_to_cart|escapejs }}",
+            unavailable: "{{ spark_i18n_unavailable|escapejs }}",
+            deleteConfirm: "{{ spark_i18n_delete_confirm|escapejs }}",
+            subscriptionFrequencyError: "{{ spark_i18n_subscription_frequency_error|escapejs }}"
+        };
         </script>
         <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>
         <script type="text/javascript" src="{{ 'js/theme.js'|asset_url }}"></script>
         {% if settings.enable_membership_pricing %}
             {% url 'storefrontapi:graphql' as membership_graphql_url %}
             <script>
+            {% t 'membership.price_label' as spark_membership_price_label %}
+            {% t 'membership.applied_at_checkout' as spark_membership_applied_at_checkout %}
             window.SparkMembershipPricingConfig = {
                 enabled: true,
                 graphqlUrl: "{{ membership_graphql_url|default:'/api/graphql/'|escapejs }}",
                 discountPercent: "{{ settings.membership_discount_percent|default:"25"|escapejs }}",
                 statusMetadataKey: "{{ settings.membership_status_metadata_key|default:"uvbrite_member_status"|escapejs }}",
                 activeStatusValue: "{{ settings.membership_active_status_value|default:"active"|escapejs }}",
-                label: "{{ settings.membership_label|default:"Member price"|escapejs }}",
-                detailText: "{{ settings.membership_detail_text|default:"Applied at checkout"|escapejs }}"
+                label: "{% if settings.membership_label %}{{ settings.membership_label|escapejs }}{% else %}{{ spark_membership_price_label|escapejs }}{% endif %}",
+                detailText: "{% if settings.membership_detail_text %}{{ settings.membership_detail_text|escapejs }}{% else %}{{ spark_membership_applied_at_checkout|escapejs }}{% endif %}"
             };
             </script>
             <script type="text/javascript" src="{{ 'js/spark-membership-pricing.js'|asset_url }}" defer></script>

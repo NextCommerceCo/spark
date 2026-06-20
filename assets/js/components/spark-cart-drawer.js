@@ -209,7 +209,7 @@
         '<div class="spark-drawer-panel" role="document">' +
         '  <div class="spark-drawer-header">' +
         '    <h2 class="spark-drawer-header-title"></h2>' +
-        '    <button class="spark-drawer-close" data-action="close" aria-label="Close cart">' +
+        '    <button class="spark-drawer-close" data-action="close">' +
         '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '    </button>' +
         '  </div>' +
@@ -240,6 +240,17 @@
         this._shippingText = this.getAttribute('data-shipping-text') || 'Calculated at checkout';
         this._couponPlaceholder = this.getAttribute('data-coupon-placeholder') || 'Coupon code';
         this._couponBtn = this.getAttribute('data-coupon-btn') || 'Apply';
+        this._closeCartLabel = this.getAttribute('data-close-cart-label') || 'Close cart';
+        this._freeText = this.getAttribute('data-free-text') || 'Free';
+        this._frequencyTemplate = this.getAttribute('data-frequency-template') || 'Every {count} {interval}';
+        this._decreaseQuantityLabel = this.getAttribute('data-decrease-quantity-label') || 'Decrease quantity';
+        this._quantityLabel = this.getAttribute('data-quantity-label') || 'Quantity';
+        this._increaseQuantityLabel = this.getAttribute('data-increase-quantity-label') || 'Increase quantity';
+        this._removeItemLabel = this.getAttribute('data-remove-item-label') || 'Remove {title}';
+        this._removeVoucherLabel = this.getAttribute('data-remove-voucher-label') || 'Remove voucher';
+        this._shippingLabel = this.getAttribute('data-shipping-label') || 'Shipping';
+        this._totalLabel = this.getAttribute('data-total-label') || 'Total';
+        this._invalidCouponText = this.getAttribute('data-invalid-coupon-text') || 'Invalid coupon code';
         this._giftProductId = this.getAttribute('data-gift-product-id') || '';
         this._currencyCode = this.getAttribute('data-currency') || 'USD';
         this._openOnAdd = this.getAttribute('data-open-on-add') !== 'false';
@@ -255,7 +266,17 @@
             discountText: this._discountText,
             shippingText: this._shippingText,
             couponPlaceholder: this._couponPlaceholder,
-            couponBtn: this._couponBtn
+            couponBtn: this._couponBtn,
+            freeText: this._freeText,
+            frequencyTemplate: this._frequencyTemplate,
+            decreaseQuantityLabel: this._decreaseQuantityLabel,
+            quantityLabel: this._quantityLabel,
+            increaseQuantityLabel: this._increaseQuantityLabel,
+            removeItemLabel: this._removeItemLabel,
+            removeVoucherLabel: this._removeVoucherLabel,
+            shippingLabel: this._shippingLabel,
+            totalLabel: this._totalLabel,
+            invalidCouponText: this._invalidCouponText
         };
 
         // Attach shadow DOM
@@ -268,8 +289,10 @@
         this._titleEl = shadow.querySelector('.spark-drawer-header-title');
         this._body = shadow.querySelector('.spark-drawer-body');
         this._footer = shadow.querySelector('.spark-drawer-footer');
+        this._closeBtn = shadow.querySelector('.spark-drawer-close');
 
         this._titleEl.textContent = this._headerTitle;
+        if (this._closeBtn) this._closeBtn.setAttribute('aria-label', this._closeCartLabel);
         this.removeAttribute('hidden');
         this.setAttribute('data-open', 'false');
 
@@ -409,7 +432,7 @@
         }
 
         // Focus close button
-        var closeBtn = this.shadowRoot.querySelector('.spark-drawer-close');
+        var closeBtn = this._closeBtn;
         if (closeBtn) {
             var btn = closeBtn;
             setTimeout(function() { btn.focus(); }, 50);
@@ -477,7 +500,7 @@
         // Render items
         var lines = cart.lines || [];
         var renderer = window.SparkCartDrawerRenderer;
-        var frag = renderer.createItemsFragment(lines, currency, document);
+        var frag = renderer.createItemsFragment(lines, currency, document, this._labels);
 
         this._body.innerHTML = '';
         var itemsContainer = document.createElement('div');
@@ -673,7 +696,7 @@
                 self._isMutating = false;
                 if (btn) btn.disabled = false;
                 if (errorEl) {
-                    errorEl.textContent = err.message || 'Invalid coupon code';
+                    errorEl.textContent = err.message || self._labels.invalidCouponText;
                     errorEl.style.display = '';
                 }
             });

@@ -26,7 +26,7 @@
     {% endwith %}
     {% if session.price.exists and session.price.price_retail > session.price.price %}
         <div class="absolute top-0 left-0 bg-[var(--primary-color)] text-white text-xs font-medium px-2 py-0.5 leading-5">
-            {% widthratio session.price.price session.price.price_retail 100 as pct %}Sale
+            {% widthratio session.price.price session.price.price_retail 100 as pct %}{% t "store.catalogue.sale" %}
         </div>
     {% endif %}
     <div class="product-title text-slate-800 group-hover:text-slate-600">{{ product.get_title }}</div>

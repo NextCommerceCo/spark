@@ -6,6 +6,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     name: Verify theme tooling
@@ -25,8 +32,28 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install CI dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pyyaml
+
+      - name: Validate GitHub YAML
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          for path in sorted(Path(".github").glob("**/*.yml")):
+              with path.open() as handle:
+                  yaml.safe_load(handle)
+              print(f"OK: {path}")
+          PY
+
       - name: Run tests
         run: python3 -m unittest discover -s tests
+
+      - name: Run JavaScript module tests
+        run: node tests/js/membership-pricing.test.js
 
       - name: Check committed CSS compatibility
         run: python3 scripts/sass-compat.py --check assets/main.css

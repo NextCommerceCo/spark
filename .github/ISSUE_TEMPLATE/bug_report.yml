@@ -51,6 +51,7 @@ body:
         - Homepage section partial
         - Product detail page
         - Cart or side cart
+        - Web Component
         - App hook
         - CSS build or compatibility
         - Documentation
@@ -65,3 +66,5 @@ body:
       placeholder: |
         python3 -m unittest discover -s tests
         python3 scripts/sass-compat.py --check assets/main.css
+    validations:
+      required: true

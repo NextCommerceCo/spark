@@ -4,7 +4,7 @@ All notable public Spark changes should be recorded here.
 
 Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
-## Unreleased
+## 1.1.2 - Unreleased
 
 - Clarified the first-run path for local inspection versus installing Spark on a real Next Commerce store.
 - Added contribution guidance, issue templates, CI checks, and an extension guide for theme developers.

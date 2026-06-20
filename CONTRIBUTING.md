@@ -18,6 +18,8 @@ python3 -m unittest discover -s tests
 python3 scripts/sass-compat.py --check assets/main.css
 ```
 
+The standard local checks do not need extra Python packages. CI also validates GitHub workflow and issue-template YAML with PyYAML; install `pyyaml` first if you run that optional check locally.
+
 If you change `css/input.css`, rebuild and check the generated CSS:
 
 ```bash
@@ -41,7 +43,7 @@ That rebuilds and stages `assets/main.css`. Commit the source CSS and generated 
 ## Pull Request Checklist
 
 - Explain the user-facing or theme-developer impact.
-- Link the relevant workstream from [PLAN.md](PLAN.md) when possible.
+- Name the relevant [PLAN.md](PLAN.md) workstream when it applies; otherwise explain the public DX or user impact in plain language.
 - Include screenshots for storefront UI changes at desktop and mobile widths.
 - Include the exact commands you ran and their results.
 - Update docs when behavior, settings, events, public APIs, or release steps change.
@@ -49,7 +51,7 @@ That rebuilds and stages `assets/main.css`. Commit the source CSS and generated 
 
 ## Public Issues And Support
 
-GitHub issue creation may be limited for this repository. If you can open an issue, use the templates and include reproduction steps, expected behavior, actual behavior, and the Spark version or commit.
+Use the GitHub issue templates for reproducible bugs and developer-experience feedback. Include reproduction steps, expected behavior, actual behavior, and the Spark version or commit. If issue creation is unavailable for your account or the topic is store-specific, use your normal Next Commerce support channel.
 
 For security reports, do not open a public issue. Follow [SECURITY.md](SECURITY.md).
 

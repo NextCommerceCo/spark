@@ -8,7 +8,7 @@ Spark is meant to be extended without forking the whole theme. This guide points
 | --- | --- | --- |
 | Add or change a homepage design block | Homepage section partial plus Theme Settings | `docs/design-block-authoring.md` |
 | Add merchant-configurable theme behavior | `configs/settings_schema.json` and `configs/settings_data.json` | `docs/theme-settings-partials.md` |
-| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/cart-events.md`, `docs/cart-drawer-architecture.md` |
+| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/terminology.md`, `docs/performance-load-order.md` |
 | Coordinate cart UI behavior | DOM events through `SparkEvents` | `docs/cart-events.md` |
 | Change PDP variant picker UI | Real controls named `attr_*` plus `SparkVariantState` | `docs/pdp-variant-state.md`, `docs/pdp-customization.md` |
 | Add custom client-side behavior | Focused vanilla JS module or Web Component | Existing files in `assets/js/` |
@@ -22,10 +22,10 @@ When adding a setting-backed surface:
 
 1. Add the setting to `configs/settings_schema.json`.
 2. Add a default to `configs/settings_data.json`.
-3. Use a stable prefix for related settings, such as `featured_products_*`.
+3. Use a stable prefix for related settings. For example, the featured products section keeps its toggle, content, and style controls under `show_featured_products` and `featured_products_*`; see [configs/settings_schema.json](../configs/settings_schema.json) and [partials/section_featured_products.html](../partials/section_featured_products.html).
 4. Render the setting from a focused partial or template surface.
 5. Update `docs/theme-settings-partials.md`.
-6. Run JSON/schema parity checks if your branch adds them, then run the standard local checks.
+6. Run the standard local checks. If your branch adds a schema validation script, add it to [CONTRIBUTING.md](../CONTRIBUTING.md) and CI before referencing it here.
 
 Keep future theme sections in mind. Settings that belong to one repeated section should be easy to move from `settings.foo` to future `section.settings.foo`.
 
@@ -76,7 +76,7 @@ When adding client-side code:
 
 - Keep modules focused and expose only the smallest useful public API on `window`.
 - Prefer progressive enhancement. The page should still have useful server-rendered markup.
-- Keep JS asset files ASCII-only. The platform processes JS through the template engine, so avoid `{%`, `{{`, Unicode punctuation, and non-ASCII symbols in comments or strings.
+- Keep JS asset files ASCII-only; see [CLAUDE.md](../CLAUDE.md#critical-js-asset-files). The platform processes JS through DTL, so `{%`, `{{`, Unicode punctuation, and non-ASCII symbols can be parsed as template syntax or trigger CDN 500s.
 - Add tests when logic can be isolated without a full storefront runtime.
 
 ## CSS And Generated Artifacts

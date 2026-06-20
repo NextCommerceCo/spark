@@ -46,4 +46,4 @@ body:
     id: time_lost
     attributes:
       label: Time lost
-      placeholder: "About 10 minutes"
+      placeholder: "e.g., about 10 minutes"

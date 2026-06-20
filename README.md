@@ -45,7 +45,7 @@ Use this path when you have a Next Commerce store, API key, and theme id.
    ntk push
    ```
 
-Expected time: 5-10 minutes if you already have store credentials. If `ntk` reports that `-a/--apikey` and `-s/--store` are required, create `config.yml` with `ntk init` or pass those flags explicitly. If Python prints a local OpenSSL or `urllib3` warning before `ntk` output, use a newer Python virtual environment; the warning comes from the local Python TLS stack, not from Spark.
+Expected time: 5-10 minutes if you already have store credentials. If `ntk` cannot find credentials, create `config.yml` with `ntk init`, copy `config.example.yml`, or pass credentials through the CLI options shown by `ntk --help`.
 
 For day-to-day development (editing CSS sources), set up Tailwind locally:
 
@@ -71,6 +71,11 @@ When you change `css/input.css` (or any source that affects the build), run `mak
 | `make verify-theme` | Run CSS compatibility checks plus lightweight tooling tests |
 | `make release` | Rebuild minified `assets/main.css` and stage it for commit |
 | `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
+
+## Troubleshooting
+
+- Credential errors from `ntk`: confirm `config.yml` has the API key, store domain, and theme id for a store you control.
+- Python runtime warnings before `ntk` output: retry from a current Python virtual environment. These warnings usually come from local Python packaging, not Spark.
 
 ## CSS Compatibility Verification
 

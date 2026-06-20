@@ -72,11 +72,6 @@ When you change `css/input.css` (or any source that affects the build), run `mak
 | `make release` | Rebuild minified `assets/main.css` and stage it for commit |
 | `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
 
-## Troubleshooting
-
-- Credential errors from `ntk`: confirm `config.yml` has the API key, store domain, and theme id for a store you control.
-- Python runtime warnings before `ntk` output: retry from a current Python virtual environment. These warnings usually come from local Python packaging, not Spark.
-
 ## CSS Compatibility Verification
 
 Spark authoring CSS can use Tailwind v4 constructs in `css/input.css`, but the storefront platform sees the generated artifact in `assets/main.css`. Before uploading CSS, run:
@@ -91,8 +86,10 @@ Known risky generated CSS includes `@supports`, `@property`, `@layer`, `oklch()`
 
 Avoid dynamic Tailwind class construction in templates. Tailwind scans source files at build time, so classes like `bg-{{ settings.primary_color }}` are never emitted. Use CSS custom properties (`bg-[var(--primary-color)]`) or static conditional classes instead.
 
-Troubleshooting quick read:
+## Troubleshooting
 
+- Credential errors from `ntk`: confirm `config.yml` has the API key, store domain, and theme id for a store you control.
+- Python runtime warnings before `ntk` output: retry from a current Python virtual environment. These warnings usually come from local Python packaging, not Spark.
 - Local Tailwind/build failure: `make css` fails before `assets/main.css` is written. Fix `css/input.css`, missing Tailwind binary, or local command setup.
 - Platform Sass/compiler failure: local build passes but upload/storefront errors mention CSS parsing. Run `make css-check` and inspect any unsupported construct it reports.
 - Missing uploaded compiled CSS: templates changed but styling did not. Rebuild with `make css-check`, then push `assets/main.css` explicitly.

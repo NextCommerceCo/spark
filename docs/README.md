@@ -6,6 +6,7 @@ This directory contains Spark's theme-developer, design-team, and architecture d
 
 | Doc | Audience | Purpose |
 | --- | --- | --- |
+| [extending-spark.md](extending-spark.md) | Theme developers, app developers | Supported extension surfaces for settings, partials, app hooks, events, and Web Components. |
 | [theme-settings-partials.md](theme-settings-partials.md) | Designers, theme developers | Catalog of Theme Settings-backed partials and template surfaces. |
 | [figma-section-library-plan.md](figma-section-library-plan.md) | Design team, theme developers | Plan for mapping Figma section components to Spark section authoring units. |
 | [section-specs/](section-specs/) | Design team, theme developers | Per-section specs for the current homepage section partials. |

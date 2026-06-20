@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Store-specific support
+    url: https://github.com/NextCommerceCo/spark/blob/main/CONTRIBUTING.md#public-issues-and-support
+    about: Use your normal Next Commerce support channel for merchant-specific store issues.
+  - name: Security reports
+    url: https://github.com/NextCommerceCo/spark/security/advisories/new
+    about: Report vulnerabilities privately. Do not open public issues with exploit details or secrets.

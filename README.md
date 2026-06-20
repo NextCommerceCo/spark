@@ -14,9 +14,26 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 
 ## Quick Start
 
-The compiled `assets/main.css` is committed to the repo, so NEXT developers can install Spark on a store without a local Tailwind toolchain. Clone the repo, point `ntk` at a store you control, and push.
+The compiled `assets/main.css` is committed to the repo, so NEXT developers can inspect or install Spark without a local Tailwind toolchain. Choose the path that matches what you have available.
 
-1. Install ntk and configure your store:
+### Inspect Spark Locally
+
+Use this path when you want to evaluate the theme structure, docs, and generated CSS before connecting a store.
+
+```bash
+git clone https://github.com/NextCommerceCo/spark.git
+cd spark
+python3 -m unittest discover -s tests
+python3 scripts/sass-compat.py --check assets/main.css
+```
+
+Expected time: under 2 minutes after clone on a typical laptop. This verifies the committed CSS artifact and local tooling tests. It does not render a live storefront because Spark templates run inside the Next Commerce theme runtime.
+
+### Install On A Store
+
+Use this path when you have a Next Commerce store, API key, and theme id.
+
+1. Install `ntk` and configure your store:
    ```bash
    pip install next-theme-kit
    ntk init
@@ -27,6 +44,8 @@ The compiled `assets/main.css` is committed to the repo, so NEXT developers can 
    ```bash
    ntk push
    ```
+
+Expected time: 5-10 minutes if you already have store credentials. If `ntk` cannot find credentials, create `config.yml` with `ntk init`, copy `config.example.yml`, or pass credentials through the CLI options shown by `ntk --help`.
 
 For day-to-day development (editing CSS sources), set up Tailwind locally:
 
@@ -67,8 +86,10 @@ Known risky generated CSS includes `@supports`, `@property`, `@layer`, `oklch()`
 
 Avoid dynamic Tailwind class construction in templates. Tailwind scans source files at build time, so classes like `bg-{{ settings.primary_color }}` are never emitted. Use CSS custom properties (`bg-[var(--primary-color)]`) or static conditional classes instead.
 
-Troubleshooting quick read:
+## Troubleshooting
 
+- Credential errors from `ntk`: confirm `config.yml` has the API key, store domain, and theme id for a store you control.
+- Python runtime warnings before `ntk` output: retry from a current Python virtual environment. These warnings usually come from local Python packaging, not Spark.
 - Local Tailwind/build failure: `make css` fails before `assets/main.css` is written. Fix `css/input.css`, missing Tailwind binary, or local command setup.
 - Platform Sass/compiler failure: local build passes but upload/storefront errors mention CSS parsing. Run `make css-check` and inspect any unsupported construct it reports.
 - Missing uploaded compiled CSS: templates changed but styling did not. Rebuild with `make css-check`, then push `assets/main.css` explicitly.
@@ -129,6 +150,8 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Current 
 
 See [docs/theme-settings-partials.md](docs/theme-settings-partials.md) for the design-team catalog of Theme Settings partials and homepage section partials, [docs/figma-section-library-plan.md](docs/figma-section-library-plan.md) for the Spark Figma section library plan, [docs/performance-load-order.md](docs/performance-load-order.md) for the critical-path loading convention, [docs/pdp-customization.md](docs/pdp-customization.md) for the PDP redesign preservation checklist and QA runbook, [docs/pdp-variant-state.md](docs/pdp-variant-state.md) for the PDP variant state Interface, [docs/cart-events.md](docs/cart-events.md) for the cart event Interface, [docs/cart-rewards.md](docs/cart-rewards.md) for side-cart rewards and upsell rules, [docs/cart-drawer-architecture.md](docs/cart-drawer-architecture.md) for the drawer Module split, [docs/intro-bootstrap-comparison.md](docs/intro-bootstrap-comparison.md) for the Intro Bootstrap comparison, [docs/design-block-authoring.md](docs/design-block-authoring.md) for design-block authoring guidance, [docs/terminology.md](docs/terminology.md) for NEXT-native naming guardrails, and [docs/sections-architecture-proposal.md](docs/sections-architecture-proposal.md) for the future theme sections platform proposal.
 
+Start with [docs/extending-spark.md](docs/extending-spark.md) when adding Theme Settings, homepage section partials, app hooks, Web Components, or public storefront behavior.
+
 ## Design System
 
 All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, colors, spacing, motion, interaction states, accessibility, and anti-slop rules. Read it before making any UI change.
@@ -137,7 +160,7 @@ All visual decisions are documented in [DESIGN.md](DESIGN.md) — typography, co
 
 The `.gitignore` file is intentionally committed. It documents local files that must stay out of the public repository, including store-specific `config.yml`, downloaded Tailwind binaries, tool session state, OS files, and editor settings.
 
-See [SECURITY.md](SECURITY.md) for private vulnerability reporting and secrets-handling guidance.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution workflow, [CHANGELOG.md](CHANGELOG.md) for release notes, and [SECURITY.md](SECURITY.md) for private vulnerability reporting and secrets-handling guidance.
 
 ## License
 

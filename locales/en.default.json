@@ -249,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "You may also like"
         }
     },
     "footer": {
@@ -279,7 +280,9 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Featured products",
+            "featured_categories": "Shop by category"
         },
         "placeholder": {
             "hero_image": "Hero image",

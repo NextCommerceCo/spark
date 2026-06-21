@@ -56,7 +56,9 @@
             "terms_conditions": "Algemene voorwaarden",
             "privacy": "Privacybeleid",
             "address": "Adres",
-            "copyright": "Alle rechten voorbehouden"
+            "copyright": "Alle rechten voorbehouden",
+            "help": "Helpcentrum",
+            "rights": "Alle rechten voorbehouden."
         },
         "pagination": {
             "next": "Volgende"
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "Misschien vind je dit ook leuk"
         }
     },
     "footer": {
@@ -277,7 +280,9 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Uitgelichte producten",
+            "featured_categories": "Shop op categorie"
         },
         "placeholder": {
             "hero_image": "Hero image",

@@ -56,7 +56,9 @@
             "terms_conditions": "Vilkår og betingelser",
             "privacy": "Retningslinjer for personvern",
             "address": "Adresse",
-            "copyright": "Alle rettigheter reservert"
+            "copyright": "Alle rettigheter reservert",
+            "help": "Hjelpesenter",
+            "rights": "Alle rettigheter reservert."
         },
         "pagination": {
             "next": "Neste"
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "Du vil kanskje også like"
         }
     },
     "footer": {
@@ -277,7 +280,9 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Utvalgte produkter",
+            "featured_categories": "Handle etter kategori"
         },
         "placeholder": {
             "hero_image": "Hero image",

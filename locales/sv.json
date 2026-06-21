@@ -56,7 +56,9 @@
             "terms_conditions": "Regler & Villkor",
             "privacy": "Sekretesspolicy",
             "address": "Adress",
-            "copyright": "Alla rättigheter reserverade"
+            "copyright": "Alla rättigheter reserverade",
+            "help": "Hjälpcenter",
+            "rights": "Alla rättigheter förbehållna."
         },
         "pagination": {
             "next": "Nästa"
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "Du kanske också gillar"
         }
     },
     "footer": {
@@ -277,7 +280,9 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Utvalda produkter",
+            "featured_categories": "Handla efter kategori"
         },
         "placeholder": {
             "hero_image": "Hero image",

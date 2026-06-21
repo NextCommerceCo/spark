@@ -56,7 +56,9 @@
             "terms_conditions": "Allgemeine Geschäftsbedingungen",
             "privacy": "Datenschutzrichtlinie",
             "address": "Adresse",
-            "copyright": "Alle Rechte vorbehalten"
+            "copyright": "Alle Rechte vorbehalten",
+            "help": "Hilfezentrum",
+            "rights": "Alle Rechte vorbehalten."
         },
         "pagination": {
             "next": "Weiter"
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Ungültiger Gutscheincode",
             "shipping_progress_message": "Sie sind {amount} vom KOSTENLOSEN Versand entfernt",
             "gift_progress_message": "Sie sind {amount} von einem KOSTENLOSEN Geschenk entfernt",
-            "final_progress_message": "Sie haben alle Prämien freigeschaltet"
+            "final_progress_message": "Sie haben alle Prämien freigeschaltet",
+            "upsell_section_title": "Das könnte dir auch gefallen"
         }
     },
     "footer": {
@@ -277,7 +280,9 @@
             "view_product": "Produkt ansehen"
         },
         "heading": {
-            "on_sale": "Im Angebot"
+            "on_sale": "Im Angebot",
+            "featured_products": "Ausgewählte Produkte",
+            "featured_categories": "Nach Kategorie einkaufen"
         },
         "placeholder": {
             "hero_image": "Hero-Bild",

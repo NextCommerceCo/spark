@@ -56,7 +56,9 @@
             "terms_conditions": "Conditions générales",
             "privacy": "Politique de confidentialité",
             "address": "Adresse",
-            "copyright": "Tous droits réservés"
+            "copyright": "Tous droits réservés",
+            "help": "Centre d'aide",
+            "rights": "Tous droits réservés."
         },
         "pagination": {
             "next": "Suivant"
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Code de coupon invalide",
             "shipping_progress_message": "Il vous manque {amount} pour la livraison GRATUITE",
             "gift_progress_message": "Il vous manque {amount} pour un cadeau GRATUIT",
-            "final_progress_message": "Vous avez débloqué toutes les récompenses"
+            "final_progress_message": "Vous avez débloqué toutes les récompenses",
+            "upsell_section_title": "Vous aimerez aussi"
         }
     },
     "footer": {
@@ -277,7 +280,9 @@
             "view_product": "Voir le produit"
         },
         "heading": {
-            "on_sale": "En promotion"
+            "on_sale": "En promotion",
+            "featured_products": "Produits en vedette",
+            "featured_categories": "Acheter par catégorie"
         },
         "placeholder": {
             "hero_image": "Image principale",

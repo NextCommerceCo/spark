@@ -76,10 +76,14 @@ def template_paths():
 
 def localized_default_settings_from_templates():
     settings = set()
+    localized_default_vars = set()
 
     for path in template_paths():
         text = path.read_text()
-        localized_default_vars = set(LOCALIZED_DEFAULT_ASSIGNMENT_PATTERN.findall(text))
+        localized_default_vars.update(LOCALIZED_DEFAULT_ASSIGNMENT_PATTERN.findall(text))
+
+    for path in template_paths():
+        text = path.read_text()
         for setting_name, default_var in SETTING_DEFAULT_PATTERN.findall(text):
             if default_var in localized_default_vars:
                 settings.add(setting_name)

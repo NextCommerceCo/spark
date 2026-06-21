@@ -158,7 +158,7 @@
             "customer_reviews": "Asiakkaiden arvostelut",
             "see_all_reviews": "Katso kaikki arvostelut",
             "write_a_review": "Kirjoita arvostelu",
-            "recommended_products_header": "Asiakkaat, jotka katsoneet tätä tuotetta, ostivat myös",
+            "recommended_products_header": "Suositellut tuotteet",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -282,7 +282,9 @@
         "heading": {
             "on_sale": "On sale",
             "featured_products": "Esittelyssä olevat tuotteet",
-            "featured_categories": "Osta kategorian mukaan"
+            "featured_categories": "Osta kategorian mukaan",
+            "promo_banner": "Rajoitetun ajan tarjous",
+            "featured_product": "Esittelyssä oleva tuote"
         },
         "placeholder": {
             "hero_image": "Hero image",

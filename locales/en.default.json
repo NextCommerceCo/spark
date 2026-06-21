@@ -158,7 +158,7 @@
             "customer_reviews": "Customer Reviews",
             "see_all_reviews": "See all reviews",
             "write_a_review": "Write a review",
-            "recommended_products_header": "Customers who viewed this item also bought",
+            "recommended_products_header": "Recommended products",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -282,7 +282,9 @@
         "heading": {
             "on_sale": "On sale",
             "featured_products": "Featured products",
-            "featured_categories": "Shop by category"
+            "featured_categories": "Shop by category",
+            "promo_banner": "Limited-time offer",
+            "featured_product": "Featured product"
         },
         "placeholder": {
             "hero_image": "Hero image",

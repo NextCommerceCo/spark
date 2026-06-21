@@ -158,7 +158,7 @@
             "customer_reviews": "Recensies van klanten",
             "see_all_reviews": "Bekijk alle reviews",
             "write_a_review": "Schrijf een review",
-            "recommended_products_header": "Klanten die dit artikel bekeken, kochten ook",
+            "recommended_products_header": "Aanbevolen producten",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -282,7 +282,9 @@
         "heading": {
             "on_sale": "On sale",
             "featured_products": "Uitgelichte producten",
-            "featured_categories": "Shop op categorie"
+            "featured_categories": "Shop op categorie",
+            "promo_banner": "Tijdelijke aanbieding",
+            "featured_product": "Uitgelicht product"
         },
         "placeholder": {
             "hero_image": "Hero image",

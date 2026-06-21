@@ -158,7 +158,7 @@
             "customer_reviews": "Kundrecensioner",
             "see_all_reviews": "Se alla recensioner",
             "write_a_review": "Skriv en recension",
-            "recommended_products_header": "Kunder som tittade på denna artikel köpte också",
+            "recommended_products_header": "Rekommenderade produkter",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -282,7 +282,9 @@
         "heading": {
             "on_sale": "On sale",
             "featured_products": "Utvalda produkter",
-            "featured_categories": "Handla efter kategori"
+            "featured_categories": "Handla efter kategori",
+            "promo_banner": "Tidsbegränsat erbjudande",
+            "featured_product": "Utvald produkt"
         },
         "placeholder": {
             "hero_image": "Hero image",

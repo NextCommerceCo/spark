@@ -194,16 +194,16 @@
         {% if settings.enable_membership_pricing %}
             {% url 'storefrontapi:graphql' as membership_graphql_url %}
             <script>
-            {% t 'membership.price_label' as spark_membership_price_label %}
-            {% t 'membership.applied_at_checkout' as spark_membership_applied_at_checkout %}
+            {% t 'membership.price_label' as default_membership_label %}
+            {% t 'membership.applied_at_checkout' as default_membership_detail_text %}
             window.SparkMembershipPricingConfig = {
                 enabled: true,
                 graphqlUrl: "{{ membership_graphql_url|default:'/api/graphql/'|escapejs }}",
                 discountPercent: "{{ settings.membership_discount_percent|default:"25"|escapejs }}",
                 statusMetadataKey: "{{ settings.membership_status_metadata_key|default:"uvbrite_member_status"|escapejs }}",
                 activeStatusValue: "{{ settings.membership_active_status_value|default:"active"|escapejs }}",
-                label: "{% if settings.membership_label %}{{ settings.membership_label|escapejs }}{% else %}{{ spark_membership_price_label|escapejs }}{% endif %}",
-                detailText: "{% if settings.membership_detail_text %}{{ settings.membership_detail_text|escapejs }}{% else %}{{ spark_membership_applied_at_checkout|escapejs }}{% endif %}"
+                label: "{{ settings.membership_label|default:default_membership_label|escapejs }}",
+                detailText: "{{ settings.membership_detail_text|default:default_membership_detail_text|escapejs }}"
             };
             </script>
             <script type="text/javascript" src="{{ 'js/spark-membership-pricing.js'|asset_url }}" defer></script>

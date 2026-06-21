@@ -263,7 +263,7 @@
                 "name": "featured_product_header",
                 "label": "Section Heading",
                 "type": "text",
-                "help_text": "Heading above the featured product. Leave blank to hide.",
+                "help_text": "Heading above the featured product. Leave blank to use the localized default.",
                 "max_length": 250
             },
             {
@@ -556,7 +556,7 @@
                 "name": "promo_banner_heading",
                 "label": "Heading",
                 "type": "text",
-                "help_text": "Large heading text on the promo banner.",
+                "help_text": "Large heading text on the promo banner. Leave blank to use the localized default.",
                 "max_length": 100
             },
             {

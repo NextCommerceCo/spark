@@ -10,6 +10,7 @@ LOCALIZED_DEFAULT_OVERRIDE_SETTINGS = {
     "ab_link_text",
     "cart_header_title",
     "featured_categories_header",
+    "featured_product_header",
     "featured_product_cta_text",
     "featured_products_cta_text",
     "featured_products_header",
@@ -18,6 +19,7 @@ LOCALIZED_DEFAULT_OVERRIDE_SETTINGS = {
     "membership_detail_text",
     "membership_label",
     "on_sale_header",
+    "promo_banner_heading",
     "promo_banner_cta_text",
     "recommended_products_header",
     "step_1_message",
@@ -25,9 +27,16 @@ LOCALIZED_DEFAULT_OVERRIDE_SETTINGS = {
     "upsell_section_title",
 }
 
-STARTER_COPY_SETTINGS = LOCALIZED_DEFAULT_OVERRIDE_SETTINGS | {
-    "promo_banner_heading",
-}
+STARTER_COPY_SETTINGS = LOCALIZED_DEFAULT_OVERRIDE_SETTINGS
+
+TRANSLATION_TAG_PATTERN = re.compile(r"{%-?\s*t\s+[\"']([^\"']+)[\"']")
+LOCALIZED_DEFAULT_ASSIGNMENT_PATTERN = re.compile(
+    r"{%-?\s*t\s+[\"'][^\"']+[\"']\s+as\s+([A-Za-z_][A-Za-z0-9_]*)\s*-?%}"
+)
+SETTING_DEFAULT_PATTERN = re.compile(
+    r"settings\.([A-Za-z_][A-Za-z0-9_]*)\|default:([A-Za-z_][A-Za-z0-9_]*)"
+)
+TEMPLATE_DIRS = ["layouts", "partials", "templates"]
 
 
 def load_json(path):
@@ -60,15 +69,30 @@ def setting_fields(schema):
                 yield field
 
 
+def template_paths():
+    for dirname in TEMPLATE_DIRS:
+        yield from (ROOT / dirname).rglob("*.html")
+
+
+def localized_default_settings_from_templates():
+    settings = set()
+
+    for path in template_paths():
+        text = path.read_text()
+        localized_default_vars = set(LOCALIZED_DEFAULT_ASSIGNMENT_PATTERN.findall(text))
+        for setting_name, default_var in SETTING_DEFAULT_PATTERN.findall(text):
+            if default_var in localized_default_vars:
+                settings.add(setting_name)
+
+    return settings
+
+
 class LocalizationContractTests(unittest.TestCase):
     def test_template_translation_keys_exist_in_every_locale(self):
-        template_dirs = ["layouts", "partials", "templates"]
-        key_pattern = re.compile(r"{%\s*t\s+[\"']([^\"']+)[\"']")
         used_keys = set()
 
-        for dirname in template_dirs:
-            for path in (ROOT / dirname).rglob("*.html"):
-                used_keys.update(key_pattern.findall(path.read_text()))
+        for path in template_paths():
+            used_keys.update(TRANSLATION_TAG_PATTERN.findall(path.read_text()))
 
         self.assertGreater(len(used_keys), 0)
 
@@ -92,6 +116,12 @@ class LocalizationContractTests(unittest.TestCase):
                 [],
                 f"{locale_path.name} has locale keys not present in en.default.json",
             )
+
+    def test_localized_default_override_settings_match_template_usage(self):
+        self.assertEqual(
+            sorted(LOCALIZED_DEFAULT_OVERRIDE_SETTINGS),
+            sorted(localized_default_settings_from_templates()),
+        )
 
     def test_starter_copy_settings_do_not_define_schema_defaults(self):
         schema = load_json(ROOT / "configs" / "settings_schema.json")

@@ -158,7 +158,7 @@
             "customer_reviews": "รีวิวจากลูกค้า",
             "see_all_reviews": "ดูรีวิวทั้งหมด",
             "write_a_review": "เขียนรีวิว",
-            "recommended_products_header": "ลูกค้าที่ดูไอเท็มนี้ก็ซื้อ",
+            "recommended_products_header": "สินค้าแนะนำ",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -282,7 +282,9 @@
         "heading": {
             "on_sale": "On sale",
             "featured_products": "สินค้าที่แนะนำ",
-            "featured_categories": "เลือกซื้อตามหมวดหมู่"
+            "featured_categories": "เลือกซื้อตามหมวดหมู่",
+            "promo_banner": "ข้อเสนอจำกัดเวลา",
+            "featured_product": "สินค้าที่แนะนำ"
         },
         "placeholder": {
             "hero_image": "Hero image",

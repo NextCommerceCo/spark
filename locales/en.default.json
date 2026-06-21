@@ -158,7 +158,7 @@
             "customer_reviews": "Customer Reviews",
             "see_all_reviews": "See all reviews",
             "write_a_review": "Write a review",
-            "recommended_products_header": "Customers who viewed this item also bought",
+            "recommended_products_header": "Recommended products",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -249,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "You may also like"
         }
     },
     "footer": {
@@ -279,7 +280,11 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Featured products",
+            "featured_categories": "Shop by category",
+            "promo_banner": "Limited-time offer",
+            "featured_product": "Featured product"
         },
         "placeholder": {
             "hero_image": "Hero image",

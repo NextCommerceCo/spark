@@ -1,6 +1,7 @@
 {# Spark Theme - Custom Side Cart (GraphQL-first, Web Component) #}
 {# Replaces platform's side_cart.js with <spark-cart-drawer> Web Component #}
 
+{% t 'side_cart.default.your_order' as default_cart_header_title %}
 <spark-cart-drawer
     hidden
     role="dialog"
@@ -9,7 +10,7 @@
     aria-expanded="false"
     data-open="false"
     data-checkout-url="{% url 'checkout:index' %}"
-    data-header-title="{% if settings.cart_header_title %}{{ settings.cart_header_title }}{% else %}{% t 'side_cart.default.your_order' %}{% endif %}"
+    data-header-title="{{ settings.cart_header_title|default:default_cart_header_title }}"
     data-empty-title="{% t 'side_cart.default.your_cart_is_empty' %}"
     data-empty-sub="{% t 'side_cart.default.oops_You_have_nothing_here' %}"
     data-continue-text="{% t 'catalogue.continue_shopping' %}"

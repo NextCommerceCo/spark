@@ -56,7 +56,9 @@
             "terms_conditions": "Termini e condizioni",
             "privacy": "Informativa sulla privacy",
             "address": "Indirizzo",
-            "copyright": "Tutti i diritti riservati"
+            "copyright": "Tutti i diritti riservati",
+            "help": "Centro assistenza",
+            "rights": "Tutti i diritti riservati."
         },
         "pagination": {
             "next": "Successivo"
@@ -156,7 +158,7 @@
             "customer_reviews": "Recensioni clienti",
             "see_all_reviews": "Vedi tutte le recensioni",
             "write_a_review": "Scrivi una recensione",
-            "recommended_products_header": "I clienti che hanno visto questo articolo hanno acquistato anche",
+            "recommended_products_header": "Prodotti consigliati",
             "apply_filters": "Apply filters",
             "description": "Description",
             "filter_reset": "Reset",
@@ -247,7 +249,8 @@
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",
             "gift_progress_message": "You are {amount} away from a FREE gift!",
-            "final_progress_message": "You have unlocked all rewards!"
+            "final_progress_message": "You have unlocked all rewards!",
+            "upsell_section_title": "Potrebbe piacerti anche"
         }
     },
     "footer": {
@@ -277,7 +280,11 @@
             "view_product": "View product"
         },
         "heading": {
-            "on_sale": "On sale"
+            "on_sale": "On sale",
+            "featured_products": "Prodotti in evidenza",
+            "featured_categories": "Acquista per categoria",
+            "promo_banner": "Offerta a tempo limitato",
+            "featured_product": "Prodotto in evidenza"
         },
         "placeholder": {
             "hero_image": "Hero image",

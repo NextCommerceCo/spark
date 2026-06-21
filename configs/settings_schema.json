@@ -224,9 +224,8 @@
                 "name": "homepage_hero_cta",
                 "label": "Hero Button Text",
                 "type": "text",
-                "help_text": "Call-to-action button text.",
-                "max_length": 50,
-                "default": "Shop now"
+                "help_text": "Call-to-action button text. Leave blank to use the localized default.",
+                "max_length": 50
             },
             {
                 "name": "homepage_hero_cta_style",
@@ -264,7 +263,7 @@
                 "name": "featured_product_header",
                 "label": "Section Heading",
                 "type": "text",
-                "help_text": "Heading above the featured product. Leave blank to hide.",
+                "help_text": "Heading above the featured product. Leave blank to use the localized default.",
                 "max_length": 250
             },
             {
@@ -320,9 +319,8 @@
                 "name": "featured_product_cta_text",
                 "label": "Button Text",
                 "type": "text",
-                "help_text": "Call-to-action button text.",
-                "max_length": 100,
-                "default": "View Product"
+                "help_text": "Call-to-action button text. Leave blank to use the localized default.",
+                "max_length": 100
             },
             {
                 "name": "featured_product_cta_style",
@@ -366,9 +364,8 @@
                 "name": "featured_products_header",
                 "label": "Section Heading",
                 "type": "text",
-                "help_text": "Heading above the featured products grid. Leave blank to hide.",
-                "max_length": 250,
-                "default": "Featured Products"
+                "help_text": "Heading above the featured products grid. Leave blank to use the localized default.",
+                "max_length": 250
             },
             {
                 "name": "featured_products_header_size",
@@ -439,8 +436,7 @@
                 "name": "featured_products_cta_text",
                 "label": "Button Text",
                 "type": "text",
-                "default": "View All",
-                "help_text": "Optional button text shown below the grid.",
+                "help_text": "Optional button text shown below the grid. Leave blank to use the localized default.",
                 "max_length": 100
             },
             {
@@ -480,8 +476,7 @@
                 "name": "on_sale_header",
                 "label": "Section Heading",
                 "type": "text",
-                "default": "On Sale",
-                "help_text": "Heading above the on-sale products grid.",
+                "help_text": "Heading above the on-sale products grid. Leave blank to use the localized default.",
                 "max_length": 250
             },
             {
@@ -561,8 +556,7 @@
                 "name": "promo_banner_heading",
                 "label": "Heading",
                 "type": "text",
-                "default": "Limited Time Offer",
-                "help_text": "Large heading text on the promo banner.",
+                "help_text": "Large heading text on the promo banner. Leave blank to use the localized default.",
                 "max_length": 100
             },
             {
@@ -576,8 +570,7 @@
                 "name": "promo_banner_cta_text",
                 "label": "Button Text",
                 "type": "text",
-                "default": "Shop Now",
-                "help_text": "Call-to-action button label.",
+                "help_text": "Optional button text shown in the promo banner. Leave blank to use the localized default.",
                 "max_length": 50
             },
             {
@@ -635,9 +628,8 @@
                 "name": "featured_categories_header",
                 "label": "Section Heading",
                 "type": "text",
-                "help_text": "Heading above the featured categories. Leave blank to hide.",
-                "max_length": 250,
-                "default": "Shop by Category"
+                "help_text": "Heading above the featured categories. Leave blank to use the localized default.",
+                "max_length": 250
             },
             {
                 "name": "featured_categories_header_size",
@@ -848,16 +840,14 @@
                 "name": "membership_label",
                 "label": "Member Price Label",
                 "type": "text",
-                "default": "Member price",
-                "help_text": "Short label shown beside the member price.",
+                "help_text": "Short label shown beside the member price. Leave blank to use the localized default.",
                 "max_length": 80
             },
             {
                 "name": "membership_detail_text",
                 "label": "Member Price Detail",
                 "type": "text",
-                "default": "Applied at checkout",
-                "help_text": "Optional detail shown on larger price surfaces.",
+                "help_text": "Optional detail shown on larger price surfaces. Leave blank to use the localized default.",
                 "max_length": 120
             }
         ],
@@ -881,8 +871,7 @@
                 "name": "recommended_products_header",
                 "label": "Section Heading",
                 "type": "text",
-                "default": "Recommended Products",
-                "help_text": "Heading above the recommended products grid. Leave blank to use the default translation.",
+                "help_text": "Heading above recommended products. Leave blank to use the localized default.",
                 "max_length": 250
             },
             {
@@ -1171,8 +1160,7 @@
                 "name": "cart_header_title",
                 "label": "Header Title",
                 "type": "text",
-                "default": "Your Cart",
-                "help_text": "Title displayed at the top of the side cart.",
+                "help_text": "Title displayed at the top of the side cart. Leave blank to use the localized default.",
                 "max_length": 50
             },
             {
@@ -1209,24 +1197,21 @@
                 "name": "step_1_message",
                 "label": "Free Shipping Message",
                 "type": "text",
-                "default": "You are {amount} away from FREE shipping",
-                "help_text": "Message shown when cart is below the shipping threshold. Use {amount} for the remaining amount.",
+                "help_text": "Message shown when cart is below the shipping threshold. Use {amount} for the remaining amount. Leave blank to use the localized default.",
                 "max_length": 200
             },
             {
                 "name": "step_2_message",
                 "label": "Free Gift Message",
                 "type": "text",
-                "default": "You are {amount} away from a FREE gift!",
-                "help_text": "Message shown when cart is between shipping and gift thresholds. Use {amount} for the remaining amount.",
+                "help_text": "Message shown when cart is between shipping and gift thresholds. Use {amount} for the remaining amount. Leave blank to use the localized default.",
                 "max_length": 200
             },
             {
                 "name": "final_step_message",
                 "label": "All Rewards Reached Message",
                 "type": "text",
-                "default": "You have unlocked all rewards!",
-                "help_text": "Celebration message shown when the cart total exceeds all milestones.",
+                "help_text": "Celebration message shown when the cart total exceeds all milestones. Leave blank to use the localized default.",
                 "max_length": 200
             },
             {
@@ -1248,8 +1233,7 @@
                 "name": "upsell_section_title",
                 "label": "Section Title",
                 "type": "text",
-                "default": "You May Also Like",
-                "help_text": "Heading displayed above suggested products in the side cart.",
+                "help_text": "Heading displayed above suggested products in the side cart. Leave blank to use the localized default.",
                 "max_length": 100
             },
             {
@@ -1404,9 +1388,8 @@
                 "name": "ab_link_text",
                 "label": "Link Text",
                 "type": "text",
-                "help_text": "Text for the announcement link.",
-                "max_length": 100,
-                "default": "Learn more"
+                "help_text": "Text for the announcement link. Leave blank to use the localized default.",
+                "max_length": 100
             },
             {
                 "name": "ab_placement",

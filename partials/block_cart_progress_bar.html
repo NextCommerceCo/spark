@@ -6,6 +6,9 @@
 {% load theme_tags %}
 {% widthratio first_value max_value 100 as first_percent %}
 {% widthratio second_value max_value 100 as second_percent %}
+{% t 'side_cart.default.shipping_progress_message' as default_step_1_message %}
+{% t 'side_cart.default.gift_progress_message' as default_step_2_message %}
+{% t 'side_cart.default.final_progress_message' as default_final_step_message %}
 
 {% if settings.enable_progress_bar %}
 <div class="spark-progress-section" style="padding: 12px 0;">
@@ -20,22 +23,22 @@
     {# Messages (slotted into shadow DOM) #}
     <div data-shipping slot="messages"
          data-value="{{ first_value }}"
-         data-message-template="{% if settings.step_1_message %}{{ settings.step_1_message }}{% else %}{% t 'side_cart.default.shipping_progress_message' %}{% endif %}"
+         data-message-template="{{ settings.step_1_message|default:default_step_1_message }}"
          class="spark-progress-msg">
-      <span class="js-message-text">{% if settings.step_1_message %}{{ settings.step_1_message }}{% else %}{% t 'side_cart.default.shipping_progress_message' %}{% endif %}</span>
+      <span class="js-message-text">{{ settings.step_1_message|default:default_step_1_message }}</span>
     </div>
     {% if settings.gift_product %}
     <div data-gift slot="messages"
          data-value="{{ second_value }}"
          data-gift-id="{{ settings.gift_product.children.first.pk }}"
-         data-message-template="{% if settings.step_2_message %}{{ settings.step_2_message }}{% else %}{% t 'side_cart.default.gift_progress_message' %}{% endif %}"
+         data-message-template="{{ settings.step_2_message|default:default_step_2_message }}"
          class="spark-progress-msg">
-      <span class="js-message-text">{% if settings.step_2_message %}{{ settings.step_2_message }}{% else %}{% t 'side_cart.default.gift_progress_message' %}{% endif %}</span>
+      <span class="js-message-text">{{ settings.step_2_message|default:default_step_2_message }}</span>
     </div>
     {% endif %}
     <div data-final-goal slot="messages"
          class="spark-progress-msg">
-      <span class="js-message-text">{% if settings.final_step_message %}{{ settings.final_step_message }}{% else %}{% t 'side_cart.default.final_progress_message' %}{% endif %}</span>
+      <span class="js-message-text">{{ settings.final_step_message|default:default_final_step_message }}</span>
     </div>
 
     {# Step markers (slotted into progress track) #}

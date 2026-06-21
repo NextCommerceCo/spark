@@ -3,7 +3,8 @@
     {% if settings.featured_categories|length > 0 %}
     <section class="py-12 md:py-16" {% if settings.featured_categories_bg_color %}style="background-color: {{ settings.featured_categories_bg_color }};"{% endif %}>
         <div class="container">
-            {% include "partials/section_heading.html" with heading=settings.featured_categories_header size=settings.featured_categories_header_size align=settings.featured_categories_header_align %}
+            {% t "homepage.heading.featured_categories" as default_featured_categories_heading %}
+            {% include "partials/section_heading.html" with heading=settings.featured_categories_header|default:default_featured_categories_heading size=settings.featured_categories_header_size align=settings.featured_categories_header_align %}
             <div class="category-grid" {% if settings.featured_categories_columns %}style="--category-grid-columns: {{ settings.featured_categories_columns }};"{% endif %}>
                 {% for category in settings.featured_categories %}
                     <a href="{{ category.get_absolute_url }}" class="relative group overflow-hidden">

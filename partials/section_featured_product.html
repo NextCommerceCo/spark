@@ -3,7 +3,8 @@
     {% if settings.featured_product %}
     <section class="py-12 md:py-16" {% if settings.featured_product_bg_color %}style="background-color: {{ settings.featured_product_bg_color }};"{% endif %}>
         <div class="container">
-            {% include "partials/section_heading.html" with heading=settings.featured_product_header size=settings.featured_product_header_size align=settings.featured_product_header_align %}
+            {% t "homepage.heading.featured_product" as default_featured_product_heading %}
+            {% include "partials/section_heading.html" with heading=settings.featured_product_header|default:default_featured_product_heading size=settings.featured_product_header_size align=settings.featured_product_header_align %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
                 {% with product=settings.featured_product image=settings.featured_product.primary_image %}
                 <div>

@@ -198,7 +198,11 @@
         '  color: #475569; text-decoration: none; cursor: pointer; background: none; border: none;' +
         '  font-family: var(--font-body, inherit); padding: 4px;' +
         '}',
-        '.spark-drawer-continue:hover { color: #1E293B; }'
+        '.spark-drawer-continue:hover { color: #1E293B; }',
+        '.spark-drawer-announcement {' +
+        '  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;' +
+        '  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;' +
+        '}'
     ].join('\n');
 
     /* --- SparkCartDrawer Web Component --- */
@@ -213,6 +217,7 @@
         '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '    </button>' +
         '  </div>' +
+        '  <div class="spark-drawer-announcement" role="status" aria-live="polite"></div>' +
         '  <slot name="progress"></slot>' +
         '  <div class="spark-drawer-body"></div>' +
         '  <slot name="upsells"></slot>' +
@@ -251,6 +256,9 @@
         this._shippingLabel = this.getAttribute('data-shipping-label') || 'Shipping';
         this._totalLabel = this.getAttribute('data-total-label') || 'Total';
         this._invalidCouponText = this.getAttribute('data-invalid-coupon-text') || 'Invalid coupon code';
+        var messages = window.SparkI18n || {};
+        this._itemRemovedAnnouncement = messages.cartItemRemoved || 'Item removed from cart.';
+        this._quantityUpdatedAnnouncement = messages.cartQuantityUpdated || 'Cart quantity updated.';
         this._giftProductId = this.getAttribute('data-gift-product-id') || '';
         this._currencyCode = this.getAttribute('data-currency') || 'USD';
         this._openOnAdd = this.getAttribute('data-open-on-add') !== 'false';
@@ -290,6 +298,7 @@
         this._body = shadow.querySelector('.spark-drawer-body');
         this._footer = shadow.querySelector('.spark-drawer-footer');
         this._closeBtn = shadow.querySelector('.spark-drawer-close');
+        this._announcementEl = shadow.querySelector('.spark-drawer-announcement');
 
         this._titleEl.textContent = this._headerTitle;
         if (this._closeBtn) this._closeBtn.setAttribute('aria-label', this._closeCartLabel);
@@ -358,6 +367,7 @@
 
         this._onCartUpdated = function(e) {
             var detail = e.detail || {};
+            self._announceCartUpdate(detail.action);
             if (detail.cart) {
                 self._cart = detail.cart;
                 self._currencyCode = detail.cart.currency || self._currencyCode;
@@ -409,6 +419,7 @@
     };
 
     disconnectedCallback() {
+        this._cancelAnnounce();
         document.removeEventListener('spark:cart:added', this._onCartAdded);
         document.removeEventListener('spark:cart:toggle', this._onCartToggle);
         document.removeEventListener('spark:cart:updated', this._onCartUpdated);
@@ -480,6 +491,49 @@
     };
 
     /* --- Rendering --- */
+
+    _announceCartUpdate(action) {
+        if (!this._announcementEl) return;
+        var message = '';
+        if (action === 'remove') {
+            message = this._itemRemovedAnnouncement;
+        } else if (action === 'update') {
+            message = this._quantityUpdatedAnnouncement;
+        }
+        this._cancelAnnounce();
+        this._announcementEl.textContent = '';
+        if (!message) return;
+        /* Defer the set so a repeated identical message is not coalesced into a
+           single accessibility-tree update. Double requestAnimationFrame lets the
+           cleared region commit in one paint before the message lands in the next,
+           which some screen readers require to re-announce; fall back to a task
+           when rAF is unavailable (SSR / test env). */
+        var self = this;
+        if (typeof requestAnimationFrame === 'function') {
+            this._announceRaf = requestAnimationFrame(function() {
+                self._announceRaf = requestAnimationFrame(function() {
+                    self._announceRaf = null;
+                    self._announcementEl.textContent = message;
+                });
+            });
+        } else {
+            this._announceTimer = setTimeout(function() {
+                self._announceTimer = null;
+                self._announcementEl.textContent = message;
+            }, 0);
+        }
+    };
+
+    _cancelAnnounce() {
+        if (this._announceTimer) {
+            clearTimeout(this._announceTimer);
+            this._announceTimer = null;
+        }
+        if (this._announceRaf && typeof cancelAnimationFrame === 'function') {
+            cancelAnimationFrame(this._announceRaf);
+            this._announceRaf = null;
+        }
+    };
 
     _setLoading(loading) {
         this._isLoading = loading;

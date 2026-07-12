@@ -120,6 +120,7 @@
 </head>
 
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+    <a href="#main-content" class="skip-to-content">{% t 'global.accessibility.skip_to_main_content' %}</a>
 
     {% block layout %}
         {% if not settings.account_only %}
@@ -140,7 +141,7 @@
 
         {# Main content #}
         {% block content_wrapper %}
-            <main>
+            <main id="main-content" tabindex="-1">
                 {% block breadcrumbs %}{% endblock %}
                 <div class="container">
                     {% include "partials/alert_messages.html" %}
@@ -174,6 +175,8 @@
         {% t 'store.catalogue.product_unavailable' as spark_i18n_unavailable %}
         {% t 'global.confirm.delete' as spark_i18n_delete_confirm %}
         {% t 'store.catalogue.subscription_frequency_error' as spark_i18n_subscription_frequency_error %}
+        {% t 'side_cart.default.item_removed_announcement' as spark_i18n_cart_item_removed %}
+        {% t 'side_cart.default.quantity_updated_announcement' as spark_i18n_cart_quantity_updated %}
         window.SparkCartAssets = {
             cart: "{{ 'js/spark-cart.js'|asset_url|escapejs }}",
             cartRewards: "{{ 'js/spark-cart-rewards.js'|asset_url|escapejs }}",
@@ -186,7 +189,9 @@
             addToCart: "{{ spark_i18n_add_to_cart|escapejs }}",
             unavailable: "{{ spark_i18n_unavailable|escapejs }}",
             deleteConfirm: "{{ spark_i18n_delete_confirm|escapejs }}",
-            subscriptionFrequencyError: "{{ spark_i18n_subscription_frequency_error|escapejs }}"
+            subscriptionFrequencyError: "{{ spark_i18n_subscription_frequency_error|escapejs }}",
+            cartItemRemoved: "{{ spark_i18n_cart_item_removed|escapejs }}",
+            cartQuantityUpdated: "{{ spark_i18n_cart_quantity_updated|escapejs }}"
         };
         </script>
         <script type="text/javascript" src="{{ 'js/spark-cart-loader.js'|asset_url }}"></script>

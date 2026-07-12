@@ -24,6 +24,9 @@
         },
         "confirm": {
             "delete": "Voulez-vous vraiment supprimer cet élément ?"
+        },
+        "accessibility": {
+            "skip_to_main_content": "Aller au contenu principal"
         }
     },
     "navigation": {
@@ -245,6 +248,8 @@
             "decrease_quantity": "Diminuer la quantité",
             "increase_quantity": "Augmenter la quantité",
             "remove_item": "Supprimer {title}",
+            "item_removed_announcement": "Article supprimé du panier.",
+            "quantity_updated_announcement": "Quantité du panier mise à jour.",
             "remove_voucher": "Supprimer le coupon",
             "invalid_coupon_code": "Code de coupon invalide",
             "shipping_progress_message": "Il vous manque {amount} pour la livraison GRATUITE",

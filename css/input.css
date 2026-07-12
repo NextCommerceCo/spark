@@ -627,6 +627,41 @@
         border: 0;
     }
 
+    /* Skip link: hidden until keyboard focus enters the page */
+    .skip-to-content {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .skip-to-content:focus {
+        top: 1rem;
+        left: 1rem;
+        z-index: 100;
+        width: auto;
+        height: auto;
+        padding: 0.625rem 1rem;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        /* Fixed neutral colors: brand primaries can sit at mid luminance
+           where neither white nor dark text clears WCAG contrast */
+        color: #FFFFFF !important;
+        background-color: #1E293B;
+        border: 1px solid #1E293B;
+        border-radius: 2px;
+        font-family: var(--font-sans);
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+    }
+
     /* ─── Focus Visible ─── */
 
     :focus-visible {

@@ -660,6 +660,10 @@
         line-height: 1.25rem;
     }
 
+    [data-light-primary] .skip-to-content:focus {
+        color: #1E293B !important;
+    }
+
     /* ─── Focus Visible ─── */
 
     :focus-visible {

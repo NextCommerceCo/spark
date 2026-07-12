@@ -37,7 +37,13 @@ class FakeElement {
     }
 
     setAttribute(name, value) {
-        this.attributes[name] = String(value);
+        const oldValue = this.getAttribute(name);
+        const newValue = String(value);
+        this.attributes[name] = newValue;
+        const observed = this.constructor.observedAttributes || [];
+        if (oldValue !== newValue && observed.indexOf(name) !== -1 && this.attributeChangedCallback) {
+            this.attributeChangedCallback(name, oldValue, newValue);
+        }
     }
 
     getAttribute(name) {
@@ -146,6 +152,20 @@ async function testShippingThresholdTransitionsOnce() {
     ]);
 }
 
+async function testShippingThresholdTransitionsThroughPublicAttribute() {
+    const env = createEnvironment();
+    const fixture = createProgressBar(env);
+    fixture.progress.setAttribute('data-value', '50');
+    fixture.progress.setAttribute('data-value', '75');
+    fixture.progress.setAttribute('data-value', '10');
+    fixture.progress.setAttribute('data-value', '20');
+
+    assert.deepEqual(env.events.map(function(event) { return event.type; }), [
+        'spark:progress:shipping-reached',
+        'spark:progress:shipping-unreached'
+    ]);
+}
+
 async function testGiftThresholdTransitionsAndDetail() {
     const env = createEnvironment();
     const fixture = createProgressBar(env);
@@ -182,6 +202,7 @@ async function testStepAriaCheckedUpdates() {
 
 const tests = [
     ['shipping threshold transitions once', testShippingThresholdTransitionsOnce],
+    ['shipping threshold transitions through public attribute', testShippingThresholdTransitionsThroughPublicAttribute],
     ['gift threshold transitions and detail', testGiftThresholdTransitionsAndDetail],
     ['step aria-checked updates', testStepAriaCheckedUpdates]
 ];

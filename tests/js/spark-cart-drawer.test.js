@@ -8,6 +8,14 @@ const EVENTS_SCRIPT = path.join(ROOT, 'assets', 'js', 'spark-events.js');
 const REWARDS_SCRIPT = path.join(ROOT, 'assets', 'js', 'spark-cart-rewards.js');
 const RENDERER_SCRIPT = path.join(ROOT, 'assets', 'js', 'spark-cart-drawer-renderer.js');
 const DRAWER_SCRIPT = path.join(ROOT, 'assets', 'js', 'components', 'spark-cart-drawer.js');
+const FABRICATED_SHADOW_SELECTORS = [
+    '.spark-drawer-backdrop',
+    '.spark-drawer-panel',
+    '.spark-drawer-header-title',
+    '.spark-drawer-body',
+    '.spark-drawer-footer',
+    '.spark-drawer-close'
+];
 
 class FakeClassList {
     constructor() {
@@ -100,12 +108,9 @@ class FakeElement {
 
     attachShadow() {
         const root = new FakeElement('shadow-root');
-        root.queries['.spark-drawer-backdrop'] = new FakeElement('div');
-        root.queries['.spark-drawer-panel'] = new FakeElement('div');
-        root.queries['.spark-drawer-header-title'] = new FakeElement('h2');
-        root.queries['.spark-drawer-body'] = new FakeElement('div');
-        root.queries['.spark-drawer-footer'] = new FakeElement('div');
-        root.queries['.spark-drawer-close'] = new FakeElement('button');
+        for (const selector of FABRICATED_SHADOW_SELECTORS) {
+            root.queries[selector] = new FakeElement('div');
+        }
         root.queries['.spark-drawer-close'].focus = function() { this.focused = true; };
         this.shadowRoot = root;
         return root;
@@ -233,10 +238,26 @@ async function testEmptyCartRendersEmptyState() {
     assert.equal(drawer._footer.style.display, 'none');
 }
 
+async function testFabricatedShadowNodesMatchSourceTemplate() {
+    const source = fs.readFileSync(DRAWER_SCRIPT, 'utf8');
+    const templateStart = source.indexOf('template.innerHTML =');
+    const classStart = source.indexOf('class SparkCartDrawerEl', templateStart);
+    assert.notEqual(templateStart, -1);
+    assert.notEqual(classStart, -1);
+    const templateSource = source.slice(templateStart, classStart);
+
+    for (const selector of FABRICATED_SHADOW_SELECTORS) {
+        const className = selector.slice(1);
+        const classAttribute = new RegExp('class="[^"]*' + className + '(?:\\s|\\")');
+        assert.match(templateSource, classAttribute, selector + ' must remain in the real drawer template');
+    }
+}
+
 const tests = [
     ['open and close visible state', testOpenAndCloseVisibleState],
     ['cart updated event rerenders contents', testCartUpdatedEventRerendersContents],
-    ['empty cart renders empty state', testEmptyCartRendersEmptyState]
+    ['empty cart renders empty state', testEmptyCartRendersEmptyState],
+    ['fabricated shadow nodes match source template', testFabricatedShadowNodesMatchSourceTemplate]
 ];
 
 (async function main() {

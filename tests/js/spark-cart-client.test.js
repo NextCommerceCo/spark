@@ -16,6 +16,7 @@ function createEnvironment(options = {}) {
     const cookieJar = Object.assign({}, options.cookies);
     const storage = {};
     const responses = (options.responses || []).slice();
+    const timers = [];
 
     const document = {
         dispatchEvent: function(event) {
@@ -58,8 +59,16 @@ function createEnvironment(options = {}) {
         Intl: Intl,
         Date: Date,
         Promise: Promise,
-        clearTimeout: function() {},
+        clearTimeout: function(timerId) {
+            const timer = timers.find(function(item) { return item.id === timerId; });
+            if (timer) timer.cleared = true;
+        },
         setTimeout: function(callback, delay) {
+            if (options.controllableTimers) {
+                const timer = { id: timers.length + 1, callback: callback, delay: delay, cleared: false };
+                timers.push(timer);
+                return timer.id;
+            }
             if (delay === 2000) callback();
             return 1;
         },
@@ -69,6 +78,7 @@ function createEnvironment(options = {}) {
                 init: Object.assign({}, init, { headers: Object.assign({}, init.headers) })
             });
             if (options.onFetch) options.onFetch(fetchCalls.length, cookieJar);
+            if (options.neverSettlingFetch) return new Promise(function() {});
             const response = responses.shift();
             if (!response) throw new Error('Unexpected fetch');
             return Promise.resolve({
@@ -88,7 +98,8 @@ function createEnvironment(options = {}) {
         cookieJar: cookieJar,
         events: events,
         fetchCalls: fetchCalls,
-        storage: storage
+        storage: storage,
+        timers: timers
     };
 }
 
@@ -156,6 +167,43 @@ async function testAddToCartCreationAndDefaults() {
     });
     assert.equal(env.events[0].detail.action, 'add');
     assert.equal(env.events[0].detail.count, 1);
+}
+
+async function testZeroQuantityIsPromoted() {
+    const env = createEnvironment({ cookies: { storefront_cart_id: 'cart-1' } });
+    const client = new env.Client();
+    let variables;
+    client._request = function(query, inputVariables) {
+        variables = plain(inputVariables);
+        return Promise.resolve({ addCartLines: { success: true, cart: { id: 'cart-1', numItems: 1 } } });
+    };
+
+    // Characterization: zero is silently promoted to one by quantity || 1.
+    await client.addToCart(5, 0);
+    assert.equal(variables.input.lines[0].quantity, 1);
+}
+
+async function testUnvalidatedQuantitiesAreForwarded() {
+    const env = createEnvironment({ cookies: { storefront_cart_id: 'cart-1' } });
+    const client = new env.Client();
+    const quantities = [];
+    client._request = function(query, variables) {
+        const input = plain(variables.input);
+        if (query.indexOf('AddCartLines') !== -1) {
+            quantities.push(input.lines[0].quantity);
+            return Promise.resolve({ addCartLines: { success: true, cart: { id: 'cart-1', numItems: 1 } } });
+        }
+        quantities.push(input.lines[0].quantity);
+        return Promise.resolve({ updateCartLines: { success: true, cart: { id: 'cart-1', numItems: 1 } } });
+    };
+
+    // Characterization: MAX_QTY_PER_LINE (15) is not enforced client-side.
+    await client.addToCart(5, 16);
+    await client.updateCartLines('cart-1', [{ lineId: 'line-1', quantity: 16 }]);
+    // Characterization: negative and string quantities are forwarded unchanged.
+    await client.addToCart(5, -2);
+    await client.addToCart(5, '7');
+    assert.deepEqual(quantities, [16, 16, -2, '7']);
 }
 
 async function testAddToCartExpiredRetry() {
@@ -274,6 +322,54 @@ async function testRequestErrorsAndRetries() {
     assert.equal(limited.fetchCalls.length, 2);
 }
 
+async function testSecondRateLimitResponseStatusIsIgnored() {
+    const env = createEnvironment({ responses: [
+        { status: 429, json: {} },
+        { status: 429, json: { data: { acceptedFromSecond429: true } } }
+    ] });
+
+    // Characterization: the retry body is used without checking its HTTP status.
+    const result = await new env.Client()._request('query Test', {});
+    assert.equal(result.acceptedFromSecond429, true);
+    assert.equal(env.fetchCalls.length, 2);
+}
+
+async function testUnchangedCsrfTokenRejectsWithoutRetry() {
+    const env = createEnvironment({
+        cookies: { csrftoken: 'unchanged-token' },
+        responses: [{ status: 403, json: {} }]
+    });
+
+    await assert.rejects(new env.Client()._request('query Test', {}), {
+        message: 'CSRF validation failed'
+    });
+    assert.equal(env.fetchCalls.length, 1);
+}
+
+async function testDirectServerErrorBodyIsParsed() {
+    const env = createEnvironment({
+        responses: [{ status: 500, json: { data: { acceptedFrom500: true } } }]
+    });
+
+    // Characterization: a direct 500 response is parsed as if it were successful.
+    const result = await new env.Client()._request('query Test', {});
+    assert.equal(result.acceptedFrom500, true);
+    assert.equal(env.fetchCalls.length, 1);
+}
+
+async function testRequestTimeoutAbortsFetch() {
+    const env = createEnvironment({ controllableTimers: true, neverSettlingFetch: true });
+    const request = new env.Client()._request('query Test', {});
+    const timer = env.timers.find(function(item) { return item.delay === 5000; });
+
+    assert.ok(timer, 'expected a 5000ms timeout');
+    assert.equal(env.fetchCalls.length, 1);
+    assert.equal(env.fetchCalls[0].init.signal.aborted, false);
+    timer.callback();
+    await assert.rejects(request, { message: 'Network timeout' });
+    assert.equal(env.fetchCalls[0].init.signal.aborted, true);
+}
+
 async function testStaticUtilities() {
     const env = createEnvironment();
     assert.equal(env.Client.formatMoney(29.99, 'USD'), '$29.99');
@@ -284,10 +380,16 @@ const tests = [
     ['createCart persistence paths', testCreateCartPersistencePaths],
     ['getCart outcomes', testGetCartOutcomes],
     ['addToCart creation and defaults', testAddToCartCreationAndDefaults],
+    ['zero quantity is promoted', testZeroQuantityIsPromoted],
+    ['unvalidated quantities are forwarded', testUnvalidatedQuantitiesAreForwarded],
     ['addToCart expired retry', testAddToCartExpiredRetry],
     ['subscription validation and input', testSubscriptionValidationAndInput],
     ['mutation variables and events', testMutationVariablesAndEvents],
     ['request errors and retries', testRequestErrorsAndRetries],
+    ['second rate limit response status is ignored', testSecondRateLimitResponseStatusIsIgnored],
+    ['unchanged CSRF token rejects without retry', testUnchangedCsrfTokenRejectsWithoutRetry],
+    ['direct server error body is parsed', testDirectServerErrorBodyIsParsed],
+    ['request timeout aborts fetch', testRequestTimeoutAbortsFetch],
     ['static utilities', testStaticUtilities]
 ];
 

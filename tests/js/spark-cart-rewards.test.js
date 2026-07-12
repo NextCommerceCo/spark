@@ -69,6 +69,17 @@ async function testGiftLookupAndStateTransitions() {
     assert.equal(rewards.giftState(removed, 99).containsGift, false);
 }
 
+async function testDuplicateGiftLookupReturnsFirstLine() {
+    const rewards = loadModule();
+    const duplicateGifts = { lines: [
+        { pk: 'gift-line-first', isUpsell: true, product: { pk: 99 } },
+        { pk: 'gift-line-second', isUpsell: true, product: { pk: 99 } }
+    ] };
+
+    // Characterization: one removal uses only the first match, so a duplicate would survive.
+    assert.equal(rewards.findGiftLine(duplicateGifts, '99').pk, 'gift-line-first');
+}
+
 async function testToggleGiftPathsAndNoOps() {
     const rewards = loadModule();
     const calls = [];
@@ -120,6 +131,7 @@ const tests = [
     ['metadata and slots', testMetadataAndSlots],
     ['cart product ids and active slots', testCartProductIdsAndActiveSlots],
     ['gift lookup and state transitions', testGiftLookupAndStateTransitions],
+    ['duplicate gift lookup returns first line', testDuplicateGiftLookupReturnsFirstLine],
     ['toggle gift paths and no-ops', testToggleGiftPathsAndNoOps],
     ['upsell visibility and fallback slots', testUpsellVisibilityAndFallbackSlots]
 ];

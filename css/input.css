@@ -650,18 +650,16 @@
         margin: 0;
         overflow: visible;
         clip: auto;
+        /* Fixed neutral colors: brand primaries can sit at mid luminance
+           where neither white nor dark text clears WCAG contrast */
         color: #FFFFFF !important;
-        background-color: var(--primary-color);
-        border: 1px solid var(--primary-color);
+        background-color: #1E293B;
+        border: 1px solid #1E293B;
         border-radius: 2px;
         font-family: var(--font-sans);
         font-size: 0.875rem;
         font-weight: 500;
         line-height: 1.25rem;
-    }
-
-    [data-light-primary] .skip-to-content:focus {
-        color: #1E293B !important;
     }
 
     /* ─── Focus Visible ─── */

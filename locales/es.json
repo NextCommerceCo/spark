@@ -24,6 +24,9 @@
         },
         "confirm": {
             "delete": "¿Seguro que quieres eliminarlo?"
+        },
+        "accessibility": {
+            "skip_to_main_content": "Ir al contenido principal"
         }
     },
     "navigation": {

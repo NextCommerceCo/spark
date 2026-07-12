@@ -4,10 +4,12 @@ const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const BASE_TEMPLATE = path.join(ROOT, 'layouts', 'base.html');
+const ACCOUNT_ONLY_PARTIAL = path.join(ROOT, 'partials', 'account_only.html');
 const SOURCE_CSS = path.join(ROOT, 'css', 'input.css');
 const COMPILED_CSS = path.join(ROOT, 'assets', 'main.css');
 
 const template = fs.readFileSync(BASE_TEMPLATE, 'utf8');
+const accountOnlyPartial = fs.readFileSync(ACCOUNT_ONLY_PARTIAL, 'utf8');
 const sourceCss = fs.readFileSync(SOURCE_CSS, 'utf8');
 const compiledCss = fs.readFileSync(COMPILED_CSS, 'utf8');
 
@@ -84,6 +86,19 @@ function testEveryRenderedMainIsATarget() {
     }
 }
 
+function testAccountOnlyBranchHasOneFocusableTarget() {
+    const targetIdPattern = /\bid=["']main-content["']/gi;
+    const outerContainerPattern = /<div\b(?=[^>]*\bid=["']main-content["'])(?=[^>]*\btabindex=["']-1["'])[^>]*>/i;
+    const targets = accountOnlyPartial.match(targetIdPattern) || [];
+
+    assert.equal(targets.length, 1, 'account-only branch should contain exactly one #main-content target');
+    assert.match(
+        accountOnlyPartial,
+        outerContainerPattern,
+        'account-only outer container should be the focusable #main-content target'
+    );
+}
+
 function testSkipLinkStylesAndCompiledDriftGuard() {
     assert.match(sourceCss, /\.skip-to-content\s*\{[^}]+\}/s, 'source CSS should style the skip link');
     assert.match(
@@ -108,6 +123,7 @@ const tests = [
     ['skip link is first focusable body content', testSkipLinkIsFirstFocusableBodyContent],
     ['main content target is focusable', testMainContentTarget],
     ['every rendered main is a focusable target', testEveryRenderedMainIsATarget],
+    ['account-only branch has one focusable target', testAccountOnlyBranchHasOneFocusableTarget],
     ['skip link source and compiled styles stay in sync', testSkipLinkStylesAndCompiledDriftGuard]
 ];
 

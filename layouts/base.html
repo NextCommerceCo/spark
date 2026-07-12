@@ -120,6 +120,7 @@
 </head>
 
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+    <a href="#main-content" class="skip-to-content">{% t 'global.accessibility.skip_to_main_content' %}</a>
 
     {% block layout %}
         {% if not settings.account_only %}
@@ -140,7 +141,7 @@
 
         {# Main content #}
         {% block content_wrapper %}
-            <main>
+            <main id="main-content" tabindex="-1">
                 {% block breadcrumbs %}{% endblock %}
                 <div class="container">
                     {% include "partials/alert_messages.html" %}

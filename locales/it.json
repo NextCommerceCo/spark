@@ -248,6 +248,8 @@
             "decrease_quantity": "Decrease quantity",
             "increase_quantity": "Increase quantity",
             "remove_item": "Remove {title}",
+            "item_removed_announcement": "Articolo rimosso dal carrello.",
+            "quantity_updated_announcement": "Quantità del carrello aggiornata.",
             "remove_voucher": "Remove voucher",
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",

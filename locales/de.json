@@ -248,6 +248,8 @@
             "decrease_quantity": "Menge verringern",
             "increase_quantity": "Menge erhöhen",
             "remove_item": "{title} entfernen",
+            "item_removed_announcement": "Artikel aus dem Warenkorb entfernt.",
+            "quantity_updated_announcement": "Warenkorbmenge aktualisiert.",
             "remove_voucher": "Gutschein entfernen",
             "invalid_coupon_code": "Ungültiger Gutscheincode",
             "shipping_progress_message": "Sie sind {amount} vom KOSTENLOSEN Versand entfernt",

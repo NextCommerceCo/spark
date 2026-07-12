@@ -248,6 +248,8 @@
             "decrease_quantity": "Decrease quantity",
             "increase_quantity": "Increase quantity",
             "remove_item": "Remove {title}",
+            "item_removed_announcement": "Varan har tagits bort från varukorgen.",
+            "quantity_updated_announcement": "Antalet i varukorgen har uppdaterats.",
             "remove_voucher": "Remove voucher",
             "invalid_coupon_code": "Invalid coupon code",
             "shipping_progress_message": "You are {amount} away from FREE shipping",

@@ -419,10 +419,7 @@
     };
 
     disconnectedCallback() {
-        if (this._announceTimer) {
-            clearTimeout(this._announceTimer);
-            this._announceTimer = null;
-        }
+        this._cancelAnnounce();
         document.removeEventListener('spark:cart:added', this._onCartAdded);
         document.removeEventListener('spark:cart:toggle', this._onCartToggle);
         document.removeEventListener('spark:cart:updated', this._onCartUpdated);
@@ -503,19 +500,39 @@
         } else if (action === 'update') {
             message = this._quantityUpdatedAnnouncement;
         }
+        this._cancelAnnounce();
+        this._announcementEl.textContent = '';
+        if (!message) return;
+        /* Defer the set so a repeated identical message is not coalesced into a
+           single accessibility-tree update. Double requestAnimationFrame lets the
+           cleared region commit in one paint before the message lands in the next,
+           which some screen readers require to re-announce; fall back to a task
+           when rAF is unavailable (SSR / test env). */
+        var self = this;
+        if (typeof requestAnimationFrame === 'function') {
+            this._announceRaf = requestAnimationFrame(function() {
+                self._announceRaf = requestAnimationFrame(function() {
+                    self._announceRaf = null;
+                    self._announcementEl.textContent = message;
+                });
+            });
+        } else {
+            this._announceTimer = setTimeout(function() {
+                self._announceTimer = null;
+                self._announcementEl.textContent = message;
+            }, 0);
+        }
+    };
+
+    _cancelAnnounce() {
         if (this._announceTimer) {
             clearTimeout(this._announceTimer);
             this._announceTimer = null;
         }
-        this._announcementEl.textContent = '';
-        if (!message) return;
-        /* Defer the set to a later task so a repeated identical message is
-           not coalesced into a single accessibility-tree update */
-        var self = this;
-        this._announceTimer = setTimeout(function() {
-            self._announceTimer = null;
-            self._announcementEl.textContent = message;
-        }, 0);
+        if (this._announceRaf && typeof cancelAnimationFrame === 'function') {
+            cancelAnimationFrame(this._announceRaf);
+            this._announceRaf = null;
+        }
     };
 
     _setLoading(loading) {

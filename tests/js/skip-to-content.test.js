@@ -86,6 +86,30 @@ function testEveryRenderedMainIsATarget() {
     }
 }
 
+function testEveryMainContentTargetIsFocusable() {
+    // Element-agnostic drift guard: any #main-content skip-link target must be
+    // focusable, whatever tag renders it (<main>, the account-only <div>, or a
+    // future <section>/custom element). Catches shapes the <main>-only scan misses.
+    const templateDirectories = ['templates', 'layouts', 'partials'].map((directory) => path.join(ROOT, directory));
+    const templateFiles = templateDirectories.flatMap(listHtmlFiles);
+    const targetPattern = /<[a-zA-Z][^>]*\bid=["']main-content["'][^>]*>/gi;
+    const focusTargetPattern = /\btabindex=["']-1["']/i;
+    let targetCount = 0;
+
+    for (const templateFile of templateFiles) {
+        const contents = fs.readFileSync(templateFile, 'utf8');
+        const targets = contents.match(targetPattern) || [];
+        const relativePath = path.relative(ROOT, templateFile);
+
+        for (const target of targets) {
+            targetCount += 1;
+            assert.match(target, focusTargetPattern, relativePath + ' #main-content target should have tabindex="-1"');
+        }
+    }
+
+    assert.ok(targetCount > 0, 'at least one #main-content skip-link target should exist');
+}
+
 function testAccountOnlyBranchHasOneFocusableTarget() {
     const targetIdPattern = /\bid=["']main-content["']/gi;
     const outerContainerPattern = /<div\b(?=[^>]*\bid=["']main-content["'])(?=[^>]*\btabindex=["']-1["'])[^>]*>/i;
@@ -117,12 +141,17 @@ function testSkipLinkStylesAndCompiledDriftGuard() {
     assert.match(focusRule, /(?:^|;)width:auto(?:;|$)/, 'compiled focused skip link should restore auto width');
     assert.match(focusRule, /(?:^|;)height:auto(?:;|$)/, 'compiled focused skip link should restore auto height');
     assert.match(focusRule, /(?:^|;)overflow:visible(?:;|$)/, 'compiled focused skip link should reveal overflow');
+    // Lock the patch-6 contrast fix: fixed white-on-slate (14.63:1), not a
+    // mid-luminance brand primary that can fail WCAG.
+    assert.match(focusRule, /(?:^|;)color:#fff!important(?:;|$)/, 'compiled focused skip link should force white text');
+    assert.match(focusRule, /(?:^|;)background-color:#1e293b(?:;|$)/, 'compiled focused skip link should use the slate-800 background');
 }
 
 const tests = [
     ['skip link is first focusable body content', testSkipLinkIsFirstFocusableBodyContent],
     ['main content target is focusable', testMainContentTarget],
     ['every rendered main is a focusable target', testEveryRenderedMainIsATarget],
+    ['every #main-content target is focusable regardless of tag', testEveryMainContentTargetIsFocusable],
     ['account-only branch has one focusable target', testAccountOnlyBranchHasOneFocusableTarget],
     ['skip link source and compiled styles stay in sync', testSkipLinkStylesAndCompiledDriftGuard]
 ];

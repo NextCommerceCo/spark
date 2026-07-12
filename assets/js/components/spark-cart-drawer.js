@@ -686,6 +686,10 @@
         // Removing the gift line by hand is an explicit decline; the
         // reconciler must not force the gift back while the cart stays
         // above the threshold. Dropping below the threshold resets this.
+        // Deliberately NOT rolled back if the removal request fails: the
+        // flag records shopper intent, and the reconciler completes the
+        // failed removal on the next snapshot instead of silently
+        // keeping a gift the shopper asked to remove
         if (this._giftLineId && String(lineId) === String(this._giftLineId)) {
             this._giftDeclined = true;
         }

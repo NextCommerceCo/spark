@@ -423,6 +423,33 @@ async function testDuplicateGiftLinesConverge() {
     assert.equal(removals[1].args[1].join(','), 'g2');
 }
 
+/* A FAILED explicit gift removal still records the decline: the flag is
+   intent, and the reconciler completes the removal on the next snapshot
+   rather than silently keeping a gift the shopper asked to remove. */
+async function testFailedDeclineIsCompletedByReconciler() {
+    const env = createEnvironment();
+    const drawer = createDrawer(env);
+    env.responders.addToCart.push({ success: true, cart: createCart('b', 60, [regularLine('r1', 60), giftLine('g1')]) });
+    updateCart(env, createCart('a', 60, [regularLine('r1', 60)]));
+    await flush();
+
+    // Shopper removes the gift; the request fails transiently
+    env.responders.removeCartLines.push(function() { return Promise.reject(new Error('transient')); });
+    drawer._handleRemoveByLineId('g1', null);
+    await flush();
+    assert.equal(callsFor(env, 'removeCartLines').length, 1);
+
+    // Next external snapshot still above threshold and still carrying the
+    // gift: the reconciler completes the shopper's removal
+    env.responders.removeCartLines.push({ success: true, cart: createCart('d', 60, [regularLine('r1', 60)]) });
+    updateCart(env, createCart('c', 60, [regularLine('r1', 60), giftLine('g1')]));
+    await flush();
+    const removals = callsFor(env, 'removeCartLines');
+    assert.equal(removals.length, 2, 'reconciler must complete the failed explicit removal');
+    assert.equal(removals[1].args[1].join(','), 'g1');
+    assert.equal(callsFor(env, 'addToCart').length, 1, 'and must not re-add the declined gift');
+}
+
 /* The auto-mutation cap is per external snapshot, not per session: transient
    API failures must not permanently disable gift auto-management. */
 async function testAttemptCapResetsOnExternalSnapshot() {
@@ -473,6 +500,7 @@ const tests = [
     ['empty cart resets gift tracking', testEmptyCartResetsGiftTracking],
     ['shopper-declined gift is not re-added', testShopperDeclinedGiftIsNotReAdded],
     ['duplicate gift lines converge', testDuplicateGiftLinesConverge],
+    ['failed decline is completed by reconciler', testFailedDeclineIsCompletedByReconciler],
     ['attempt cap resets on external snapshot', testAttemptCapResetsOnExternalSnapshot],
     ['non-converging snapshots are capped', testNonConvergingSnapshotsAreCapped]
 ];

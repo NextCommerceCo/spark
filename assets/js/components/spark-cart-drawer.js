@@ -419,6 +419,10 @@
     };
 
     disconnectedCallback() {
+        if (this._announceTimer) {
+            clearTimeout(this._announceTimer);
+            this._announceTimer = null;
+        }
         document.removeEventListener('spark:cart:added', this._onCartAdded);
         document.removeEventListener('spark:cart:toggle', this._onCartToggle);
         document.removeEventListener('spark:cart:updated', this._onCartUpdated);
@@ -499,9 +503,19 @@
         } else if (action === 'update') {
             message = this._quantityUpdatedAnnouncement;
         }
+        if (this._announceTimer) {
+            clearTimeout(this._announceTimer);
+            this._announceTimer = null;
+        }
         this._announcementEl.textContent = '';
         if (!message) return;
-        this._announcementEl.textContent = message;
+        /* Defer the set to a later task so a repeated identical message is
+           not coalesced into a single accessibility-tree update */
+        var self = this;
+        this._announceTimer = setTimeout(function() {
+            self._announceTimer = null;
+            self._announcementEl.textContent = message;
+        }, 0);
     };
 
     _setLoading(loading) {

@@ -109,6 +109,7 @@ function createEnvironment() {
         return element;
     };
 
+    const timers = [];
     const context = {
         console: console,
         document: document,
@@ -117,12 +118,23 @@ function createEnvironment() {
             define: function(name, constructor) { registry[name] = constructor; },
             get: function(name) { return registry[name]; }
         },
-        setTimeout: function(callback) { callback(); },
+        setTimeout: function(callback) {
+            const timer = { callback: callback };
+            timers.push(timer);
+            return timer;
+        },
+        clearTimeout: function(timer) { if (timer) timer.callback = null; },
         Promise: Promise
     };
     context.window = context;
     vm.runInNewContext(fs.readFileSync(DRAWER_SCRIPT, 'utf8'), context, { filename: DRAWER_SCRIPT });
-    return { document: document, Drawer: registry['spark-cart-drawer'] };
+    function flushTimers() {
+        while (timers.length) {
+            const timer = timers.shift();
+            if (timer.callback) timer.callback();
+        }
+    }
+    return { document: document, Drawer: registry['spark-cart-drawer'], flushTimers: flushTimers };
 }
 
 function createDrawer(env) {
@@ -135,6 +147,7 @@ async function testRemoveAnnouncement() {
     const env = createEnvironment();
     const drawer = createDrawer(env);
     env.document.dispatchEvent({ type: 'spark:cart:updated', detail: { action: 'remove' } });
+    env.flushTimers();
     assert.match(drawer._announcementEl.textContent, /Item removed from cart\./);
 }
 
@@ -142,7 +155,22 @@ async function testUpdateAnnouncement() {
     const env = createEnvironment();
     const drawer = createDrawer(env);
     env.document.dispatchEvent({ type: 'spark:cart:updated', detail: { action: 'update' } });
+    env.flushTimers();
     assert.match(drawer._announcementEl.textContent, /Cart quantity updated\./);
+}
+
+async function testRepeatedAnnouncementClearsBeforeReset() {
+    const env = createEnvironment();
+    const drawer = createDrawer(env);
+    env.document.dispatchEvent({ type: 'spark:cart:updated', detail: { action: 'remove' } });
+    env.flushTimers();
+    assert.match(drawer._announcementEl.textContent, /Item removed from cart\./);
+    // Same message again: region must be cleared synchronously and only
+    // repopulated in a later task, so screen readers re-announce it
+    env.document.dispatchEvent({ type: 'spark:cart:updated', detail: { action: 'remove' } });
+    assert.equal(drawer._announcementEl.textContent, '');
+    env.flushTimers();
+    assert.match(drawer._announcementEl.textContent, /Item removed from cart\./);
 }
 
 async function testLiveRegionAttributes() {
@@ -162,6 +190,7 @@ async function testAddDoesNotAnnounceRemoval() {
 const tests = [
     ['remove announces item removal', testRemoveAnnouncement],
     ['update announces quantity change', testUpdateAnnouncement],
+    ['repeated announcement clears before reset', testRepeatedAnnouncementClearsBeforeReset],
     ['live region is polite status', testLiveRegionAttributes],
     ['add does not announce removal', testAddDoesNotAnnounceRemoval]
 ];

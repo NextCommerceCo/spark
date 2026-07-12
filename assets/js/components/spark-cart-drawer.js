@@ -311,9 +311,16 @@
         // Mutation guard - prevents concurrent GraphQL calls from rapid clicks
         this._isMutating = false;
 
-        // Track gift state
+        // Track gift state. Gift bookkeeping is reconciled against every
+        // cart snapshot (see _reconcileGift), not just threshold edges.
         this._giftLineId = null;
         this._isCartContainsGift = false;
+        this._giftMutationInFlight = false;
+        this._giftDeclined = false;
+        this._giftAutoAttempts = 0;
+        // Bumped whenever a cart snapshot is applied; in-flight gift
+        // mutations use it to detect that their result is stale
+        this._cartVersion = 0;
 
         // Get cart client
         this._client = window.SparkCartClient ? new SparkCartClient() : null;
@@ -353,6 +360,7 @@
             var detail = e.detail || {};
             if (detail.cart) {
                 self._cart = detail.cart;
+                self._cartVersion++;
                 self._currencyCode = detail.cart.currency || self._currencyCode;
                 self._renderCart();
             }
@@ -370,6 +378,7 @@
             self._announceCartUpdate(detail.action);
             if (detail.cart) {
                 self._cart = detail.cart;
+                self._cartVersion++;
                 self._currencyCode = detail.cart.currency || self._currencyCode;
                 self._renderCart();
             }
@@ -381,18 +390,17 @@
             }
         };
 
-        // Gift threshold listeners (from progress bar)
-        this._onGiftReached = function(e) {
-            var giftId = self._giftProductId || (e.detail && e.detail.giftId);
-            if (giftId && !self._isCartContainsGift) {
-                self._toggleGift(true, giftId);
-            }
+        // Gift threshold listeners (from progress bar). Edges are only a
+        // wake-up signal; the reconciler recomputes desired state from the
+        // current cart snapshot so a stale edge cannot double-apply
+        this._onGiftReached = function() {
+            self._reconcileGift();
         };
-        this._onGiftUnreached = function(e) {
-            var giftId = self._giftProductId || (e.detail && e.detail.giftId);
-            if (giftId && self._isCartContainsGift && self._giftLineId) {
-                self._toggleGift(false, giftId);
-            }
+        this._onGiftUnreached = function() {
+            // Dropping below the threshold resets a shopper's explicit
+            // decline; the offer is presented fresh on the next crossing
+            self._giftDeclined = false;
+            self._reconcileGift();
         };
 
         document.addEventListener('spark:cart:added', this._onCartAdded);
@@ -479,6 +487,7 @@
         this._setLoading(true);
         this._client.getCart().then(function(cart) {
             self._cart = cart;
+            self._cartVersion++;
             if (cart) {
                 self._currencyCode = cart.currency || self._currencyCode;
             }
@@ -573,6 +582,12 @@
         if (!this._progressBar) {
             this._progressBar = this.querySelector('spark-progress-bar');
         }
+
+        // Track gift state BEFORE updating the progress bar: the bar emits
+        // threshold events synchronously, and their handlers must see this
+        // snapshot's gift bookkeeping, not the previous snapshot's
+        this._trackGiftState(cart);
+
         if (window.SparkCartRewards) {
             SparkCartRewards.updateProgressBar(this._progressBar, total);
         } else if (this._progressBar) {
@@ -582,20 +597,21 @@
         // Update upsell visibility
         this._updateUpsellVisibility(cart);
 
-        // Track gift state for auto-add/remove
-        if (window.SparkCartRewards) {
-            var giftState = SparkCartRewards.giftState(cart, this._giftProductId);
-            this._isCartContainsGift = giftState.containsGift;
-            this._giftLineId = giftState.lineId;
-        } else {
-            this._isCartContainsGift = false;
-            this._giftLineId = null;
-        }
+        // Repair gift drift that produces no threshold edge (external
+        // add/remove between snapshots on the same side of the threshold)
+        this._reconcileGift();
     };
 
     _renderEmpty() {
         this._body.innerHTML = SparkCartDrawerRenderer.emptyHtml(this._labels);
         this._footer.style.display = 'none';
+
+        // Reset gift bookkeeping; stale flags must not survive an emptied
+        // cart or they suppress the auto-add on the next eligible cart
+        this._isCartContainsGift = false;
+        this._giftLineId = null;
+        this._giftDeclined = false;
+        this._giftAutoAttempts = 0;
 
         // Hide upsells and reset progress bar when empty
         if (window.SparkCartRewards) {
@@ -640,6 +656,7 @@
                 self._isMutating = false;
                 if (result && result.cart) {
                     self._cart = result.cart;
+                    self._cartVersion++;
                     self._renderCart();
                 }
             }).catch(function() {
@@ -659,6 +676,13 @@
         var self = this;
         if (this._isMutating || !this._client || !this._cart) return;
 
+        // Removing the gift line by hand is an explicit decline; the
+        // reconciler must not force the gift back while the cart stays
+        // above the threshold. Dropping below the threshold resets this.
+        if (this._giftLineId && String(lineId) === String(this._giftLineId)) {
+            this._giftDeclined = true;
+        }
+
         this._isMutating = true;
         if (itemEl) itemEl.setAttribute('data-loading', 'true');
         this._client.removeCartLines(this._cart.id, [lineId])
@@ -666,6 +690,7 @@
                 self._isMutating = false;
                 if (result && result.cart) {
                     self._cart = result.cart;
+                    self._cartVersion++;
                     self._renderCart();
                 }
             }).catch(function() {
@@ -684,12 +709,74 @@
 
     /* --- Gift auto-management --- */
 
+    /* Track containsGift / giftLineId bookkeeping from a cart snapshot */
+    _trackGiftState(cart) {
+        var config = this._giftConfig();
+        var trackId = (config && config.productId) || this._giftProductId;
+        if (window.SparkCartRewards && trackId) {
+            var giftState = SparkCartRewards.giftState(cart, trackId);
+            this._isCartContainsGift = giftState.containsGift;
+            this._giftLineId = giftState.lineId;
+        } else {
+            this._isCartContainsGift = false;
+            this._giftLineId = null;
+        }
+    };
+
+    /* Gift product id + threshold, from the host attribute and the progress
+       bar's [data-gift] child. Null when no gift program is configured. */
+    _giftConfig() {
+        if (!this._progressBar) {
+            this._progressBar = this.querySelector('spark-progress-bar');
+        }
+        var productId = this._giftProductId;
+        var threshold = NaN;
+        var giftMsg = this._progressBar ? this._progressBar.querySelector('[data-gift]') : null;
+        if (giftMsg) {
+            threshold = parseFloat(giftMsg.getAttribute('data-value'));
+            if (!productId) productId = giftMsg.getAttribute('data-gift-id') || '';
+        }
+        if (!productId || isNaN(threshold)) return null;
+        return { productId: productId, threshold: threshold };
+    };
+
+    /* Desired-state reconciler: compares what the current cart snapshot
+       SHOULD contain (total vs threshold, minus an explicit shopper decline)
+       with what it DOES contain, and issues at most one corrective mutation.
+       Runs on every render and after every gift mutation settles, so drift
+       converges regardless of whether a threshold edge fired. */
+    _reconcileGift() {
+        if (!this._client || !window.SparkCartRewards) return;
+        if (this._giftMutationInFlight) return;
+        var config = this._giftConfig();
+        if (!config) return;
+
+        var cart = this._cart;
+        var hasLines = !!(cart && cart.lines && cart.lines.length);
+        var total = hasLines ? Number(cart.totalExclTax || 0) : 0;
+        var desired = hasLines && total >= config.threshold && !this._giftDeclined;
+        if (desired === this._isCartContainsGift) {
+            this._giftAutoAttempts = 0;
+            return;
+        }
+        // Cap consecutive corrective mutations so a snapshot that never
+        // converges (e.g. an API that drops the gift line) cannot storm
+        // the GraphQL endpoint; the next external cart update resets it
+        if (this._giftAutoAttempts >= 3) return;
+        this._giftAutoAttempts++;
+        this._toggleGift(desired, config.productId);
+    };
+
     _toggleGift(shouldAdd, giftProductId) {
         var self = this;
         if (!this._client || !this._cart) return;
+        if (this._giftMutationInFlight) return;
 
         if (shouldAdd && this._isCartContainsGift) return;
         if (!shouldAdd && (!this._isCartContainsGift || !this._giftLineId)) return;
+
+        var startVersion = this._cartVersion;
+        this._giftMutationInFlight = true;
 
         var promise = window.SparkCartRewards
             ? SparkCartRewards.toggleGift(this._client, this._cart, shouldAdd, giftProductId, this._giftLineId)
@@ -698,11 +785,22 @@
                 : this._client.removeCartLines(this._cart.id, [this._giftLineId]));
 
         promise.then(function(result) {
+            self._giftMutationInFlight = false;
+            if (self._cartVersion !== startVersion) {
+                // A newer cart snapshot arrived while this mutation was in
+                // flight; its result is stale. Drop it and reconcile against
+                // the current snapshot instead of overwriting it
+                self._reconcileGift();
+                return;
+            }
             if (result && result.cart) {
                 self._cart = result.cart;
+                self._cartVersion++;
                 self._renderCart();
             }
-        }).catch(function() {});
+        }).catch(function() {
+            self._giftMutationInFlight = false;
+        });
     };
 
     /* --- Upsell visibility --- */
@@ -744,6 +842,7 @@
                 }
                 if (result && result.cart) {
                     self._cart = result.cart;
+                    self._cartVersion++;
                     self._renderCart();
                 }
             }).catch(function(err) {
@@ -764,6 +863,7 @@
             .then(function(result) {
                 if (result && result.cart) {
                     self._cart = result.cart;
+                    self._cartVersion++;
                     self._renderCart();
                 }
             }).catch(function() {

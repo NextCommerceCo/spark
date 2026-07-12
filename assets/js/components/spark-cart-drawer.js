@@ -361,6 +361,7 @@
             if (detail.cart) {
                 self._cart = detail.cart;
                 self._cartVersion++;
+                self._resetGiftAttemptsForExternalSnapshot();
                 self._currencyCode = detail.cart.currency || self._currencyCode;
                 self._renderCart();
             }
@@ -379,6 +380,7 @@
             if (detail.cart) {
                 self._cart = detail.cart;
                 self._cartVersion++;
+                self._resetGiftAttemptsForExternalSnapshot();
                 self._currencyCode = detail.cart.currency || self._currencyCode;
                 self._renderCart();
             }
@@ -392,7 +394,11 @@
 
         // Gift threshold listeners (from progress bar). Edges are only a
         // wake-up signal; the reconciler recomputes desired state from the
-        // current cart snapshot so a stale edge cannot double-apply
+        // current cart snapshot so a stale edge cannot double-apply.
+        // Intentional: only the drawer's configured gift program (host
+        // attribute or its own progress bar's [data-gift] child) is
+        // reconciled; e.detail.giftId from unrelated progress bars is
+        // ignored to avoid cross-program cart mutations
         this._onGiftReached = function() {
             self._reconcileGift();
         };
@@ -488,6 +494,7 @@
         this._client.getCart().then(function(cart) {
             self._cart = cart;
             self._cartVersion++;
+            self._resetGiftAttemptsForExternalSnapshot();
             if (cart) {
                 self._currencyCode = cart.currency || self._currencyCode;
             }
@@ -709,6 +716,18 @@
 
     /* --- Gift auto-management --- */
 
+    /* The corrective-mutation cap is per external snapshot: a fresh snapshot
+       from outside a gift mutation (page event, other component, recovered
+       API) re-arms auto-management. Mutation-produced snapshots must NOT
+       reset it, or a cart that never converges would be mutated forever.
+       Gift-mutation results dispatch spark:cart:updated while the mutation
+       is still in flight, which is what the guard below distinguishes. */
+    _resetGiftAttemptsForExternalSnapshot() {
+        if (!this._giftMutationInFlight) {
+            this._giftAutoAttempts = 0;
+        }
+    };
+
     /* Track containsGift / giftLineId bookkeeping from a cart snapshot */
     _trackGiftState(cart) {
         var config = this._giftConfig();
@@ -761,7 +780,8 @@
         }
         // Cap consecutive corrective mutations so a snapshot that never
         // converges (e.g. an API that drops the gift line) cannot storm
-        // the GraphQL endpoint; the next external cart update resets it
+        // the GraphQL endpoint. The cap is per external snapshot: see
+        // _resetGiftAttemptsForExternalSnapshot
         if (this._giftAutoAttempts >= 3) return;
         this._giftAutoAttempts++;
         this._toggleGift(desired, config.productId);

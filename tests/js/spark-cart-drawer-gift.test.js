@@ -423,6 +423,48 @@ async function testDuplicateGiftLinesConverge() {
     assert.equal(removals[1].args[1].join(','), 'g2');
 }
 
+/* The auto-mutation cap is per external snapshot, not per session: transient
+   API failures must not permanently disable gift auto-management. */
+async function testAttemptCapResetsOnExternalSnapshot() {
+    const env = createEnvironment();
+    createDrawer(env);
+    const failure = function() { return Promise.reject(new Error('transient')); };
+    env.responders.addToCart.push(failure, failure, failure);
+
+    updateCart(env, createCart('a', 60, [regularLine('r1', 60)]));
+    await flush();
+    updateCart(env, createCart('b', 60, [regularLine('r1', 60)]));
+    await flush();
+    updateCart(env, createCart('c', 60, [regularLine('r1', 60)]));
+    await flush();
+    assert.equal(callsFor(env, 'addToCart').length, 3, 'each external snapshot retries the add');
+
+    // API recovered: the next external snapshot must still auto-add
+    env.responders.addToCart.push({ success: true, cart: createCart('e', 60, [regularLine('r1', 60), giftLine('g1')]) });
+    updateCart(env, createCart('d', 60, [regularLine('r1', 60)]));
+    await flush();
+    assert.equal(callsFor(env, 'addToCart').length, 4,
+        'a recovered API must resume gift auto-management');
+}
+
+/* Anti-storm guard: mutation-produced snapshots must NOT reset the attempt
+   cap, or an API that accepts the add but drops the gift line would be
+   mutated forever. */
+async function testNonConvergingSnapshotsAreCapped() {
+    const env = createEnvironment();
+    createDrawer(env);
+    // Every add "succeeds" but the returned cart never contains the gift
+    for (let i = 0; i < 10; i++) {
+        env.responders.addToCart.push({ success: true, cart: createCart('x' + i, 60, [regularLine('r1', 60)]) });
+    }
+    updateCart(env, createCart('a', 60, [regularLine('r1', 60)]));
+    await flush();
+    await flush();
+    await flush();
+    const adds = callsFor(env, 'addToCart').length;
+    assert.ok(adds <= 3, 'non-converging snapshot must stop mutating at the cap, got ' + adds);
+}
+
 const tests = [
     ['no duplicate gift add when snapshot already contains gift', testNoDuplicateGiftAddWhenSnapshotAlreadyContainsGift],
     ['external gift removal above threshold is repaired', testExternalGiftRemovalAboveThresholdIsRepaired],
@@ -430,7 +472,9 @@ const tests = [
     ['stale gift mutation result is dropped', testStaleGiftMutationResultIsDropped],
     ['empty cart resets gift tracking', testEmptyCartResetsGiftTracking],
     ['shopper-declined gift is not re-added', testShopperDeclinedGiftIsNotReAdded],
-    ['duplicate gift lines converge', testDuplicateGiftLinesConverge]
+    ['duplicate gift lines converge', testDuplicateGiftLinesConverge],
+    ['attempt cap resets on external snapshot', testAttemptCapResetsOnExternalSnapshot],
+    ['non-converging snapshots are capped', testNonConvergingSnapshotsAreCapped]
 ];
 
 (async function main() {

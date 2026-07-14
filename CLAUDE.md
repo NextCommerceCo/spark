@@ -152,3 +152,15 @@ Do not push the entire theme during normal iteration.
 
 ## Reference Theme
 Intro Bootstrap remains the comparison point for DTL patterns, available template tags/filters, URL names, and context variables. Prefer the tracked Spark docs first, especially `docs/intro-bootstrap-comparison.md` and `docs/terminology.md`, before relying on a local checkout of the reference theme.
+## Issue tracking
+
+Work in this repo is tracked with GitHub Issues and coordinated on the
+org-level **[Operations](https://github.com/orgs/NextCommerceCo/projects/10)**
+Kanban board (Todo / In Progress / Done). New issues are added to the board
+automatically by the `add-to-project` workflow.
+
+Before starting work on an issue: check it is not assigned to someone else,
+assign yourself (`gh issue edit <n> --add-assignee @me`), and move the card to
+In Progress. Open PRs with `Closes #<n>`; when the issue closes on merge, the
+board's built-in "Item closed" automation moves the card to Done. Contributors
+have a `/next-board` skill that wraps these board operations.

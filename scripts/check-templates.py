@@ -13,7 +13,7 @@ LITERAL_RE = re.compile(
     r"""\s*(?P<quote>['"])(?P<value>(?:(?!(?P=quote)).)*)(?P=quote)(?:\s|$)""",
     re.DOTALL,
 )
-INLINE_COMMENT_RE = re.compile(r"{#.*?#}", re.DOTALL)
+INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")
 BLOCK_COMMENT_RE = re.compile(
     r"{%\s*comment(?:\s+.*?)?\s*%}.*?{%\s*endcomment\s*%}",
     re.DOTALL,
@@ -56,6 +56,23 @@ def template_paths(root):
     for directory in TEMPLATE_DIRECTORIES:
         paths.extend((root / directory).rglob("*.html"))
     return sorted(set(paths))
+
+
+def missing_default_inventory(root, paths):
+    missing = []
+    base_template = root / "layouts" / "base.html"
+    if not base_template.is_file():
+        missing.append("required template layouts/base.html")
+
+    for directory in TEMPLATE_DIRECTORIES:
+        directory_root = root / directory
+        if not any(
+            path.is_file() and path.is_relative_to(directory_root)
+            for path in paths
+        ):
+            missing.append(f"at least one .html file under {directory}/")
+
+    return missing
 
 
 def inspect_templates(root, allowlist):
@@ -135,7 +152,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         description="Lint template includes and literal URL names."
     )
-    parser.add_argument("--root", default=".")
+    parser.add_argument("--root")
     parser.add_argument(
         "--allowlist",
         default="scripts/url-name-allowlist.txt",
@@ -145,7 +162,8 @@ def parse_args(argv=None):
 
 def main(argv=None):
     args = parse_args(argv)
-    root = Path(args.root)
+    default_scan = args.root is None
+    root = Path(".") if default_scan else Path(args.root)
     try:
         allowlist = load_allowlist(Path(args.allowlist))
     except OSError as error:
@@ -155,6 +173,18 @@ def main(argv=None):
     paths, skipped_includes, skipped_urls, violations = inspect_templates(
         root, allowlist
     )
+
+    if default_scan:
+        missing = missing_default_inventory(root, paths)
+        if missing:
+            print(
+                "Template integrity gate failed: default template inventory "
+                "is incomplete:",
+                file=sys.stderr,
+            )
+            for requirement in missing:
+                print(f"- {requirement}", file=sys.stderr)
+            return 1
 
     if not paths:
         directories = ", ".join(TEMPLATE_DIRECTORIES)

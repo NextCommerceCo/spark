@@ -11,10 +11,10 @@ SCRIPTS = ROOT / "scripts"
 FIXTURES = ROOT / "tests" / "fixtures" / "ci_gates"
 
 
-def run_checker(script_name, *arguments):
+def run_checker(script_name, *arguments, cwd=ROOT):
     return subprocess.run(
         [sys.executable, str(SCRIPTS / script_name), *map(str, arguments)],
-        cwd=ROOT,
+        cwd=cwd,
         capture_output=True,
         text=True,
         check=False,
@@ -148,6 +148,24 @@ class SettingsParityGateTests(unittest.TestCase):
                             "type": "radio",
                             "options": [{"name": "Choice"}],
                         },
+                        {
+                            "name": "missing_name",
+                            "type": "select",
+                            "options": [{"value": "choice"}],
+                        },
+                        {
+                            "name": "non_string_name",
+                            "type": "radio",
+                            "options": [{"name": 1, "value": "choice"}],
+                        },
+                        {
+                            "name": "duplicate_values",
+                            "type": "select",
+                            "options": [
+                                {"name": "First", "value": "same"},
+                                {"name": "Second", "value": "same"},
+                            ],
+                        },
                     ]
                 }
             }
@@ -156,6 +174,9 @@ class SettingsParityGateTests(unittest.TestCase):
                 "footer_menu": "footer",
                 "empty_options": "",
                 "missing_value": "",
+                "missing_name": "",
+                "non_string_name": "",
+                "duplicate_values": "",
             }
             schema_path = fixture_dir / "schema.json"
             data_path = fixture_dir / "data.json"
@@ -177,6 +198,52 @@ class SettingsParityGateTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("[schema-options] 'empty_options'", result.stderr)
         self.assertIn("[schema-options] 'missing_value'", result.stderr)
+        self.assertIn("[schema-options] 'missing_name'", result.stderr)
+        self.assertIn("[schema-options] 'non_string_name'", result.stderr)
+        self.assertIn(
+            "[schema-options] 'duplicate_values': option values must be unique",
+            result.stderr,
+        )
+
+    def test_unknown_schema_type_is_reported_without_default_or_data(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            schema = {
+                "General": {
+                    "Settings": [
+                        {"name": "main_menu", "type": "menu"},
+                        {"name": "footer_menu", "type": "menu"},
+                        {"name": "future_setting", "type": "future_type"},
+                    ]
+                }
+            }
+            data = {
+                "main_menu": "main",
+                "footer_menu": "footer",
+            }
+            schema_path = fixture_dir / "schema.json"
+            data_path = fixture_dir / "data.json"
+            optional_path = fixture_dir / "optional.txt"
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            data_path.write_text(json.dumps(data), encoding="utf-8")
+            optional_path.write_text("future_setting\n", encoding="utf-8")
+
+            result = run_checker(
+                "check-settings-parity.py",
+                "--schema",
+                schema_path,
+                "--data",
+                data_path,
+                "--optional",
+                optional_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "[schema-type] 'future_setting': unsupported schema type "
+            "'future_type'",
+            result.stderr,
+        )
 
     def test_invalid_schema_default_is_reported(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -232,6 +299,7 @@ class SettingsParityGateTests(unittest.TestCase):
                             "type": "range",
                             "min": 0,
                             "max": 10,
+                            "step": 1,
                             "default": 5,
                         },
                         {
@@ -288,6 +356,103 @@ class SettingsParityGateTests(unittest.TestCase):
         self.assertIn("[type] 'data_nan': expected a finite number", result.stderr)
         self.assertIn(
             "[default] 'default_nan': expected a finite number",
+            result.stderr,
+        )
+
+    def test_range_schema_requires_valid_min_max_and_step(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            schema = {
+                "General": {
+                    "Settings": [
+                        {"name": "main_menu", "type": "menu"},
+                        {"name": "footer_menu", "type": "menu"},
+                        {"name": "missing_fields", "type": "range"},
+                        {
+                            "name": "equal_bounds",
+                            "type": "range",
+                            "min": 5,
+                            "max": 5,
+                            "step": 1,
+                        },
+                        {
+                            "name": "invalid_step",
+                            "type": "range",
+                            "min": 0,
+                            "max": 10,
+                            "step": 0,
+                        },
+                        {
+                            "name": "non_finite_fields",
+                            "type": "range",
+                            "min": float("-inf"),
+                            "max": float("inf"),
+                            "step": float("nan"),
+                        },
+                    ]
+                }
+            }
+            data = {
+                "main_menu": "main",
+                "footer_menu": "footer",
+            }
+            schema_path = fixture_dir / "schema.json"
+            data_path = fixture_dir / "data.json"
+            optional_path = fixture_dir / "optional.txt"
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            data_path.write_text(json.dumps(data), encoding="utf-8")
+            optional_path.write_text(
+                "missing_fields\n"
+                "equal_bounds\n"
+                "invalid_step\n"
+                "non_finite_fields\n",
+                encoding="utf-8",
+            )
+
+            result = run_checker(
+                "check-settings-parity.py",
+                "--schema",
+                schema_path,
+                "--data",
+                data_path,
+                "--optional",
+                optional_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "[schema-range] 'missing_fields': min must be a finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'missing_fields': max must be a finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'missing_fields': step must be a positive "
+            "finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'equal_bounds': min must be less than max",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'invalid_step': step must be a positive "
+            "finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'non_finite_fields': min must be a finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'non_finite_fields': max must be a finite number",
+            result.stderr,
+        )
+        self.assertIn(
+            "[schema-range] 'non_finite_fields': step must be a positive "
+            "finite number",
             result.stderr,
         )
 
@@ -396,6 +561,32 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Template integrity gate passed", result.stdout)
         self.assertNotIn("partials/missing.html", result.stderr)
+
+    def test_unterminated_inline_comment_does_not_hide_a_later_include(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "index.html").write_text(
+                "{# unterminated inline comment\n"
+                "{% include 'partials/missing.html' %}\n"
+                "#}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[include]", result.stderr)
+        self.assertIn("partials/missing.html", result.stderr)
 
     def test_include_and_url_inside_verbatim_block_are_ignored(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -525,6 +716,50 @@ class TemplateIntegrityGateTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("no template files were found", result.stderr)
+
+    def test_default_scan_requires_layouts_base(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            for directory, filename in (
+                ("layouts", "alternate.html"),
+                ("templates", "index.html"),
+                ("partials", "card.html"),
+            ):
+                directory_path = fixture_dir / directory
+                directory_path.mkdir()
+                (directory_path / filename).write_text("", encoding="utf-8")
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--allowlist",
+                allowlist_path,
+                cwd=fixture_dir,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("layouts/base.html", result.stderr)
+
+    def test_default_scan_requires_html_in_each_template_directory(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            layouts_dir = fixture_dir / "layouts"
+            layouts_dir.mkdir()
+            (layouts_dir / "base.html").write_text("", encoding="utf-8")
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--allowlist",
+                allowlist_path,
+                cwd=fixture_dir,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("templates/", result.stderr)
+        self.assertIn("partials/", result.stderr)
 
 
 class BuildConfigurationTests(unittest.TestCase):

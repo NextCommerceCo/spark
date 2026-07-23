@@ -26,6 +26,13 @@ NULLABLE_TYPES = {"product", "product_category", "image_picker"}
 REQUIRED_MENUS = ("main_menu", "footer_menu")
 OPTION_TYPES = {"select", "radio"}
 NUMBER_TYPES = {"number", "range"}
+SUPPORTED_TYPES = (
+    STRING_TYPES
+    | LIST_TYPES
+    | OPTION_TYPES
+    | NUMBER_TYPES
+    | {"checkbox", "product", "product_category"}
+)
 
 
 def load_json(path):
@@ -110,22 +117,77 @@ def validate_schema_setting(name, setting):
     violations = []
     setting_type = setting["type"]
 
+    if setting_type not in SUPPORTED_TYPES:
+        violations.append(
+            f"[schema-type] {name!r}: unsupported schema type "
+            f"{setting_type!r}"
+        )
+
     if setting_type in OPTION_TYPES:
         options = setting.get("options")
-        if (
-            not isinstance(options, list)
-            or not options
-            or any(
-                not isinstance(option, dict) or "value" not in option
-                for option in options
-            )
-        ):
+        if not isinstance(options, list) or not options:
             violations.append(
                 f"[schema-options] {name!r}: options must be a non-empty "
-                "list of objects with a 'value' key"
+                "list"
+            )
+        else:
+            if any(
+                not isinstance(option, dict)
+                or not isinstance(option.get("name"), str)
+                or "value" not in option
+                for option in options
+            ):
+                violations.append(
+                    f"[schema-options] {name!r}: each option must be an "
+                    "object with a string 'name' and a 'value' key"
+                )
+
+            seen_values = []
+            duplicate_values = []
+            for option in options:
+                if not isinstance(option, dict) or "value" not in option:
+                    continue
+                value = option["value"]
+                if value in seen_values:
+                    if value not in duplicate_values:
+                        duplicate_values.append(value)
+                else:
+                    seen_values.append(value)
+            if duplicate_values:
+                violations.append(
+                    f"[schema-options] {name!r}: option values must be "
+                    f"unique; duplicates: {duplicate_values!r}"
+                )
+
+    if setting_type == "range":
+        valid_bounds = {}
+        for bound_name in ("min", "max"):
+            bound = setting.get(bound_name)
+            if not is_finite_number(bound):
+                violations.append(
+                    f"[schema-range] {name!r}: {bound_name} must be a "
+                    "finite number"
+                )
+                continue
+            valid_bounds[bound_name] = bound
+
+        if (
+            "min" in valid_bounds
+            and "max" in valid_bounds
+            and valid_bounds["min"] >= valid_bounds["max"]
+        ):
+            violations.append(
+                f"[schema-range] {name!r}: min must be less than max"
             )
 
-    if setting_type in NUMBER_TYPES:
+        step = setting.get("step")
+        if not is_finite_number(step) or step <= 0:
+            violations.append(
+                f"[schema-range] {name!r}: step must be a positive "
+                "finite number"
+            )
+
+    if setting_type == "number":
         valid_bounds = {}
         for bound_name in ("min", "max"):
             if bound_name not in setting:
@@ -224,7 +286,7 @@ def validate_settings(schema, data, optional_names):
     for name in sorted(settings):
         setting = settings[name]
         violations.extend(validate_schema_setting(name, setting))
-        if "default" in setting:
+        if setting["type"] in SUPPORTED_TYPES and "default" in setting:
             error = validate_value(setting, setting["default"])
             if error:
                 violations.append(f"[default] {name!r}: {error}")
@@ -254,7 +316,10 @@ def validate_settings(schema, data, optional_names):
             )
 
     for name in sorted(schema_names & data_names):
-        error = validate_value(settings[name], data[name])
+        setting = settings[name]
+        if setting["type"] not in SUPPORTED_TYPES:
+            continue
+        error = validate_value(setting, data[name])
         if error:
             violations.append(f"[type] {name!r}: {error}")
 

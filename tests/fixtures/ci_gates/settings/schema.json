@@ -1,0 +1,42 @@
+{
+  "General": {
+    "Menus": [
+      {
+        "name": "main_menu",
+        "type": "menu"
+      },
+      {
+        "name": "footer_menu",
+        "type": "menu"
+      }
+    ],
+    "Controls": [
+      {
+        "name": "enabled",
+        "type": "checkbox"
+      },
+      {
+        "name": "layout",
+        "type": "select",
+        "options": [
+          {
+            "name": "Grid",
+            "value": "grid"
+          },
+          {
+            "name": "List",
+            "value": "list"
+          }
+        ]
+      },
+      {
+        "name": "missing_text",
+        "type": "text"
+      },
+      {
+        "name": "optional_text",
+        "type": "text"
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{# {% include 'partials/commented-out.html' %} #}
+{% include 'partials/present.html' %}
+{% include "partials/missing.html" with item=item %}
+{% include dynamic_partial %}
+<a href="{% url 'known:route' %}">Known</a>
+<a href="{% url "unknown:route" item.pk %}">Unknown</a>

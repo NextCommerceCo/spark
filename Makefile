@@ -5,7 +5,7 @@ TAILWIND = ./tailwindcss
 COMPAT = python3 scripts/sass-compat.py
 TAILWIND_VERSION = v4.2.2
 
-.PHONY: dev build css css-check verify-theme test watch push release install-tailwind
+.PHONY: dev build css css-drift css-check verify-theme test watch push release install-tailwind
 
 # Run both Tailwind watcher and ntk watcher in parallel
 dev:
@@ -23,6 +23,10 @@ css:
 	trap 'rm -f "$$TMP_CSS"' EXIT; \
 	$(TAILWIND) -i css/input.css -o "$$TMP_CSS" --minify; \
 	$(COMPAT) "$$TMP_CSS" assets/main.css
+
+# Fail if the committed CSS differs from a fresh post-processed build.
+css-drift:
+	python3 scripts/check-css-drift.py
 
 # Build CSS and fail if generated output still contains platform-unsafe CSS.
 css-check: css

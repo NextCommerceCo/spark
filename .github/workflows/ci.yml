@@ -60,3 +60,25 @@ jobs:
 
       - name: Check committed CSS compatibility
         run: python scripts/sass-compat.py --check assets/main.css
+
+      - name: Cache Tailwind CSS CLI
+        uses: actions/cache@v4
+        with:
+          path: tailwindcss
+          key: tailwind-v4.2.2-linux-x64
+
+      - name: Install Tailwind CSS CLI
+        run: |
+          if [ ! -f ./tailwindcss ]; then
+            make install-tailwind
+          fi
+          chmod +x tailwindcss
+
+      - name: CSS drift gate
+        run: make css-drift
+
+      - name: Settings parity gate
+        run: python scripts/check-settings-parity.py
+
+      - name: Template integrity gate
+        run: python scripts/check-templates.py

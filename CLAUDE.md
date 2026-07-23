@@ -55,16 +55,17 @@ Treat `main.css` as a versioned artifact: every CSS source change recompiles + r
 ## Development
 ```bash
 make install-tailwind  # First-time setup: download the standalone CLI binary
-ntk watch              # Watches files + auto-compiles Tailwind + runs sass-compat + pushes
-ntk tailwind           # One-shot: compile Tailwind + sass-compat + push CSS
-ntk tailwind --minify  # Production build: compile minified + push
+make dev               # Standard loop: Tailwind watcher + ntk watch in parallel
+ntk watch              # Watches files + pushes changes (no Tailwind compile; pair with make watch)
+make watch             # Tailwind watcher only, for a separate terminal
 make release           # Rebuild minified main.css and stage it for commit
-make dev               # Legacy: Run Tailwind watcher + ntk watcher in parallel
-make css               # Legacy: Compile Tailwind once
+make css               # Compile Tailwind once (minified) + sass-compat
 make css-check         # Compile CSS, run sass-compat, then scan generated CSS
 make verify-theme      # CSS compatibility check + lightweight tooling tests
-make build             # Legacy: Compile + minify for production
+make build             # Compile + minify for production (css-check alias)
 ```
+
+Released `ntk` has no `tailwind` subcommand and does not compile Tailwind from `ntk watch`; the CSS build always comes from the standalone binary via the Makefile (decision: NextCommerceCo/theme-kit#31).
 
 ### CSS Compatibility Verification
 

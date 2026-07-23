@@ -51,26 +51,25 @@ For day-to-day development (editing CSS sources), set up Tailwind locally:
 
 ```bash
 make install-tailwind   # downloads the right standalone binary for your OS
-ntk watch               # watches files, compiles Tailwind, pushes changes
+make dev                # runs the Tailwind watcher and ntk watch in parallel
 ```
 
 When you change `css/input.css` (or any source that affects the build), run `make release` to rebuild `assets/main.css` and stage it for commit. The committed `main.css` is the canonical artifact that ships to merchants — keep it in sync.
 
 ## Development
 
-`ntk watch` watches files, auto-compiles Tailwind (with sass-compat post-processing), and pushes changes to your store. Edit templates, partials, or CSS — changes go live automatically.
+`make dev` runs the Tailwind watcher and `ntk watch` in parallel: edit templates, partials, or CSS, and changes compile and push automatically. Note that `ntk watch` on its own only watches and pushes files — the Tailwind compile comes from the standalone binary, so run the two together (which is exactly what `make dev` does).
 
 | Command | Description |
 |---------|-------------|
 | `make install-tailwind` | Download the standalone Tailwind binary for local CSS development |
-| `ntk watch` | Watch mode — auto-compile Tailwind + push changes |
-| `ntk tailwind` | One-shot: compile Tailwind + sass-compat + push CSS |
-| `ntk tailwind --minify` | Production build: compile minified + push |
-| `make css` | Compile Tailwind once and run `scripts/sass-compat.py` |
+| `make dev` | Run the Tailwind watcher and `ntk watch` in parallel — the standard dev loop |
+| `ntk watch` | Watch and push file changes (pair with `make watch` for CSS, or use `make dev`) |
+| `make watch` | Tailwind watcher only, for running `ntk watch` in a separate terminal |
+| `make css` | Compile Tailwind once (minified) and run `scripts/sass-compat.py` |
 | `make css-check` | Run `make css`, then fail if `assets/main.css` still contains unsupported CSS |
 | `make verify-theme` | Run CSS compatibility checks plus lightweight tooling tests |
 | `make release` | Rebuild minified `assets/main.css` and stage it for commit |
-| `make dev` | Legacy: run Tailwind watcher + ntk watcher in parallel |
 
 ## CSS Compatibility Verification
 

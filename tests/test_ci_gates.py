@@ -1,5 +1,7 @@
+import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -76,6 +78,58 @@ class SettingsParityGateTests(unittest.TestCase):
         self.assertIn("[type] 'layout'", result.stderr)
         self.assertNotIn("[schema-key] 'optional_text'", result.stderr)
 
+    def test_textarea_and_product_category_values_pass(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            schema = {
+                "General": {
+                    "Settings": [
+                        {"name": "main_menu", "type": "menu"},
+                        {"name": "footer_menu", "type": "menu"},
+                        {"name": "body", "type": "textarea"},
+                        {
+                            "name": "category_handle",
+                            "type": "product_category",
+                        },
+                        {
+                            "name": "category_id",
+                            "type": "product_category",
+                        },
+                        {
+                            "name": "category_unset",
+                            "type": "product_category",
+                        },
+                    ]
+                }
+            }
+            data = {
+                "main_menu": "main",
+                "footer_menu": "footer",
+                "body": "Long-form copy",
+                "category_handle": "summer",
+                "category_id": 42,
+                "category_unset": None,
+            }
+            schema_path = fixture_dir / "schema.json"
+            data_path = fixture_dir / "data.json"
+            optional_path = fixture_dir / "optional.txt"
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            data_path.write_text(json.dumps(data), encoding="utf-8")
+            optional_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-settings-parity.py",
+                "--schema",
+                schema_path,
+                "--data",
+                data_path,
+                "--optional",
+                optional_path,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Settings parity gate passed", result.stdout)
+
 
 class TemplateIntegrityGateTests(unittest.TestCase):
     def test_real_repo_passes(self):
@@ -102,6 +156,32 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("unknown:route", result.stderr)
         self.assertIn("skipped 1 include tag(s)", result.stdout)
         self.assertNotIn("commented-out.html", result.stderr)
+
+    def test_include_inside_named_comment_block_is_ignored(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "index.html").write_text(
+                '{% comment "note" %}\n'
+                "{% include 'partials/missing.html' %}\n"
+                "{% endcomment %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+        self.assertNotIn("partials/missing.html", result.stderr)
 
 
 if __name__ == "__main__":

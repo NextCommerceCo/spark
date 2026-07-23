@@ -9,6 +9,7 @@ from pathlib import Path
 
 STRING_TYPES = {
     "text",
+    "textarea",
     "html",
     "css",
     "richtext",
@@ -20,7 +21,7 @@ STRING_TYPES = {
 LIST_TYPES = {"products", "product_categories"}
 # Picker-backed settings use null to represent no selection. The committed
 # data uses this for product settings; image_picker has the same unset model.
-NULLABLE_TYPES = {"product", "image_picker"}
+NULLABLE_TYPES = {"product", "product_category", "image_picker"}
 REQUIRED_MENUS = ("main_menu", "footer_menu")
 
 
@@ -119,7 +120,7 @@ def validate_value(setting, value):
             return None
         return f"expected str, got {type(value).__name__}"
 
-    if setting_type == "product":
+    if setting_type in {"product", "product_category"}:
         if isinstance(value, str):
             return None
         if isinstance(value, int) and not isinstance(value, bool):

@@ -15,7 +15,7 @@ LITERAL_RE = re.compile(
 )
 INLINE_COMMENT_RE = re.compile(r"{#.*?#}", re.DOTALL)
 BLOCK_COMMENT_RE = re.compile(
-    r"{%\s*comment\s*%}.*?{%\s*endcomment\s*%}",
+    r"{%\s*comment(?:\s+.*?)?\s*%}.*?{%\s*endcomment\s*%}",
     re.DOTALL,
 )
 

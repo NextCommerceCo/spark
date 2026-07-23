@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -23,6 +24,8 @@ LIST_TYPES = {"products", "product_categories"}
 # data uses this for product settings; image_picker has the same unset model.
 NULLABLE_TYPES = {"product", "product_category", "image_picker"}
 REQUIRED_MENUS = ("main_menu", "footer_menu")
+OPTION_TYPES = {"select", "radio"}
+NUMBER_TYPES = {"number", "range"}
 
 
 def load_json(path):
@@ -97,6 +100,57 @@ def option_values(setting):
     return values
 
 
+def is_finite_number(value):
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    return not isinstance(value, float) or math.isfinite(value)
+
+
+def validate_schema_setting(name, setting):
+    violations = []
+    setting_type = setting["type"]
+
+    if setting_type in OPTION_TYPES:
+        options = setting.get("options")
+        if (
+            not isinstance(options, list)
+            or not options
+            or any(
+                not isinstance(option, dict) or "value" not in option
+                for option in options
+            )
+        ):
+            violations.append(
+                f"[schema-options] {name!r}: options must be a non-empty "
+                "list of objects with a 'value' key"
+            )
+
+    if setting_type in NUMBER_TYPES:
+        valid_bounds = {}
+        for bound_name in ("min", "max"):
+            if bound_name not in setting:
+                continue
+            bound = setting[bound_name]
+            if not is_finite_number(bound):
+                violations.append(
+                    f"[schema-range] {name!r}: {bound_name} must be a "
+                    "finite number"
+                )
+                continue
+            valid_bounds[bound_name] = bound
+
+        if (
+            "min" in valid_bounds
+            and "max" in valid_bounds
+            and valid_bounds["min"] > valid_bounds["max"]
+        ):
+            violations.append(
+                f"[schema-range] {name!r}: min must not exceed max"
+            )
+
+    return violations
+
+
 def validate_value(setting, value):
     setting_type = setting["type"]
 
@@ -110,10 +164,21 @@ def validate_value(setting, value):
             return None
         return f"expected bool, got {type(value).__name__}"
 
-    if setting_type in {"number", "range"}:
-        if isinstance(value, (int, float)) and not isinstance(value, bool):
-            return None
-        return f"expected int or float, got {type(value).__name__}"
+    if setting_type in NUMBER_TYPES:
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            return f"expected int or float, got {type(value).__name__}"
+        if not is_finite_number(value):
+            return f"expected a finite number, got {value!r}"
+
+        minimum = setting.get("min")
+        if is_finite_number(minimum) and value < minimum:
+            return f"value {value!r} is below minimum {minimum!r}"
+
+        maximum = setting.get("max")
+        if is_finite_number(maximum) and value > maximum:
+            return f"value {value!r} exceeds maximum {maximum!r}"
+
+        return None
 
     if setting_type in STRING_TYPES:
         if isinstance(value, str):
@@ -155,6 +220,15 @@ def validate_value(setting, value):
 
 def validate_settings(schema, data, optional_names):
     settings, violations = flatten_schema(schema)
+
+    for name in sorted(settings):
+        setting = settings[name]
+        violations.extend(validate_schema_setting(name, setting))
+        if "default" in setting:
+            error = validate_value(setting, setting["default"])
+            if error:
+                violations.append(f"[default] {name!r}: {error}")
+
     if not isinstance(data, dict):
         violations.append("[data-shape] settings data root must be an object")
         return settings, violations

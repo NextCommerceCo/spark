@@ -64,7 +64,7 @@ jobs:
       - name: Read Tailwind CSS version
         id: tailwind
         run: |
-          version="$(awk '$1 == "TAILWIND_VERSION" && $2 == "=" { print $3; exit }' Makefile)"
+          version="$(awk '$1 == "TAILWIND_VERSION" && ($2 == "=" || $2 == ":=") { version = $3 } END { print version }' Makefile)"
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -76,10 +76,33 @@ jobs:
 
       - name: Install Tailwind CSS CLI
         run: |
-          if [ ! -f ./tailwindcss ]; then
+          expected_version="${{ steps.tailwind.outputs.version }}"
+
+          validate_tailwind() {
+            if [ ! -x ./tailwindcss ]; then
+              return 1
+            fi
+
+            output="$(./tailwindcss --help 2>&1)" || return 1
+            banner="${output%%$'\n'*}"
+            echo "Tailwind CLI banner: $banner"
+            case " $banner " in
+              *" $expected_version "*) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          if [ -f ./tailwindcss ]; then
+            chmod +x ./tailwindcss
+          fi
+
+          if ! validate_tailwind; then
+            echo "Cached Tailwind CLI is missing or has the wrong version."
+            rm -f ./tailwindcss
             make install-tailwind
           fi
-          chmod +x tailwindcss
+
+          validate_tailwind
 
       - name: CSS drift gate
         run: make css-drift

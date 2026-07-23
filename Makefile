@@ -4,15 +4,16 @@
 TAILWIND = ./tailwindcss
 COMPAT = python3 scripts/sass-compat.py
 TAILWIND_VERSION = v4.2.2
+CSS_INPUT = css/input.css
 
 .PHONY: dev build css css-drift css-check verify-theme test watch push release install-tailwind
 
 # Run both Tailwind watcher and ntk watcher in parallel
 dev:
 	@echo "Starting Spark development..."
-	@echo "  Tailwind: css/input.css -> assets/main.css"
+	@echo "  Tailwind: $(CSS_INPUT) -> assets/main.css"
 	@echo "  ntk: watching for changes -> pushing to store"
-	@$(TAILWIND) -i css/input.css -o assets/main.css --watch &
+	@$(TAILWIND) -i "$(CSS_INPUT)" -o assets/main.css --watch &
 	@ntk watch
 
 # Compile Tailwind once + post-process for Sass compatibility.
@@ -21,12 +22,12 @@ css:
 	@set -e; \
 	TMP_CSS=$$(mktemp); \
 	trap 'rm -f "$$TMP_CSS"' EXIT; \
-	$(TAILWIND) -i css/input.css -o "$$TMP_CSS" --minify; \
+	$(TAILWIND) -i "$(CSS_INPUT)" -o "$$TMP_CSS" --minify; \
 	$(COMPAT) "$$TMP_CSS" assets/main.css
 
 # Fail if the committed CSS differs from a fresh post-processed build.
 css-drift:
-	python3 scripts/check-css-drift.py
+	python3 scripts/check-css-drift.py --input "$(CSS_INPUT)"
 
 # Build CSS and fail if generated output still contains platform-unsafe CSS.
 css-check: css
@@ -50,11 +51,11 @@ verify-theme: css-check test
 
 # Watch Tailwind only (useful when running ntk watch separately)
 watch:
-	$(TAILWIND) -i css/input.css -o assets/main.css --watch
+	$(TAILWIND) -i "$(CSS_INPUT)" -o assets/main.css --watch
 
 # Production release: rebuild main.css and stage it for commit.
 # Run this before committing CSS source changes so the committed
-# main.css stays in sync with css/input.css.
+# main.css stays in sync with $(CSS_INPUT).
 release: css-check
 	@git add assets/main.css
 	@echo "main.css rebuilt and staged. Commit it with your CSS source changes."

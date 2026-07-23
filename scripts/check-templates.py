@@ -10,12 +10,17 @@ from pathlib import Path
 TEMPLATE_DIRECTORIES = ("layouts", "templates", "partials")
 TAG_RE = re.compile(r"{%\s*(include|url)\b(?P<body>.*?)%}", re.DOTALL)
 LITERAL_RE = re.compile(
-    r"""\s*(?P<quote>['"])(?P<value>.*?)(?P=quote)(?:\s|$)""",
+    r"""\s*(?P<quote>['"])(?P<value>(?:(?!(?P=quote)).)*)(?P=quote)(?:\s|$)""",
     re.DOTALL,
 )
 INLINE_COMMENT_RE = re.compile(r"{#.*?#}", re.DOTALL)
 BLOCK_COMMENT_RE = re.compile(
     r"{%\s*comment(?:\s+.*?)?\s*%}.*?{%\s*endcomment\s*%}",
+    re.DOTALL,
+)
+VERBATIM_BLOCK_RE = re.compile(
+    r"{%\s*verbatim(?:\s+.*?)?\s*%}.*?"
+    r"{%\s*endverbatim(?:\s+.*?)?\s*%}",
     re.DOTALL,
 )
 
@@ -25,8 +30,15 @@ def mask_match(match):
 
 
 def mask_comments(text):
-    text = BLOCK_COMMENT_RE.sub(mask_match, text)
-    return INLINE_COMMENT_RE.sub(mask_match, text)
+    # Django tokenizes inline comments before interpreting block tags. Masking
+    # them first prevents comment/endcomment text inside {# ... #} from
+    # changing the extent of a real block comment.
+    text = INLINE_COMMENT_RE.sub(mask_match, text)
+    return BLOCK_COMMENT_RE.sub(mask_match, text)
+
+
+def mask_ignored_regions(text):
+    return VERBATIM_BLOCK_RE.sub(mask_match, mask_comments(text))
 
 
 def load_allowlist(path):
@@ -48,8 +60,10 @@ def template_paths(root):
 
 def inspect_templates(root, allowlist):
     violations = []
-    skipped_variable_includes = 0
+    skipped_includes = 0
+    skipped_urls = 0
     paths = template_paths(root)
+    resolved_root = root.resolve()
 
     for path in paths:
         try:
@@ -58,34 +72,63 @@ def inspect_templates(root, allowlist):
             violations.append(f"[read] {path}: {error}")
             continue
 
-        masked = mask_comments(text)
+        masked = mask_ignored_regions(text)
         relative_path = path.relative_to(root)
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)
-            literal = LITERAL_RE.match(match.group("body"))
+            body = match.group("body")
+            literal = LITERAL_RE.match(body)
             line_number = masked.count("\n", 0, match.start()) + 1
             location = f"{relative_path}:{line_number}"
 
+            if not body.strip():
+                argument_name = "target" if tag_name == "include" else "URL name"
+                violations.append(
+                    f"[{tag_name}] {location}: tag has no {argument_name} argument"
+                )
+                continue
+
             if tag_name == "include":
                 if literal is None:
-                    skipped_variable_includes += 1
+                    skipped_includes += 1
                     continue
                 target = literal.group("value")
-                if not (root / target).is_file():
+                target_path = Path(target)
+                try:
+                    resolved_target = (resolved_root / target_path).resolve()
+                except (OSError, RuntimeError, ValueError) as error:
+                    violations.append(
+                        f"[path-escape] {location}: include target {target!r} "
+                        f"could not be resolved safely: {error}"
+                    )
+                    continue
+                if (
+                    target_path.is_absolute()
+                    or ".." in target_path.parts
+                    or not resolved_target.is_relative_to(resolved_root)
+                ):
+                    violations.append(
+                        f"[path-escape] {location}: include target {target!r} "
+                        "must resolve inside the template root"
+                    )
+                elif not resolved_target.is_file():
                     violations.append(
                         f"[include] {location}: target {target!r} does not exist"
                     )
                 continue
 
-            if literal is not None:
-                url_name = literal.group("value")
-                if url_name not in allowlist:
-                    violations.append(
-                        f"[url-name] {location}: {url_name!r} is not in "
-                        "the reviewed allowlist"
-                    )
+            if literal is None:
+                skipped_urls += 1
+                continue
 
-    return paths, skipped_variable_includes, violations
+            url_name = literal.group("value")
+            if url_name not in allowlist:
+                violations.append(
+                    f"[url-name] {location}: {url_name!r} is not in "
+                    "the reviewed allowlist"
+                )
+
+    return paths, skipped_includes, skipped_urls, violations
 
 
 def parse_args(argv=None):
@@ -109,10 +152,23 @@ def main(argv=None):
         print(f"Template integrity gate failed: {error}", file=sys.stderr)
         return 1
 
-    paths, skipped_count, violations = inspect_templates(root, allowlist)
+    paths, skipped_includes, skipped_urls, violations = inspect_templates(
+        root, allowlist
+    )
+
+    if not paths:
+        directories = ", ".join(TEMPLATE_DIRECTORIES)
+        print(
+            "Template integrity gate failed: no template files were found "
+            f"under the scanned directories ({directories}).",
+            file=sys.stderr,
+        )
+        return 1
+
     print(
         "INFO: skipped "
-        f"{skipped_count} include tag(s) with variable targets."
+        f"{skipped_includes} include tag(s); skipped {skipped_urls} url tag(s) "
+        "with non-literal arguments."
     )
 
     if violations:

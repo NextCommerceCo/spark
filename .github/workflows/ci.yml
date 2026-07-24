@@ -60,3 +60,58 @@ jobs:
 
       - name: Check committed CSS compatibility
         run: python scripts/sass-compat.py --check assets/main.css
+
+      - name: Read Tailwind CSS version
+        id: tailwind
+        run: |
+          version="$(awk '$1 == "TAILWIND_VERSION" && ($2 == "=" || $2 == ":=") { version = $3 } END { print version }' Makefile)"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Tailwind CSS CLI
+        uses: actions/cache@v4
+        with:
+          path: tailwindcss
+          key: tailwind-${{ steps.tailwind.outputs.version }}-linux-x64
+
+      - name: Install Tailwind CSS CLI
+        run: |
+          expected_version="${{ steps.tailwind.outputs.version }}"
+
+          validate_tailwind() {
+            if [ ! -x ./tailwindcss ]; then
+              return 1
+            fi
+
+            output="$(./tailwindcss --help 2>&1)" || return 1
+            banner="${output%%$'\n'*}"
+            # Strip ANSI color/style escape sequences: the CLI colorizes its
+            # banner on CI runners, which breaks plain string matching.
+            banner="$(printf '%s' "$banner" | sed $'s/\x1b\\[[0-9;]*m//g')"
+            echo "Tailwind CLI banner: $banner"
+            case " $banner " in
+              *" $expected_version "*) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          if [ -f ./tailwindcss ]; then
+            chmod +x ./tailwindcss
+          fi
+
+          if ! validate_tailwind; then
+            echo "Cached Tailwind CLI is missing or has the wrong version."
+            rm -f ./tailwindcss
+            make install-tailwind
+          fi
+
+          validate_tailwind
+
+      - name: CSS drift gate
+        run: make css-drift
+
+      - name: Settings parity gate
+        run: python scripts/check-settings-parity.py
+
+      - name: Template integrity gate
+        run: python scripts/check-templates.py

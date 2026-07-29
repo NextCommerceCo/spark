@@ -516,8 +516,32 @@ class TemplateIntegrityGateTests(unittest.TestCase):
                 )
 
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("valid base block structure", result.stderr)
+            self.assertIn("[block-structure] layouts/base.html", result.stderr)
             self.assertIn("preview_indicator", result.stderr)
+
+    def test_block_structure_is_checked_in_every_template(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "index.html").write_text(
+                "{% block content %}Broken{% endblock wrong_name %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[block-structure] templates/index.html", result.stderr)
+        self.assertIn("closes as 'wrong_name'", result.stderr)
 
     def test_missing_include_unknown_url_and_variable_include_are_reported(self):
         template_fixtures = FIXTURES / "templates"

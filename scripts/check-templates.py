@@ -123,11 +123,9 @@ def missing_default_inventory(root, paths):
     else:
         try:
             base_text = mask_ignored_regions(base_template.read_text(encoding="utf-8"))
-            base_blocks, block_errors = inspect_block_structure(base_text)
+            base_blocks, _ = inspect_block_structure(base_text)
             for block_name in sorted(REQUIRED_BASE_BLOCKS - base_blocks):
                 missing.append(f"overridable base block {block_name!r}")
-            for error in block_errors:
-                missing.append(f"valid base block structure ({error})")
         except OSError as error:
             missing.append(f"readable layouts/base.html ({error})")
 
@@ -158,6 +156,10 @@ def inspect_templates(root, allowlist):
 
         masked = mask_ignored_regions(text)
         relative_path = path.relative_to(root)
+        _, block_errors = inspect_block_structure(masked)
+        for error in block_errors:
+            violations.append(f"[block-structure] {relative_path}: {error}")
+
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)
             body = match.group("body")

@@ -19,7 +19,9 @@
  * What is intentionally dropped:
  * - jquery.validate.min.js - Use HTML5 validation instead
  * - core.variant.init() - Was empty function, Spark has its own variant picker
- * - core.preview_theme / core.theme_settings_preview - Admin-only features
+ * - core.theme_settings_preview - Theme-editor iframe behavior remains platform-owned
+ *
+ * Preview-session visibility is provided separately by spark-preview.js.
  */
 
 (function() {

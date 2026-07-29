@@ -23,6 +23,20 @@ VERBATIM_BLOCK_RE = re.compile(
     r"{%\s*endverbatim(?:\s+.*?)?\s*%}",
     re.DOTALL,
 )
+BLOCK_RE = re.compile(r"{%\s*block\s+([\w-]+)(?:\s|%})")
+REQUIRED_BASE_BLOCKS = {
+    "announcement_bar",
+    "nav_header",
+    "content_wrapper",
+    "footer",
+    "side_cart",
+    "custom_css",
+    "platform_compatibility",
+    "preview_indicator",
+    "delight_scripts",
+    "footer_app_hooks",
+    "tracking",
+}
 
 
 def mask_match(match):
@@ -63,6 +77,14 @@ def missing_default_inventory(root, paths):
     base_template = root / "layouts" / "base.html"
     if not base_template.is_file():
         missing.append("required template layouts/base.html")
+    else:
+        try:
+            base_text = mask_ignored_regions(base_template.read_text(encoding="utf-8"))
+            base_blocks = set(BLOCK_RE.findall(base_text))
+            for block_name in sorted(REQUIRED_BASE_BLOCKS - base_blocks):
+                missing.append(f"overridable base block {block_name!r}")
+        except OSError as error:
+            missing.append(f"readable layouts/base.html ({error})")
 
     for directory in TEMPLATE_DIRECTORIES:
         directory_root = root / directory

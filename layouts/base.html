@@ -108,9 +108,11 @@
 
     {% block extrastyles %}{% endblock extrastyles %}
 
-    {% if settings.custom_css %}
-        <style>{{ settings.custom_css|safe }}</style>
-    {% endif %}
+    {% block custom_css %}
+        {% if settings.custom_css %}
+            <style>{{ settings.custom_css|safe }}</style>
+        {% endif %}
+    {% endblock custom_css %}
     {% block extrahead %}{% endblock extrahead %}
 
     {# Head app hook is for platform-critical head snippets only. Prefer footer hooks. #}
@@ -217,12 +219,19 @@
 
     {% block component_scripts %}{% endblock component_scripts %}
 
-    {# Platform compatibility — replaces jQuery-dependent core_js with vanilla JS #}
-    <script type="text/javascript" src="{{ 'js/spark-platform.js'|asset_url }}"></script>
+    {% block platform_compatibility %}
+        {# Platform compatibility — replaces jQuery-dependent core_js with vanilla JS #}
+        <script type="text/javascript" src="{{ 'js/spark-platform.js'|asset_url }}"></script>
+    {% endblock platform_compatibility %}
+
+    {% block preview_indicator %}
+        <script type="text/javascript" src="{{ 'js/spark-preview.js'|asset_url }}"></script>
+    {% endblock preview_indicator %}
 
     {# Additional JS #}
     {% block extrascripts %}{% endblock %}
 
+    {% block delight_scripts %}
     {# Delight: skeleton dismiss + keyboard nav #}
     <script>
     (function(){
@@ -264,6 +273,7 @@
 
     })();
     </script>
+    {% endblock delight_scripts %}
 
     {# Non-critical apps and tracking run after content and theme JS. #}
     {% block footer_app_hooks %}

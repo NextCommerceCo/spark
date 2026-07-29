@@ -1282,3 +1282,59 @@
     transition: all 200ms ease-out;
     z-index: 80;
 }
+
+/* Preview sessions are explicit without changing ordinary storefront visits. */
+.spark-preview-indicator {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0.75rem 1rem;
+    color: #fff;
+    background: #0f172a;
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 32px rgb(15 23 42 / 28%);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.spark-preview-indicator__message {
+    font-weight: 600;
+}
+
+.spark-preview-indicator__exit {
+    padding: 0.25rem 0.5rem;
+    color: #0f172a;
+    background: #fff;
+    border-radius: 0.375rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.spark-preview-indicator__exit:focus-visible {
+    outline: 3px solid #fbbf24;
+    outline-offset: 3px;
+}
+
+@media (hover: hover) {
+    .spark-preview-indicator__exit:hover {
+        color: #0f172a;
+        background: #e2e8f0;
+        opacity: 1;
+    }
+}
+
+@media (width < 30rem) {
+    .spark-preview-indicator {
+        right: 0.75rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        justify-content: space-between;
+        max-width: none;
+    }
+}

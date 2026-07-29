@@ -465,6 +465,84 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("Template integrity gate passed", result.stdout)
         self.assertIn("skipped 0 include tag(s)", result.stdout)
 
+    def test_preview_asset_is_only_loaded_during_a_preview_session(self):
+        base_template = (ROOT / "layouts" / "base.html").read_text(
+            encoding="utf-8"
+        )
+        preview_block = base_template.split(
+            "{% block preview_indicator %}", 1
+        )[1].split("{% endblock preview_indicator %}", 1)[0]
+
+        condition = preview_block.index("{% if request.COOKIES.preview_theme %}")
+        asset = preview_block.index("'js/spark-preview.js'|asset_url")
+        end_condition = preview_block.index("{% endif %}")
+        self.assertLess(condition, asset)
+        self.assertLess(asset, end_condition)
+
+    def test_default_scan_rejects_unbalanced_required_base_blocks(self):
+        original = (ROOT / "layouts" / "base.html").read_text(encoding="utf-8")
+        closing_tag = "{% endblock preview_indicator %}"
+        variants = {
+            "missing": original.replace(closing_tag, "", 1),
+            "misnamed": original.replace(
+                closing_tag, "{% endblock wrong_name %}", 1
+            ),
+        }
+
+        for label, base_text in variants.items():
+            with (
+                self.subTest(label=label),
+                tempfile.TemporaryDirectory() as temp_dir,
+            ):
+                fixture_dir = Path(temp_dir)
+                for directory, filename in (
+                    ("templates", "index.html"),
+                    ("partials", "card.html"),
+                ):
+                    directory_path = fixture_dir / directory
+                    directory_path.mkdir()
+                    (directory_path / filename).write_text("", encoding="utf-8")
+                layouts_dir = fixture_dir / "layouts"
+                layouts_dir.mkdir()
+                (layouts_dir / "base.html").write_text(
+                    base_text, encoding="utf-8"
+                )
+
+                result = run_checker(
+                    "check-templates.py",
+                    "--allowlist",
+                    ROOT / "scripts" / "url-name-allowlist.txt",
+                    cwd=fixture_dir,
+                )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("[block-structure] layouts/base.html", result.stderr)
+            self.assertIn("preview_indicator", result.stderr)
+
+    def test_block_structure_is_checked_in_every_template(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "index.html").write_text(
+                "{% block content %}Broken{% endblock wrong_name %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[block-structure] templates/index.html", result.stderr)
+        self.assertIn("closes as 'wrong_name'", result.stderr)
+
     def test_missing_include_unknown_url_and_variable_include_are_reported(self):
         template_fixtures = FIXTURES / "templates"
         result = run_checker(

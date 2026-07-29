@@ -23,6 +23,22 @@ VERBATIM_BLOCK_RE = re.compile(
     r"{%\s*endverbatim(?:\s+.*?)?\s*%}",
     re.DOTALL,
 )
+BLOCK_TAG_RE = re.compile(
+    r"{%\s*(?P<tag>endblock|block)\b(?:\s+(?P<name>[\w-]+))?[^%]*%}"
+)
+REQUIRED_BASE_BLOCKS = {
+    "announcement_bar",
+    "nav_header",
+    "content_wrapper",
+    "footer",
+    "side_cart",
+    "custom_css",
+    "platform_compatibility",
+    "preview_indicator",
+    "delight_scripts",
+    "footer_app_hooks",
+    "tracking",
+}
 
 
 def mask_match(match):
@@ -39,6 +55,47 @@ def mask_comments(text):
 
 def mask_ignored_regions(text):
     return VERBATIM_BLOCK_RE.sub(mask_match, mask_comments(text))
+
+
+def inspect_block_structure(text):
+    block_names = set()
+    stack = []
+    errors = []
+
+    for match in BLOCK_TAG_RE.finditer(text):
+        tag_name = match.group("tag")
+        block_name = match.group("name")
+        line_number = text.count("\n", 0, match.start()) + 1
+
+        if tag_name == "block":
+            if not block_name:
+                errors.append(f"block on line {line_number} has no name")
+                continue
+            if block_name in block_names:
+                errors.append(
+                    f"duplicate block {block_name!r} on line {line_number}"
+                )
+            block_names.add(block_name)
+            stack.append((block_name, line_number))
+            continue
+
+        if not stack:
+            errors.append(f"endblock on line {line_number} has no opening block")
+            continue
+
+        expected_name, opening_line = stack.pop()
+        if block_name and block_name != expected_name:
+            errors.append(
+                f"block {expected_name!r} opened on line {opening_line} "
+                f"closes as {block_name!r} on line {line_number}"
+            )
+
+    for block_name, opening_line in stack:
+        errors.append(
+            f"block {block_name!r} opened on line {opening_line} is unclosed"
+        )
+
+    return block_names, errors
 
 
 def load_allowlist(path):
@@ -63,6 +120,14 @@ def missing_default_inventory(root, paths):
     base_template = root / "layouts" / "base.html"
     if not base_template.is_file():
         missing.append("required template layouts/base.html")
+    else:
+        try:
+            base_text = mask_ignored_regions(base_template.read_text(encoding="utf-8"))
+            base_blocks, _ = inspect_block_structure(base_text)
+            for block_name in sorted(REQUIRED_BASE_BLOCKS - base_blocks):
+                missing.append(f"overridable base block {block_name!r}")
+        except OSError as error:
+            missing.append(f"readable layouts/base.html ({error})")
 
     for directory in TEMPLATE_DIRECTORIES:
         directory_root = root / directory
@@ -91,6 +156,10 @@ def inspect_templates(root, allowlist):
 
         masked = mask_ignored_regions(text)
         relative_path = path.relative_to(root)
+        _, block_errors = inspect_block_structure(masked)
+        for error in block_errors:
+            violations.append(f"[block-structure] {relative_path}: {error}")
+
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)
             body = match.group("body")

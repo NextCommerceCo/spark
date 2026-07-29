@@ -13,7 +13,20 @@
         }
     }
 
-    function createPreviewIndicator(doc, themeId) {
+    function buildExitPreviewUrl(location) {
+        var pathname = String(location && location.pathname || '/');
+        var search = String(location && location.search || '').replace(/^\?/, '');
+        var hash = String(location && location.hash || '');
+        var params = new root.URLSearchParams(search);
+
+        params.delete('preview_theme');
+        params.set('deactivate-theme', 'true');
+
+        var query = params.toString();
+        return pathname + (query ? '?' + query : '') + hash;
+    }
+
+    function createPreviewIndicator(doc, themeId, location) {
         var existing = doc.getElementById('spark-preview-indicator');
         if (existing) return existing;
 
@@ -30,7 +43,7 @@
 
         var exitLink = doc.createElement('a');
         exitLink.className = 'spark-preview-indicator__exit';
-        exitLink.href = '/?deactivate-theme=true';
+        exitLink.href = buildExitPreviewUrl(location);
         exitLink.textContent = 'Exit preview';
 
         indicator.appendChild(message);
@@ -39,14 +52,15 @@
         return indicator;
     }
 
-    function initPreviewIndicator(doc) {
+    function initPreviewIndicator(doc, location) {
         if (!doc || !doc.body) return null;
         var themeId = readPreviewTheme(doc.cookie);
-        return themeId ? createPreviewIndicator(doc, themeId) : null;
+        return themeId ? createPreviewIndicator(doc, themeId, location) : null;
     }
 
     var api = {
         readPreviewTheme: readPreviewTheme,
+        buildExitPreviewUrl: buildExitPreviewUrl,
         createPreviewIndicator: createPreviewIndicator,
         initPreviewIndicator: initPreviewIndicator
     };
@@ -57,10 +71,10 @@
     if (typeof document !== 'undefined') {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
-                initPreviewIndicator(document);
+                initPreviewIndicator(document, root.location);
             }, { once: true });
         } else {
-            initPreviewIndicator(document);
+            initPreviewIndicator(document, root.location);
         }
     }
 })(typeof window !== 'undefined' ? window : globalThis);

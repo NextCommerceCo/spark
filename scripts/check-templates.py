@@ -23,7 +23,9 @@ VERBATIM_BLOCK_RE = re.compile(
     r"{%\s*endverbatim(?:\s+.*?)?\s*%}",
     re.DOTALL,
 )
-BLOCK_RE = re.compile(r"{%\s*block\s+([\w-]+)(?:\s|%})")
+BLOCK_TAG_RE = re.compile(
+    r"{%\s*(?P<tag>endblock|block)\b(?:\s+(?P<name>[\w-]+))?[^%]*%}"
+)
 REQUIRED_BASE_BLOCKS = {
     "announcement_bar",
     "nav_header",
@@ -55,6 +57,47 @@ def mask_ignored_regions(text):
     return VERBATIM_BLOCK_RE.sub(mask_match, mask_comments(text))
 
 
+def inspect_block_structure(text):
+    block_names = set()
+    stack = []
+    errors = []
+
+    for match in BLOCK_TAG_RE.finditer(text):
+        tag_name = match.group("tag")
+        block_name = match.group("name")
+        line_number = text.count("\n", 0, match.start()) + 1
+
+        if tag_name == "block":
+            if not block_name:
+                errors.append(f"block on line {line_number} has no name")
+                continue
+            if block_name in block_names:
+                errors.append(
+                    f"duplicate block {block_name!r} on line {line_number}"
+                )
+            block_names.add(block_name)
+            stack.append((block_name, line_number))
+            continue
+
+        if not stack:
+            errors.append(f"endblock on line {line_number} has no opening block")
+            continue
+
+        expected_name, opening_line = stack.pop()
+        if block_name and block_name != expected_name:
+            errors.append(
+                f"block {expected_name!r} opened on line {opening_line} "
+                f"closes as {block_name!r} on line {line_number}"
+            )
+
+    for block_name, opening_line in stack:
+        errors.append(
+            f"block {block_name!r} opened on line {opening_line} is unclosed"
+        )
+
+    return block_names, errors
+
+
 def load_allowlist(path):
     names = set()
     with path.open(encoding="utf-8") as handle:
@@ -80,9 +123,11 @@ def missing_default_inventory(root, paths):
     else:
         try:
             base_text = mask_ignored_regions(base_template.read_text(encoding="utf-8"))
-            base_blocks = set(BLOCK_RE.findall(base_text))
+            base_blocks, block_errors = inspect_block_structure(base_text)
             for block_name in sorted(REQUIRED_BASE_BLOCKS - base_blocks):
                 missing.append(f"overridable base block {block_name!r}")
+            for error in block_errors:
+                missing.append(f"valid base block structure ({error})")
         except OSError as error:
             missing.append(f"readable layouts/base.html ({error})")
 

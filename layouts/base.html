@@ -225,7 +225,9 @@
     {% endblock platform_compatibility %}
 
     {% block preview_indicator %}
-        <script type="text/javascript" src="{{ 'js/spark-preview.js'|asset_url }}"></script>
+        {% if request.COOKIES.preview_theme %}
+            <script type="text/javascript" src="{{ 'js/spark-preview.js'|asset_url }}"></script>
+        {% endif %}
     {% endblock preview_indicator %}
 
     {# Additional JS #}

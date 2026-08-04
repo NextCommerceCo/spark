@@ -100,7 +100,7 @@
         'voucherDiscounts { name amount voucher { name code } }',
         'lines {',
         '  pk quantity unitPriceExclTax linePriceExclTax linePriceExclTaxInclDiscounts isUpsell interval intervalCount',
-        '  attributes { value option }',
+        '  properties { key value }',
         '  product {',
         '    pk title url metadata',
         '    primaryImage { thumbnail: url(transform: { maxWidth: 150, maxHeight: 150, format: webp, crop: center }) }',

@@ -140,7 +140,7 @@ function createCart(id, title) {
             linePriceExclTax: 12,
             linePriceExclTaxInclDiscounts: 12,
             isUpsell: false,
-            attributes: [],
+            properties: [],
             product: { pk: 10, title: title, url: '/product', metadata: {} }
         }]
     };

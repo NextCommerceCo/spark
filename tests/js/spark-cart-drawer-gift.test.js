@@ -155,7 +155,7 @@ function giftLine(pk) {
         linePriceExclTax: 0,
         linePriceExclTaxInclDiscounts: 0,
         isUpsell: true,
-        attributes: [],
+        properties: [],
         product: { pk: Number(GIFT_PRODUCT_ID), title: 'Free gift', url: '/gift', metadata: {} }
     };
 }
@@ -168,7 +168,7 @@ function regularLine(pk, price) {
         linePriceExclTax: price,
         linePriceExclTaxInclDiscounts: price,
         isUpsell: false,
-        attributes: [],
+        properties: [],
         product: { pk: 10, title: 'Product', url: '/product', metadata: {} }
     };
 }

@@ -49,8 +49,8 @@
         var image = product.primaryImage ? product.primaryImage.thumbnail : '';
         var title = product.title || '';
         var url = product.url || '#';
-        var attrs = line.attributes || [];
-        var variant = attrs.map(function(a) { return a.option + ': ' + a.value; }).join(', ');
+        var attrs = line.properties || [];
+        var variant = attrs.map(function(a) { return a.key + ': ' + a.value; }).join(', ');
         var linePrice = numberOrFallback(line.linePriceExclTax, 0);
         var discountedLinePrice = numberOrFallback(line.linePriceExclTaxInclDiscounts, linePrice);
         // A 100% line discount renders as $0.00 with the original line total struck through.

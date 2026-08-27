@@ -489,6 +489,56 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("[cart-product-id]", result.stderr)
         self.assertIn("purchasable child PK", result.stderr)
 
+    def test_cart_add_gate_ignores_resolved_product_expressions(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "product.html").write_text(
+                "{% url 'cart:add' pk=other_product.pk %}\n"
+                "{% url 'cart:add' pk=gift_product.children.first.pk %}\n"
+                "{% url 'cart:add' pk=child.pk source=product.pk %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("cart:add\n", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+
+    def test_unknown_cart_url_reports_only_the_allowlist_violation(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "product.html").write_text(
+                "{% url 'cart:add' pk=product.pk %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("with 1 violation(s)", result.stderr)
+        self.assertIn("[url-name]", result.stderr)
+        self.assertNotIn("[cart-product-id]", result.stderr)
+
     def test_pdp_cart_paths_share_the_resolved_purchasable_pk(self):
         product_template = (
             ROOT / "templates" / "catalogue" / "product.html"

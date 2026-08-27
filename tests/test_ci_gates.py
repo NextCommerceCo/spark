@@ -465,6 +465,42 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("Template integrity gate passed", result.stdout)
         self.assertIn("skipped 0 include tag(s)", result.stdout)
 
+    def test_cart_add_rejects_a_bare_parent_product_pk(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "product.html").write_text(
+                "<form action=\"{% url 'cart:add' pk=product.pk %}\">\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("cart:add\n", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[cart-product-id]", result.stderr)
+        self.assertIn("purchasable child PK", result.stderr)
+
+    def test_pdp_cart_paths_share_the_resolved_purchasable_pk(self):
+        product_template = (
+            ROOT / "templates" / "catalogue" / "product.html"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            "{% firstof product.children.first.pk product.pk as atc_pk %}",
+            product_template,
+        )
+        self.assertIn('product-id="{{ atc_pk }}"', product_template)
+        self.assertIn("{% url 'cart:add' pk=atc_pk %}", product_template)
+
     def test_preview_asset_is_only_loaded_during_a_preview_session(self):
         base_template = (ROOT / "layouts" / "base.html").read_text(
             encoding="utf-8"

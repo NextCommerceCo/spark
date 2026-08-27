@@ -2,7 +2,7 @@
 
 A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Components, zero jQuery, zero Bootstrap, no bundler required.
 
-**Current version:** 1.1.2
+**Current version:** 1.1.3
 
 **Release status:** Public starter theme. Spark is installable on NEXT stores via `ntk` and is used for public-facing storefront builds. The theme is ready for theme developers to clone, inspect, adapt, and push to stores they control.
 

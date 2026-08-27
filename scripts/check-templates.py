@@ -9,6 +9,9 @@ from pathlib import Path
 
 TEMPLATE_DIRECTORIES = ("layouts", "templates", "partials")
 TAG_RE = re.compile(r"{%\s*(include|url)\b(?P<body>.*?)%}", re.DOTALL)
+BARE_CART_PRODUCT_PK_RE = re.compile(
+    r"(?:^|\s)pk\s*=\s*product\.pk(?=\s|$)"
+)
 LITERAL_RE = re.compile(
     r"""\s*(?P<quote>['"])(?P<value>(?:(?!(?P=quote)).)*)(?P=quote)(?:\s|$)""",
     re.DOTALL,
@@ -212,6 +215,15 @@ def inspect_templates(root, allowlist):
                 violations.append(
                     f"[url-name] {location}: {url_name!r} is not in "
                     "the reviewed allowlist"
+                )
+                continue
+            if (
+                url_name == "cart:add"
+                and BARE_CART_PRODUCT_PK_RE.search(body)
+            ):
+                violations.append(
+                    f"[cart-product-id] {location}: cart:add must resolve "
+                    "a purchasable child PK before falling back to product.pk"
                 )
 
     return paths, skipped_includes, skipped_urls, violations

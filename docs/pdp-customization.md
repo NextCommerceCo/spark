@@ -14,7 +14,7 @@ Keep these surfaces working unless the task explicitly removes them:
 | Variant controls | Real controls named `attr_<code>` using values from `variant_form` | Child-product matching depends on form names and option values, not the visual labels. |
 | Purchase info session | `{% purchase_info_for_product request product as session %}` before price and availability branches | `session.price` and `session.availability` are the source for initial price, compare-at, and sold-out state. |
 | Price bindings | Visible price node with `data-price`; compare-at node with `data-price-retail` | Variant changes update these nodes from child `purchase_info`. |
-| Add-to-cart form | `id="add-to-cart"`, POST action to `{% url 'cart:add' pk=product.pk %}`, CSRF token, hidden cart fields, submit button | No-JS fallback, GraphQL enhancement, and variant form-action updates all rely on this form. |
+| Add-to-cart form | Resolve `{% firstof product.children.first.pk product.pk as atc_pk %}`, then use `atc_pk` for the `product-id` attribute and `{% url 'cart:add' pk=atc_pk %}` action; preserve `id="add-to-cart"`, CSRF, hidden cart fields, and submit button | The initial form must target a purchasable child while still supporting standalone products. GraphQL enhancement and variant form-action updates rely on the same form. |
 | Quantity | Real `quantity` field or `<spark-quantity name="quantity">` inside the form | Cart line quantity must submit through both fallback POST and GraphQL enhancement. |
 | Subscription | `<spark-subscription>` rendered when `product.get_interval` and `interval_count_choices` exist | Subscription product data must reach `spark-add-to-cart`. |
 | Inventory states | `session.availability.is_available_to_buy` branch and selected-variant availability updates | Sold-out products should not submit, and sold-out variants should disable the CTA. |
@@ -57,11 +57,15 @@ Keep price nodes addressable:
 {% endif %}
 ```
 
-Keep the cart form intact and let Spark enhance it:
+Resolve a purchasable initial product ID server-side, then keep the cart form
+intact and let Spark enhance it. JavaScript updates the action when the shopper
+selects a different variant; without JavaScript, a parent product submits its
+first child and a standalone product submits itself.
 
 ```django
-<spark-add-to-cart product-id="{{ product.pk }}" graphql-url="{% url 'storefrontapi:graphql' %}">
-<form id="add-to-cart" action="{% url 'cart:add' pk=product.pk %}" method="post">
+{% firstof product.children.first.pk product.pk as atc_pk %}
+<spark-add-to-cart product-id="{{ atc_pk }}" graphql-url="{% url 'storefrontapi:graphql' %}">
+<form id="add-to-cart" action="{% url 'cart:add' pk=atc_pk %}" method="post">
     {% csrf_token %}
     {% for field in cart_form %}
         {% if field.is_hidden %}
@@ -89,6 +93,7 @@ Test on the `.29next.store` domain or use `?preview_theme={theme_id}&skip_cache=
 6. On mobile widths around 375-430px, scroll past the main CTA. Confirm sticky CTA appears, does not cover important content at rest, and triggers the real submit button.
 7. Confirm no horizontal overflow: `document.documentElement.scrollWidth <= window.innerWidth`.
 8. Confirm review and app hook surfaces still render or remain present for apps to target.
+9. Disable JavaScript on a single-variant parent PDP and submit the native form. Confirm the child product reaches the cart. Repeat with a standalone product and confirm it submits its own PK.
 
 Run this console audit as a quick smoke check:
 

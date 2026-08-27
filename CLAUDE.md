@@ -3,7 +3,7 @@
 ## Overview
 Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + vanilla JS. Clean, minimal commerce aesthetic. Intended to replace Intro Bootstrap as the default starter theme and become a product in its own right.
 
-**Current version:** 1.1.2
+**Current version:** 1.1.3
 **Repo:** `NextCommerceCo/spark` (public starter theme)
 **ntk config:** `config.yml` is gitignored and store-specific. Create it with `ntk init`; never commit store credentials.
 **Companion skill:** Use the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) for AI-assisted Spark, Intro Bootstrap, and custom Next Commerce theme work.
@@ -125,7 +125,7 @@ Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colo
 4. **Instagram typo**: The setting name is `instragram_link` (not `instagram_link`) — preserved from Intro Bootstrap for platform compatibility.
 5. **Payment icons** multi-select uses `"type": "select"` with `"multi-select": true` — NOT a `"multi_select"` type (which doesn't exist).
 6. **CDN caching**: CloudFront aggressively caches `assets/main.css` with a fixed `?v=` hash. Templates are server-rendered and not cached.
-7. **Parent products** can't be added to cart directly — `SparkVariantState` rewrites the add-to-cart form action to the selected child product ID and dispatches `spark:variant:changed` for gallery/price adapters.
+7. **Parent products** can't be added to cart directly — the server-rendered form starts with the first child PK (falling back to the product PK for standalone products), then `SparkVariantState` rewrites the action to the selected child and dispatches `spark:variant:changed` for gallery/price adapters.
 
 ## Design Principles
 - Products are the design — generous whitespace, large photography

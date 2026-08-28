@@ -4,6 +4,9 @@
 {% if session.availability.is_available_to_buy %}
 <a href="{{ product.get_absolute_url }}"
    class="product-card group relative {% if settings.product_card_border %}product-card-bordered{% endif %}"
+   {# Read by the catalogue sort in assets/js/theme.js. The price it sorts on #}
+   {# comes from data-base-price on .product-price below.                     #}
+   data-sort-title="{{ product.get_title }}"
    {% if card_bg %}style="background-color: {{ card_bg }};"{% endif %}>
     {% with image=product.primary_image %}
         {% if image.original %}

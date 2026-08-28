@@ -1,0 +1,28 @@
+{# Spark Theme -- Sticky mobile filter/sort bar #}
+{# Mirrors the PDP sticky add-to-cart bar: fixed to the bottom, translated    #}
+{# out of view, slid in by assets/js/theme.js once the grid is scrolled into. #}
+{# Hidden from 1024px up, where the filter rail and inline sort take over.    #}
+{% if filters or settings.catalogue_sort %}
+<div id="catalogue-bar" class="catalogue-bar" aria-hidden="true">
+    <div class="catalogue-bar-inner">
+        {% if filters %}
+            <div class="catalogue-bar-control">
+                <button type="button"
+                        class="catalogue-bar-btn"
+                        data-toggle="filter-drawer"
+                        aria-controls="filter-drawer"
+                        aria-expanded="false">
+                    {% include 'partials/icons/filter.html' %}
+                    {% t "store.catalogue.filters" %}
+                    <span class="catalogue-bar-count" data-filter-count hidden></span>
+                </button>
+            </div>
+        {% endif %}
+        {% if settings.catalogue_sort %}
+            <div class="catalogue-bar-control">
+                {% include 'partials/catalogue_sort.html' with sort_id='catalogue-sort-bar' select_class='catalogue-bar-select' label_class='sr-only' %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

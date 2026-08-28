@@ -178,7 +178,13 @@
             "subscription_frequency_error": "Please choose a valid subscription frequency.",
             "view_image": "View image {{ count }}",
             "select_variant": "Select variant",
-            "product_image_alt": "{{ title }} - image {{ count }}"
+            "product_image_alt": "{{ title }} - image {{ count }}",
+            "sort_label": "Sorteren",
+            "sort_featured": "Aanbevolen",
+            "sort_price_asc": "Prijs: laag naar hoog",
+            "sort_price_desc": "Prijs: hoog naar laag",
+            "sort_title_asc": "Naam: A tot Z",
+            "sort_apply": "Sortering toepassen"
         },
         "review": {
             "reviews": "Recensies",

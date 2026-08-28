@@ -18,8 +18,14 @@
 
 {% block content %}
 <div class="container py-8 md:py-12">
+    {# The shop index has no `filters` in context, so it gets the sort control #}
+    {# and the sticky bar only. Both partials no-op when nothing is enabled.   #}
+    {% if settings.catalogue_sort %}
+        {% include 'partials/catalogue_sort.html' with sort_id='catalogue-sort' select_class='catalogue-sort-select' form_class='catalogue-sort' %}
+    {% endif %}
+
     {% if products %}
-        <div class="product-grid">
+        <div class="product-grid" id="product-grid">
             {% for product in products %}
                 {% include 'partials/product_card.html' with product=product %}
             {% endfor %}
@@ -31,5 +37,7 @@
             <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
         </div>
     {% endif %}
+
+    {% include 'partials/catalogue_bar.html' %}
 </div>
 {% endblock %}

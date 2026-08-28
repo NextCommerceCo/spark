@@ -178,7 +178,13 @@
             "subscription_frequency_error": "Please choose a valid subscription frequency.",
             "view_image": "View image {{ count }}",
             "select_variant": "Select variant",
-            "product_image_alt": "{{ title }} - image {{ count }}"
+            "product_image_alt": "{{ title }} - image {{ count }}",
+            "sort_label": "Sortera",
+            "sort_featured": "Utvalda",
+            "sort_price_asc": "Pris: lågt till högt",
+            "sort_price_desc": "Pris: högt till lågt",
+            "sort_title_asc": "Namn: A till Ö",
+            "sort_apply": "Använd sortering"
         },
         "review": {
             "reviews": "Recensioner",

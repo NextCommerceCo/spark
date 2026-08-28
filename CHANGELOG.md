@@ -4,6 +4,14 @@ All notable public Spark changes should be recorded here.
 
 Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
+## Unreleased
+
+- Wired up `partials/catalogue_filters.html`, which existed but was never included by any template. Category pages now render the filter form in a sticky rail from 1024px up, and in a bottom-sheet drawer below that.
+- Added a sticky mobile filter/sort bar to category and shop-index pages, built on the same fixed/translate/250ms mechanics as the PDP sticky add-to-cart bar. It slides out again before the pagination, so it never covers it.
+- Added catalogue sorting as a theme-level `sort_by` parameter with Featured / price / name options, behind the new `catalogue_sort` Theme Setting (off by default). The platform catalogue view has no ordering parameter, so the reorder only reaches the current page. See `docs/catalogue-filters-and-sort.md`.
+- Pagination links now carry the rest of the query string, so filters and sort survive paging.
+- "Clear" in the filter form now clears filters on the current path instead of navigating to the shop index.
+
 ## 1.1.3 - 2026-08-27
 
 - Fixed the PDP's initial add-to-cart target so parent products resolve to a purchasable child PK while standalone products continue to use their own PK. Selected variants still update the form action through `SparkVariantState` (#43).

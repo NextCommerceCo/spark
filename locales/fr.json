@@ -178,7 +178,13 @@
             "subscription_frequency_error": "Veuillez choisir une fréquence d'abonnement valide.",
             "view_image": "Voir l’image {{ count }}",
             "select_variant": "Sélectionner une variante",
-            "product_image_alt": "{{ title }} - image {{ count }}"
+            "product_image_alt": "{{ title }} - image {{ count }}",
+            "sort_label": "Trier",
+            "sort_featured": "En vedette",
+            "sort_price_asc": "Prix : croissant",
+            "sort_price_desc": "Prix : décroissant",
+            "sort_title_asc": "Nom : de A à Z",
+            "sort_apply": "Appliquer le tri"
         },
         "review": {
             "reviews": "Avis",

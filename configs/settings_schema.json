@@ -949,6 +949,17 @@
             }
         ]
     },
+    "Catalogue": {
+        "Sorting": [
+            {
+                "name": "catalogue_sort",
+                "label": "Show Sort Control",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Show a sort control on catalogue and category pages. The platform catalogue view has no ordering parameter, so the theme reorders the products on the page that is currently shown. Leave this off for catalogues that run to more than one page."
+            }
+        ]
+    },
     "Footer": {
         "Footer Navigation": [
             {

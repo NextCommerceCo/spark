@@ -47,6 +47,9 @@
     "product_gallery_layout": "bottom",
     "product_media_fit": "fit",
     "variant_picker": "select",
+    "variant_swatch_options": "",
+    "variant_size_guide_url": "",
+    "variant_size_guide_option": "",
     "product_description_placement": "column",
     "product_card_border": false,
     "product_reviews": true,
@@ -80,7 +83,10 @@
     "pinterest_link": "",
     "snapchat_link": "",
     "vimeo_link": "",
-    "pay_icons": ["visa", "mc"],
+    "pay_icons": [
+        "visa",
+        "mc"
+    ],
     "site_disclaimer": "",
     "font_script": "",
     "font_body": "",

@@ -17,6 +17,8 @@ It provides:
 
 - `SparkVariantState.fromPage()` to create a state object from the current PDP.
 - `state.getSelection()` for selected `attr_*` values.
+- `state.getOptionAvailability()` for `{ 'attr_<code>': { '<value id>': true|false } }` given the rest of the current selection.
+- `state.getVariantForOption(name, value)` for the first child carrying an option value, used to resolve swatch imagery.
 - `state.getSelectedVariant()` for the matching child product.
 - `state.getDefaultVariant()` for the first child product.
 - `state.onChange(callback)` to react to picker changes.
@@ -40,11 +42,14 @@ Current Adapters at this Seam:
 | --- | --- |
 | `assets/js/theme.js` | Initializes PDP variant state, updates add-to-cart form action, button availability, and visible price. |
 | `assets/js/spark-gallery.js` | Listens for `spark:variant:changed` and advances or swaps the gallery image. |
-| `templates/catalogue/product.html` | Emits product data, renders picker controls, marks price nodes with `data-price` and `data-price-retail`, and keeps a no-theme fallback. |
+| `templates/catalogue/product.html` | Emits product data, marks price nodes with `data-price` and `data-price-retail`, and keeps a no-theme fallback. |
+| `partials/variant_picker.html` | Renders the picker controls for the select, radio, and chips styles. |
 
 ## Theme Developer Guidance
 
 Custom picker designs should keep the same control names (`attr_<code>`) and values from `variant_form`. A picker can be radio-based, select-based, swatch-based, or visually custom as long as it updates a real form control with the matching name and value.
+
+The chips style adds presentational hooks on top of the same controls: `[data-variant-option-group]` with `data-variant-option-name`, `[data-variant-option]` with `data-variant-option-value`, `[data-variant-option-text]`, and `[data-variant-selected-label]`. `theme.js` sets `data-variant-unavailable="true"` and `aria-disabled` on option values that cannot produce a purchasable variant. It never disables the input, so an unavailable combination is still selectable and still lands on the existing sold-out add-to-cart handling.
 
 Theme developers should listen for `spark:variant:changed` when they need selected-variant behavior, rather than parsing `#product-data` directly.
 

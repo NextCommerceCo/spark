@@ -4,6 +4,12 @@ All notable public Spark changes should be recorded here.
 
 Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
+## Unreleased
+
+- Extracted the PDP variant picker into `partials/variant_picker.html` and added a third `variant_picker` style, `chips`: content-width option buttons with a filled selected state, unavailable combinations greyed and struck through in place, an echo of the selected value beside the option name, and an optional upgrade to circular image swatches for merchant-nominated option groups. `select` remains the default and `radio` is unchanged.
+- Added an optional size guide link on the option label row, pointed at a merchant page through `variant_size_guide_url`.
+- `SparkVariantState` gained `getOptionAvailability()` and `getVariantForOption()` so pickers can render availability without re-deriving child matching.
+
 ## 1.1.3 - 2026-08-27
 
 - Fixed the PDP's initial add-to-cart target so parent products resolve to a purchasable child PK while standalone products continue to use their own PK. Selected variants still update the form action through `SparkVariantState` (#43).

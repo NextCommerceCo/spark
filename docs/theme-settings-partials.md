@@ -4,7 +4,7 @@ This catalog lists the Spark partials, homepage section partials, and setting-ba
 
 ## Mechanical Scope
 
-- Spark has 19 partial files that reference `settings.*` directly.
+- Spark has 20 partial files that reference `settings.*` directly.
 - Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
@@ -36,6 +36,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
 | `partials/product_card.html` | Product Pages > Product Images / Product Cards / Membership Pricing | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. Member price rendering is enabled by the global membership pricing script. | `product_media_fit`, `product_card_border`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label` |
+| `partials/variant_picker.html` | Product Pages > Product Information | PDP variant option controls: select, radio, or chips with unavailable-combination marking, optional image swatches, and an optional size guide link. | `variant_picker`, `variant_swatch_options`, `variant_size_guide_url`, `variant_size_guide_text`, `variant_size_guide_option` |
 | `partials/recommended_products.html` | Product Pages > Recommended Products | PDP recommended product section. | `show_recommended`, `recommended_products_header`, `recommended_products_header_size`, `recommended_products_header_align`, `recommended_products_columns`, `recommended_products_bg_color`, `recommended_products_card_bg` |
 | `partials/side_cart.html` | Side Cart > General | Cart drawer shell and web component slots. | `cart_header_title`, `sidecart_open_on_add`, `gift_product`, `enable_upsells` |
 | `partials/block_cart_progress_wrapper.html` | Side Cart > Rewards Progress | Default reward threshold selector and theme-developer extension point. | `usd_goal_1`, `usd_goal_2` |

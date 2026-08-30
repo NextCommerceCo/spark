@@ -4,6 +4,11 @@ All notable public Spark changes should be recorded here.
 
 Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
+## Unreleased
+
+- Extracted the mobile navigation drawer from `partials/header.html` into `partials/mobile_menu.html` and made it a product-first surface. New Theme Settings under Navigation > Mobile Menu add an optional curated product block with a badge on the first product, a full-width call to action, and an optional reassurance block (rating strip plus up to three benefit lines). Every block is off by default, so an unconfigured drawer renders exactly as it did before.
+- Hardened mobile drawer accessibility: `aria-expanded`/`aria-controls` on the toggle, `role="dialog"` and `aria-modal` on the drawer, a focus trap while open, Escape to close, focus moved into the panel on open and returned to the toggle on close. The `data-toggle="mobile-nav"`, `data-close="mobile-nav"`, and `#mobile-nav` hooks are unchanged.
+
 ## 1.1.3 - 2026-08-27
 
 - Fixed the PDP's initial add-to-cart target so parent products resolve to a purchasable child PK while standalone products continue to use their own PK. Selected variants still update the form action through `SparkVariantState` (#43).

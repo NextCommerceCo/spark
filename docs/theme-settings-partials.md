@@ -4,7 +4,7 @@ This catalog lists the Spark partials, homepage section partials, and setting-ba
 
 ## Mechanical Scope
 
-- Spark has 19 partial files that reference `settings.*` directly.
+- Spark has 20 partial files that reference `settings.*` directly.
 - Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
@@ -26,7 +26,8 @@ These are the primary design blocks for quick storefront builds. They are includ
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
 | `partials/announcement_bar.html` | Navigation > Announcement Bar | Top announcement with optional link. | `ab_text`, `ab_bg_color`, `ab_text_color`, `ab_link`, `ab_link_text`, `ab_placement` |
-| `partials/header.html` | Navigation | Primary nav, logo, search, account, cart. | `main_menu`, `logo_align`, `navbar_style`, `navbar_bg_color`, `navbar_link_color` |
+| `partials/header.html` | Navigation | Primary nav, logo, search, account, cart. Includes `partials/mobile_menu.html` for the mobile drawer. | `main_menu`, `logo_align`, `navbar_style`, `navbar_bg_color`, `navbar_link_color` |
+| `partials/mobile_menu.html` | Navigation > Main Navigation / Mobile Menu | Mobile navigation drawer: optional curated product block, full-width CTA, menu links, account link, and optional reassurance block. | `main_menu`, `show_mobile_menu_products`, `mobile_menu_products`, `mobile_menu_products_header`, `mobile_menu_badge_text`, `mobile_menu_cta_text`, `mobile_menu_cta_url`, `show_mobile_menu_reassurance`, `mobile_menu_rating_value`, `mobile_menu_rating_stars`, `mobile_menu_rating_text`, `mobile_menu_benefit_1`, `mobile_menu_benefit_2`, `mobile_menu_benefit_3`, `mobile_menu_reassurance_bg_color` |
 | `partials/footer.html` | Footer | Footer branding, menus, contact, payment icons, language/currency controls, disclaimer. | `footer_menu`, `footer_bg_color`, `footer_text_color`, `footer_link_color`, `enable_social`, `pay_icons`, `site_disclaimer` |
 | `partials/social_links.html` | Footer > Social Media | Social link icon row. | `facebook_link`, `instragram_link`, `twitter_link`, `youtube_link`, `tiktok_link`, `pinterest_link`, `snapchat_link`, `vimeo_link` |
 | `partials/account_only.html` | Advanced > Site Settings | Account-only storefront shell. | `account_only`, `account_only_show_footer` |

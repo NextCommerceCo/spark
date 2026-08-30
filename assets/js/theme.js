@@ -149,9 +149,13 @@
                 state.emitChange(initialVariant);
             }
 
+            theme.product.updateOptionStates();
+            theme.product.upgradeSwatches();
+
             state.onChange(function(variant) {
                 theme.product.updateForm(variant);
                 theme.product.updatePrice(variant);
+                theme.product.updateOptionStates();
             });
         },
         getVariantFromSelection: function() {
@@ -175,6 +179,76 @@
         updatePrice: function(variant) {
             if (typeof SparkVariantState === 'undefined') return;
             SparkVariantState.updatePrice(document, variant);
+        },
+        /**
+         * Chips picker only. Marks option values that cannot produce a
+         * purchasable variant, and echoes the selected label beside the
+         * option name. Never disables the input, so selection behavior and
+         * the existing sold-out add-to-cart handling are unchanged.
+         */
+        updateOptionStates: function() {
+            var state = theme.product.variantState;
+            if (!state || !state.getOptionAvailability) return;
+            var availability = state.getOptionAvailability();
+
+            document.querySelectorAll('[data-variant-option-group]').forEach(function(group) {
+                var name = group.getAttribute('data-variant-option-name');
+                var values = availability[name] || null;
+                var selectedText = '';
+
+                group.querySelectorAll('[data-variant-option]').forEach(function(option) {
+                    var value = option.getAttribute('data-variant-option-value');
+                    var input = option.querySelector('input');
+                    var text = option.querySelector('[data-variant-option-text]');
+                    var label = option.querySelector('label');
+
+                    if (values && values[value] === false) {
+                        option.setAttribute('data-variant-unavailable', 'true');
+                        if (label) label.setAttribute('aria-disabled', 'true');
+                    } else {
+                        option.removeAttribute('data-variant-unavailable');
+                        if (label) label.removeAttribute('aria-disabled');
+                    }
+
+                    if (input && input.checked && text) {
+                        selectedText = text.textContent.trim();
+                    }
+                });
+
+                var echo = group.querySelector('[data-variant-selected-label]');
+                if (echo) echo.textContent = selectedText;
+            });
+        },
+        /**
+         * Chips picker only. Turns text chips into circular image swatches
+         * for merchant-nominated option groups, but only where a variant
+         * image actually resolves - otherwise the readable text chip stays.
+         */
+        upgradeSwatches: function() {
+            var state = theme.product.variantState;
+            if (!state || !state.getVariantForOption) return;
+
+            document.querySelectorAll('[data-variant-swatch]').forEach(function(list) {
+                var group = list.closest('[data-variant-option-group]');
+                var name = group ? group.getAttribute('data-variant-option-name') : null;
+                if (!name) return;
+
+                list.querySelectorAll('[data-variant-option]').forEach(function(option) {
+                    var value = option.getAttribute('data-variant-option-value');
+                    var variant = state.getVariantForOption(name, value);
+                    var image = SparkVariantState.getVariantImageUrl(variant);
+                    if (!image) return;
+
+                    var label = option.querySelector('label');
+                    var text = option.querySelector('[data-variant-option-text]');
+                    if (!label || !text) return;
+
+                    label.classList.add('variant-option-label--swatch');
+                    label.style.backgroundImage = 'url("' + image.replace(/"/g, '%22') + '")';
+                    label.setAttribute('title', text.textContent.trim());
+                    text.classList.add('sr-only');
+                });
+            });
         }
     };
 

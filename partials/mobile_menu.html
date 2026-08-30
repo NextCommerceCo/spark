@@ -1,0 +1,178 @@
+{# Spark Theme — Mobile navigation drawer. Included from partials/header.html. #}
+{# Toggled by [data-toggle="mobile-nav"]; closed by [data-close="mobile-nav"]. #}
+{# Optional product, CTA, and reassurance blocks are merchant-configurable    #}
+{# under Theme Settings > Navigation > Mobile Menu. With nothing configured   #}
+{# the drawer renders the menu links and the account link only.               #}
+{% t 'navigation.mobile_menu.bestsellers' as default_mobile_menu_products_header %}
+{% t 'navigation.mobile_menu.badge' as default_mobile_menu_badge_text %}
+{% t 'navigation.mobile_menu.shop_all' as default_mobile_menu_cta_text %}
+<div id="mobile-nav"
+     class="hidden md:hidden fixed inset-0 z-50"
+     role="dialog"
+     aria-modal="true"
+     aria-label="{% t 'navigation.menu.toggle' %}">
+    <div class="absolute inset-0 bg-black/30" data-close="mobile-nav"></div>
+    <div class="absolute left-0 top-0 bottom-0 {% if settings.show_mobile_menu_products %}w-80 max-w-[85vw]{% else %}w-72{% endif %} bg-white flex flex-col"
+         data-mobile-nav-panel>
+
+        {# Panel header #}
+        <div class="flex items-center justify-between p-4 border-b border-slate-200 flex-shrink-0">
+            <span class="font-semibold text-slate-800">{{ store.name }}</span>
+            <button type="button"
+                    class="p-2 text-slate-600"
+                    data-close="mobile-nav"
+                    aria-label="{% t 'global.button.close' %}">
+                {% include 'partials/icons/close.html' %}
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto flex flex-col">
+
+            {# Merchant-curated products #}
+            {% if settings.show_mobile_menu_products and settings.mobile_menu_products|length > 0 %}
+                <div class="p-4 border-b border-slate-200">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                        {{ settings.mobile_menu_products_header|default:default_mobile_menu_products_header }}
+                    </h2>
+                    <ul class="space-y-3">
+                        {% for product in settings.mobile_menu_products %}
+                            {% purchase_info_for_product request product as session %}
+                            {% if session.availability.is_available_to_buy %}
+                                <li class="relative">
+                                    {% if forloop.first %}
+                                        {% with badge_text=settings.mobile_menu_badge_text|default:default_mobile_menu_badge_text %}
+                                            {% if badge_text %}
+                                                <span class="absolute -top-2 right-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white"
+                                                      style="background-color: var(--primary-color);">
+                                                    {{ badge_text }}
+                                                </span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
+                                    <a href="{{ product.get_absolute_url }}"
+                                       class="flex items-center gap-3 p-3 border {% if forloop.first %}border-2{% else %}border-slate-200{% endif %}"
+                                       {% if forloop.first %}style="border-color: var(--primary-color);"{% endif %}>
+                                        {% with image=product.primary_image %}
+                                            {% if image.original %}
+                                                {% image_thumbnail image.original "160x160" crop="center" as thumb %}
+                                                <img src="{{ thumb.url }}"
+                                                     alt="{{ product.get_title }}"
+                                                     width="64"
+                                                     height="64"
+                                                     class="w-16 h-16 object-cover flex-shrink-0 bg-slate-50"
+                                                     loading="lazy" />
+                                            {% else %}
+                                                <span class="w-16 h-16 flex-shrink-0 bg-slate-100"></span>
+                                            {% endif %}
+                                        {% endwith %}
+                                        <span class="flex-1 min-w-0">
+                                            <span class="block text-sm font-medium text-slate-800 break-words">
+                                                {{ product.get_title }}
+                                            </span>
+                                            {% if session.price.exists %}
+                                                <span class="block text-sm text-slate-600 mt-0.5">
+                                                    <span class="font-semibold text-slate-800">{{ session.price.price|currency:session.price.currency }}</span>
+                                                    {% if session.price.price_retail > session.price.price %}
+                                                        <span class="text-slate-400 text-xs line-through ml-1">
+                                                            {{ session.price.price_retail|currency:session.price.currency }}
+                                                        </span>
+                                                    {% endif %}
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-slate-400 flex-shrink-0">
+                                            {% include 'partials/icons/chevron-right.html' %}
+                                        </span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+
+                    {% with cta_text=settings.mobile_menu_cta_text|default:default_mobile_menu_cta_text %}
+                        {% if cta_text %}
+                            <a href="{% if settings.mobile_menu_cta_url %}{{ settings.mobile_menu_cta_url }}{% else %}{% url 'catalogue:index' %}{% endif %}"
+                               class="btn btn-primary w-full mt-4">
+                                {{ cta_text }}
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endif %}
+
+            {# Menu links #}
+            <ul class="py-4">
+                {% for item in settings.main_menu.items %}
+                    <li>
+                        <a href="{{ item.url }}"
+                           class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 {% if item.current %}font-medium text-slate-900{% endif %}">
+                            {{ item.name }}
+                        </a>
+                        {% if item.level > 0 %}
+                            <ul class="pl-4">
+                                {% for child in item.items %}
+                                    <li>
+                                        <a href="{{ child.url }}"
+                                           class="block px-4 py-2 text-sm text-slate-500 hover:text-slate-700">
+                                            {{ child.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                <li class="border-t border-slate-200 mt-2 pt-2">
+                    <a href="{% url 'customer:summary' %}"
+                       class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50">
+                        {% t 'navigation.account.account' %}
+                    </a>
+                </li>
+            </ul>
+
+            {# Reassurance #}
+            {% if settings.show_mobile_menu_reassurance %}
+                {% if settings.mobile_menu_rating_value or settings.mobile_menu_benefit_1 or settings.mobile_menu_benefit_2 or settings.mobile_menu_benefit_3 %}
+                    <div class="mt-auto p-4 border-t border-slate-200 {% if not settings.mobile_menu_reassurance_bg_color %}bg-slate-50{% endif %}"
+                         {% if settings.mobile_menu_reassurance_bg_color %}style="background-color: {{ settings.mobile_menu_reassurance_bg_color }};"{% endif %}>
+                        {% if settings.mobile_menu_rating_value %}
+                            <div class="flex items-center gap-2 bg-white border border-slate-200 p-3">
+                                <span class="text-sm font-semibold text-slate-800 flex-shrink-0">{{ settings.mobile_menu_rating_value }}</span>
+                                <span class="flex items-center flex-shrink-0" style="color: var(--accent-color);" aria-hidden="true">
+                                    {% for star in "12345" %}
+                                        {% if forloop.counter <= settings.mobile_menu_rating_stars %}
+                                            {% include 'partials/icons/star.html' %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                {% if settings.mobile_menu_rating_text %}
+                                    <span class="text-xs text-slate-500 min-w-0">{{ settings.mobile_menu_rating_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <ul class="mt-3 space-y-2">
+                            {% if settings.mobile_menu_benefit_1 %}
+                                <li class="flex items-start gap-2 text-sm text-slate-700">
+                                    <span class="flex-shrink-0 mt-0.5" style="color: #22C55E;">{% include 'partials/icons/check-circle.html' %}</span>
+                                    <span>{{ settings.mobile_menu_benefit_1 }}</span>
+                                </li>
+                            {% endif %}
+                            {% if settings.mobile_menu_benefit_2 %}
+                                <li class="flex items-start gap-2 text-sm text-slate-700">
+                                    <span class="flex-shrink-0 mt-0.5" style="color: #22C55E;">{% include 'partials/icons/check-circle.html' %}</span>
+                                    <span>{{ settings.mobile_menu_benefit_2 }}</span>
+                                </li>
+                            {% endif %}
+                            {% if settings.mobile_menu_benefit_3 %}
+                                <li class="flex items-start gap-2 text-sm text-slate-700">
+                                    <span class="flex-shrink-0 mt-0.5" style="color: #22C55E;">{% include 'partials/icons/check-circle.html' %}</span>
+                                    <span>{{ settings.mobile_menu_benefit_3 }}</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>

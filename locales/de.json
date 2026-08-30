@@ -71,6 +71,11 @@
         "menu": {
             "toggle": "Menü"
         },
+        "mobile_menu": {
+            "bestsellers": "Bestseller",
+            "badge": "Bestseller",
+            "shop_all": "Alle Produkte ansehen"
+        },
         "breadcrumb": "Breadcrumb"
     },
     "tables": {

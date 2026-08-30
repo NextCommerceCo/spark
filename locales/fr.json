@@ -71,6 +71,11 @@
         "menu": {
             "toggle": "Menu"
         },
+        "mobile_menu": {
+            "bestsellers": "Meilleures ventes",
+            "badge": "Meilleure vente",
+            "shop_all": "Voir tous les produits"
+        },
         "breadcrumb": "Fil d’Ariane"
     },
     "tables": {

@@ -1357,6 +1357,108 @@
                 "help_text": "Text and icon color for the header. Leave blank for default."
             }
         ],
+        "Mobile Menu": [
+            {
+                "name": "show_mobile_menu_products",
+                "label": "Show Products In Mobile Menu",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a curated product block at the top of the mobile navigation drawer."
+            },
+            {
+                "name": "mobile_menu_products",
+                "label": "Mobile Menu Products",
+                "type": "products",
+                "help_text": "Products shown in the mobile menu. The first product is highlighted with the badge. Leave empty to hide the block."
+            },
+            {
+                "name": "mobile_menu_products_header",
+                "label": "Mobile Menu Products Heading",
+                "type": "text",
+                "max_length": 100,
+                "help_text": "Heading above the product block. Defaults to a translated 'Bestsellers'."
+            },
+            {
+                "name": "mobile_menu_badge_text",
+                "label": "Mobile Menu Badge",
+                "type": "text",
+                "max_length": 30,
+                "help_text": "Badge shown on the first product. Defaults to a translated 'Best seller'. Set a single space to hide it."
+            },
+            {
+                "name": "mobile_menu_cta_text",
+                "label": "Mobile Menu Button Text",
+                "type": "text",
+                "max_length": 50,
+                "help_text": "Full-width button below the products. Defaults to a translated 'Shop all products'. Set a single space to hide it."
+            },
+            {
+                "name": "mobile_menu_cta_url",
+                "label": "Mobile Menu Button Link",
+                "type": "url",
+                "max_length": 500,
+                "help_text": "Where the button links. Defaults to the catalogue index."
+            },
+            {
+                "name": "show_mobile_menu_reassurance",
+                "label": "Show Reassurance In Mobile Menu",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a rating strip and benefit lines at the bottom of the mobile navigation drawer."
+            },
+            {
+                "name": "mobile_menu_rating_value",
+                "label": "Mobile Menu Rating",
+                "type": "text",
+                "max_length": 20,
+                "help_text": "Short rating value, for example '4.9/5'. Leave empty to hide the rating strip."
+            },
+            {
+                "name": "mobile_menu_rating_stars",
+                "label": "Mobile Menu Rating Stars",
+                "type": "range",
+                "default": 5,
+                "min": 0,
+                "max": 5,
+                "step": 1,
+                "unit": "",
+                "help_text": "Number of filled stars drawn beside the rating value."
+            },
+            {
+                "name": "mobile_menu_rating_text",
+                "label": "Mobile Menu Rating Caption",
+                "type": "text",
+                "max_length": 120,
+                "help_text": "Supporting text beside the rating, for example 'Based on 12,000+ reviews'."
+            },
+            {
+                "name": "mobile_menu_benefit_1",
+                "label": "Mobile Menu Benefit 1",
+                "type": "text",
+                "max_length": 100,
+                "help_text": "Checkmark line under the rating. Leave empty to hide it."
+            },
+            {
+                "name": "mobile_menu_benefit_2",
+                "label": "Mobile Menu Benefit 2",
+                "type": "text",
+                "max_length": 100,
+                "help_text": "Checkmark line under the rating. Leave empty to hide it."
+            },
+            {
+                "name": "mobile_menu_benefit_3",
+                "label": "Mobile Menu Benefit 3",
+                "type": "text",
+                "max_length": 100,
+                "help_text": "Checkmark line under the rating. Leave empty to hide it."
+            },
+            {
+                "name": "mobile_menu_reassurance_bg_color",
+                "label": "Mobile Menu Reassurance Background",
+                "type": "color",
+                "help_text": "Background for the reassurance block. Leave blank for the default light grey."
+            }
+        ],
         "Announcement Bar": [
             {
                 "name": "ab_text",

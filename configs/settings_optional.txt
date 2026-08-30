@@ -13,6 +13,9 @@ membership_detail_text # template applies a default filter
 membership_discount_percent # template applies a default filter
 membership_label # template applies a default filter
 membership_status_metadata_key # template applies a default filter
+mobile_menu_badge_text # template applies a default filter
+mobile_menu_cta_text # template applies a default filter
+mobile_menu_products_header # template applies a default filter
 on_sale_header # template applies a default filter
 promo_banner_cta_text # template applies a default filter
 promo_banner_heading # template applies a default filter

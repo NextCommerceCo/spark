@@ -71,6 +71,11 @@
         "menu": {
             "toggle": "Menu"
         },
+        "mobile_menu": {
+            "bestsellers": "สินค้าขายดี",
+            "badge": "ขายดีที่สุด",
+            "shop_all": "ดูสินค้าทั้งหมด"
+        },
         "breadcrumb": "Breadcrumb"
     },
     "tables": {

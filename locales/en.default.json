@@ -43,6 +43,11 @@
         "menu": {
             "toggle": "Menu"
         },
+        "mobile_menu": {
+            "bestsellers": "Bestsellers",
+            "badge": "Best seller",
+            "shop_all": "Shop all products"
+        },
         "footer": {
             "about_us": "About us",
             "contact_us": "Contact us",

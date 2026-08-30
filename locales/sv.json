@@ -71,6 +71,11 @@
         "menu": {
             "toggle": "Menu"
         },
+        "mobile_menu": {
+            "bestsellers": "Bästsäljare",
+            "badge": "Bästsäljare",
+            "shop_all": "Se alla produkter"
+        },
         "breadcrumb": "Breadcrumb"
     },
     "tables": {

@@ -71,6 +71,11 @@
         "menu": {
             "toggle": "Menu"
         },
+        "mobile_menu": {
+            "bestsellers": "Suosituimmat",
+            "badge": "Suosituin",
+            "shop_all": "Katso kaikki tuotteet"
+        },
         "breadcrumb": "Breadcrumb"
     },
     "tables": {

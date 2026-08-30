@@ -9,6 +9,26 @@
     /* Mobile Navigation */
 
     const DESKTOP_NAV_MEDIA_QUERY = '(min-width: 48rem)';
+    const FOCUSABLE_SELECTOR = [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled]):not([type="hidden"])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    function visibleFocusable(root) {
+        var nodes = root.querySelectorAll(FOCUSABLE_SELECTOR);
+        var result = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (node.offsetWidth || node.offsetHeight || node.getClientRects().length) {
+                result.push(node);
+            }
+        }
+        return result;
+    }
 
     function initMobileNav() {
         const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
@@ -18,40 +38,95 @@
         var mobileNavLockedBody = false;
         if (!toggleBtn || !mobileNav) return;
 
+        var panel = mobileNav.querySelector('[data-mobile-nav-panel]') || mobileNav;
+
+        function isOpen() {
+            return !mobileNav.classList.contains('hidden');
+        }
+
         function openMobileNav() {
             mobileNav.classList.remove('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'true');
             if (!mobileNavLockedBody) {
                 mobileNavPreviousOverflow = document.body.style.overflow;
                 mobileNavLockedBody = true;
             }
             document.body.style.overflow = 'hidden';
+            // Match the cart drawer: move focus into the panel once it is visible.
+            var closeBtn = mobileNav.querySelector('[data-close="mobile-nav"][type="button"]');
+            var target = closeBtn || visibleFocusable(panel)[0];
+            if (target) {
+                setTimeout(function() { target.focus(); }, 50);
+            }
         }
 
-        function closeMobileNav() {
+        function closeMobileNav(options) {
+            var wasOpen = isOpen();
             mobileNav.classList.add('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'false');
             // Restore the inline overflow value that existed before mobile nav opened.
             if (mobileNavLockedBody) {
                 document.body.style.overflow = mobileNavPreviousOverflow;
             }
             mobileNavLockedBody = false;
+            // Return focus to the toggle unless the viewport just went desktop.
+            if (wasOpen && !(options && options.silent)) {
+                toggleBtn.focus();
+            }
+        }
+
+        function trapFocus(e) {
+            var focusable = visibleFocusable(panel);
+            if (!focusable.length) {
+                e.preventDefault();
+                return;
+            }
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            var active = document.activeElement;
+            if (!panel.contains(active)) {
+                e.preventDefault();
+                (e.shiftKey ? last : first).focus();
+                return;
+            }
+            if (e.shiftKey && active === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && active === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
 
         toggleBtn.addEventListener('click', function() {
-            if (mobileNav.classList.contains('hidden')) {
-                openMobileNav();
-            } else {
+            if (isOpen()) {
                 closeMobileNav();
+            } else {
+                openMobileNav();
             }
         });
 
         // Close buttons and backdrop
         mobileNav.querySelectorAll('[data-close="mobile-nav"]').forEach(function(el) {
-            el.addEventListener('click', closeMobileNav);
+            el.addEventListener('click', function() {
+                closeMobileNav();
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!isOpen()) return;
+            if (e.key === 'Escape') {
+                closeMobileNav();
+                return;
+            }
+            if (e.key === 'Tab') {
+                trapFocus(e);
+            }
         });
 
         function handleDesktopNavChange(e) {
             if (e.matches) {
-                closeMobileNav();
+                closeMobileNav({ silent: true });
             }
         }
 

@@ -51,8 +51,17 @@
             return visible;
         }
 
+        var resizeFrame = null;
+        function checkAfterResize() {
+            if (resizeFrame !== null) return;
+            resizeFrame = win.requestAnimationFrame(function() {
+                resizeFrame = null;
+                check();
+            });
+        }
+
         win.addEventListener('scroll', check, { passive: true });
-        win.addEventListener('resize', check, { passive: true });
+        win.addEventListener('resize', checkAfterResize, { passive: true });
         check();
         return { check: check };
     }
@@ -152,11 +161,11 @@
         };
     }
 
-    function updateFilterCount(doc) {
+    function updateFilterCount(doc, form) {
         var badges = toArray(doc.querySelectorAll('[data-filter-count]'));
         if (!badges.length) return 0;
 
-        var form = doc.getElementById('drawerFilters') || doc.getElementById('productFilters');
+        form = form || doc.getElementById('productFilters') || doc.getElementById('drawerFilters');
         var count = 0;
         if (form) {
             count += form.querySelectorAll('input[type="checkbox"]:checked').length;
@@ -172,11 +181,23 @@
         return count;
     }
 
+    function initFilterCount(doc) {
+        var forms = toArray(doc.querySelectorAll('#productFilters, #drawerFilters'));
+        forms.forEach(function(form) {
+            function refresh() {
+                updateFilterCount(doc, form);
+            }
+            form.addEventListener('change', refresh);
+            form.addEventListener('input', refresh);
+        });
+        return updateFilterCount(doc, forms[0]);
+    }
+
     function init(doc, win) {
         return {
             drawer: initFilterDrawer(doc, root.SparkBodyScrollLock),
             bar: initCatalogueBar(doc, win),
-            activeFilterCount: updateFilterCount(doc)
+            activeFilterCount: initFilterCount(doc)
         };
     }
 
@@ -184,6 +205,7 @@
         init: init,
         initCatalogueBar: initCatalogueBar,
         initFilterDrawer: initFilterDrawer,
+        initFilterCount: initFilterCount,
         setBarVisibility: setBarVisibility,
         shouldShowBar: shouldShowBar,
         updateFilterCount: updateFilterCount,

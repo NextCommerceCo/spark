@@ -2,7 +2,9 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const catalogue = require('../../assets/js/spark-catalogue.js');
+const CATALOGUE_JS_PATH = path.join(__dirname, '..', '..', 'assets', 'js', 'spark-catalogue.js');
+const CATALOGUE_JS = fs.readFileSync(CATALOGUE_JS_PATH, 'utf8');
+const catalogue = require(CATALOGUE_JS_PATH);
 
 class FakeClassList {
     constructor() {
@@ -65,6 +67,7 @@ class FakeElement {
 
 function makeBarFixture(rect) {
     const listeners = {};
+    const frames = [];
     const doc = { getElementById() { return null; } };
     const bar = new FakeElement(doc);
     const grid = rect && { getBoundingClientRect() { return rect.current; } };
@@ -75,9 +78,23 @@ function makeBarFixture(rect) {
     };
     const win = {
         innerHeight: 800,
-        addEventListener(name, handler) { listeners[name] = handler; }
+        addEventListener(name, handler) { listeners[name] = handler; },
+        requestAnimationFrame(handler) { frames.push(handler); }
     };
-    return { bar, doc, listeners, win };
+    return { bar, doc, frames, listeners, win };
+}
+
+// Resize work is coalesced into one animation frame.
+{
+    const rect = { current: { top: 20, bottom: 1600 } };
+    const fixture = makeBarFixture(rect);
+    catalogue.initCatalogueBar(fixture.doc, fixture.win);
+    fixture.listeners.resize();
+    fixture.listeners.resize();
+    assert.strictEqual(fixture.frames.length, 1);
+    rect.current = { top: -1, bottom: 1600 };
+    fixture.frames.shift()();
+    assert.strictEqual(fixture.bar.getAttribute('aria-hidden'), 'false');
 }
 
 function makeDrawerFixture(scrollLock) {
@@ -109,6 +126,49 @@ function makeDrawerFixture(scrollLock) {
     };
 
     return { applyButton, backdrop, closeButton, doc, drawer, opener, scrollLock };
+}
+
+// Filter badges follow the form the shopper is currently editing.
+{
+    const badge = { textContent: '', hidden: true };
+    function makeForm(checkedCount) {
+        const listeners = {};
+        const checked = Array.from({ length: checkedCount }, () => ({}));
+        const numberInput = { value: '' };
+        return {
+            listeners,
+            addEventListener(name, handler) { listeners[name] = handler; },
+            querySelectorAll(selector) {
+                if (selector === 'input[type="checkbox"]:checked') return checked;
+                if (selector === 'input[type="number"]') return [numberInput];
+                return [];
+            }
+        };
+    }
+    const desktopForm = makeForm(2);
+    const drawerForm = makeForm(0);
+    const doc = {
+        querySelectorAll(selector) {
+            if (selector === '[data-filter-count]') return [badge];
+            if (selector === '#productFilters, #drawerFilters') return [desktopForm, drawerForm];
+            return [];
+        },
+        getElementById(id) {
+            if (id === 'productFilters') return desktopForm;
+            if (id === 'drawerFilters') return drawerForm;
+            return null;
+        }
+    };
+
+    assert.strictEqual(catalogue.initFilterCount(doc), 2);
+    assert.strictEqual(badge.textContent, '2');
+    drawerForm.querySelectorAll = function(selector) {
+        if (selector === 'input[type="checkbox"]:checked') return [{}, {}, {}];
+        if (selector === 'input[type="number"]') return [];
+        return [];
+    };
+    drawerForm.listeners.change();
+    assert.strictEqual(badge.textContent, '3');
 }
 
 // Empty grids keep their primary inline opener, while the supplemental bar
@@ -219,3 +279,6 @@ function makeDrawerFixture(scrollLock) {
 }
 
 console.log('spark-catalogue tests passed');
+
+const nonAscii = CATALOGUE_JS.split('').find((character) => character.charCodeAt(0) > 127);
+assert.strictEqual(nonAscii, undefined, 'spark-catalogue.js must stay ASCII-only');

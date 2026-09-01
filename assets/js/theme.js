@@ -219,6 +219,7 @@
             options = options || {};
             theme.product.messages.addToCart = options.add_to_cart_msg || theme.product.messages.addToCart;
             theme.product.messages.unavailable = options.unavailable_msg || theme.product.messages.unavailable;
+            theme.product.initSizeGuideLinks();
             if (typeof SparkVariantState === 'undefined') return;
 
             var state = SparkVariantState.fromPage();
@@ -233,9 +234,12 @@
                 state.emitChange(initialVariant);
             }
 
+            theme.product.updateOptionStates();
+
             state.onChange(function(variant) {
                 theme.product.updateForm(variant);
                 theme.product.updatePrice(variant);
+                theme.product.updateOptionStates();
             });
         },
         getVariantFromSelection: function() {
@@ -259,6 +263,75 @@
         updatePrice: function(variant) {
             if (typeof SparkVariantState === 'undefined') return;
             SparkVariantState.updatePrice(document, variant);
+        },
+        /**
+         * Chips picker only. Marks option values that cannot produce a
+         * purchasable variant, and echoes the selected label beside the
+         * option name. Never disables the input, so selection behavior and
+         * the existing sold-out add-to-cart handling are unchanged.
+         */
+        updateOptionStates: function() {
+            var state = theme.product.variantState;
+            if (!state || !state.getOptionAvailability) return;
+            var availability = state.getOptionAvailability();
+
+            document.querySelectorAll('[data-variant-option-group]').forEach(function(group) {
+                var name = group.getAttribute('data-variant-option-name');
+                var values = availability[name] || null;
+                var selectedText = '';
+
+                group.querySelectorAll('[data-variant-option]').forEach(function(option) {
+                    var value = option.getAttribute('data-variant-option-value');
+                    var input = option.querySelector('input');
+                    var text = option.querySelector('[data-variant-option-text]');
+                    var status = option.querySelector('[data-variant-option-status]');
+
+                    if (values && values[value] === false) {
+                        option.setAttribute('data-variant-unavailable', 'true');
+                        if (status) status.textContent = theme.product.messages.unavailable;
+                    } else {
+                        option.removeAttribute('data-variant-unavailable');
+                        if (status) status.textContent = '';
+                    }
+
+                    if (input && input.checked && text) {
+                        selectedText = text.textContent.trim();
+                    }
+                });
+
+                var echo = group.querySelector('[data-variant-selected-label]');
+                if (echo) echo.textContent = selectedText;
+            });
+        },
+        /**
+         * Returns a trimmed HTTP(S) or relative storefront URL. Browser URL
+         * parsing closes scheme-obfuscation gaps that string prefix checks
+         * miss. Protocol-relative URLs are rejected to keep the setting
+         * explicit about external destinations.
+         */
+        normalizeSizeGuideUrl: function(value) {
+            var candidate = String(value || '').trim();
+            if (!candidate || /^(?:\/\/|\\\\)/.test(candidate)) return null;
+
+            try {
+                var parsed = new URL(candidate, window.location.href);
+                if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+                return candidate;
+            } catch (error) {
+                return null;
+            }
+        },
+        initSizeGuideLinks: function() {
+            document.querySelectorAll('[data-variant-size-guide-url]').forEach(function(link) {
+                var safeUrl = theme.product.normalizeSizeGuideUrl(
+                    link.getAttribute('data-variant-size-guide-url')
+                );
+                if (safeUrl) {
+                    link.setAttribute('href', safeUrl);
+                    return;
+                }
+                if (link.parentNode) link.parentNode.removeChild(link);
+            });
         }
     };
 

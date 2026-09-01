@@ -20,3 +20,4 @@ recommended_products_header # template applies a default filter
 step_1_message # template applies a default filter
 step_2_message # template applies a default filter
 upsell_section_title # template applies a default filter
+variant_size_guide_text # template applies a default filter

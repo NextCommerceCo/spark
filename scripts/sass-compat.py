@@ -48,6 +48,30 @@ SCIENTIFIC_NOTATION_LENGTH = re.compile(
     re.IGNORECASE,
 )
 
+# Sass evaluates these names as its own colour functions, so a valid CSS filter
+# or colour function that shares a name is parsed as a Sass call and its CSS
+# argument is rejected. Custom-property declarations are exempt: Sass does not
+# evaluate a custom property's value, which is why Tailwind's
+# `--tw-grayscale: grayscale(100%)` compiles today. Scanned against
+# custom-property-masked CSS for that reason.
+BANNED_DECLARATION_PATTERNS = (
+    (
+        "sass-builtin-as-css-function",
+        re.compile(
+            r'(?<![\w-])'
+            r'(?:invert|saturate|grayscale|opacity|lighten|darken|complement|desaturate)\(',
+            re.IGNORECASE,
+        ),
+        "Sass treats this name as a built-in colour function, so the platform "
+        "compiler evaluates the CSS function as a Sass call and the upload fails "
+        "with 'Could not compile CSS. Please check Scss Syntax.' (`make css-check` "
+        "passes locally, so this only surfaces at push time). Use a filter "
+        "function Sass does not claim - brightness(), contrast(), blur(), sepia(), "
+        "hue-rotate(), drop-shadow() - or assign the value through a custom "
+        "property, whose value Sass leaves alone.",
+    ),
+)
+
 BANNED_GENERATED_PATTERNS = (
     (
         "@property",
@@ -438,18 +462,39 @@ def mask_css_comments(css):
     return re.sub(r'/\*[\s\S]*?\*/', lambda m: ' ' * len(m.group(0)), css)
 
 
+def mask_custom_property_values(css):
+    """Blank out custom-property values, keeping offsets aligned.
+
+    Sass does not evaluate a custom property's value, so a Sass built-in name
+    inside one is not a compile hazard. Masking here keeps the declaration
+    scanner from flagging Tailwind's own `--tw-*` filter variables.
+    """
+    return re.sub(
+        r'(--[\w-]+\s*:)([^;}]*)',
+        lambda m: m.group(1) + ' ' * len(m.group(2)),
+        css,
+    )
+
+
 def find_unsupported_constructs(css):
     """Return generated CSS constructs the platform compiler is known to reject."""
     issues = []
     searchable_css = mask_css_comments(css)
-    for name, pattern, guidance in BANNED_GENERATED_PATTERNS:
-        for match in pattern.finditer(searchable_css):
-            issues.append({
-                "name": name,
-                "line": line_number(css, match.start()),
-                "snippet": snippet_for(css, match),
-                "guidance": guidance,
-            })
+    declaration_css = mask_custom_property_values(searchable_css)
+    scans = (
+        (BANNED_GENERATED_PATTERNS, searchable_css),
+        (BANNED_DECLARATION_PATTERNS, declaration_css),
+    )
+    for patterns, scanned in scans:
+        for name, pattern, guidance in patterns:
+            for match in pattern.finditer(scanned):
+                issues.append({
+                    "name": name,
+                    "line": line_number(css, match.start()),
+                    "snippet": snippet_for(css, match),
+                    "guidance": guidance,
+                })
+    issues.sort(key=lambda issue: issue["line"])
     return issues
 
 

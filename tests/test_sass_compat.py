@@ -99,6 +99,60 @@ class SassCompatTests(unittest.TestCase):
             [],
         )
 
+    def test_check_mode_rejects_sass_builtin_filter_functions(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
+            css_file.write(".logo{filter:brightness(0) invert(1)}")
+            path = css_file.name
+
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--check", path],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("sass-builtin-as-css-function", result.stderr)
+        self.assertIn("brightness()", result.stderr)
+
+    def test_check_mode_accepts_non_colliding_filter_functions(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
+            css_file.write(".logo{filter:contrast(0) brightness(10)}")
+            path = css_file.name
+
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--check", path],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_every_sass_builtin_name_is_covered(self):
+        for name in (
+            "invert", "saturate", "grayscale", "opacity",
+            "lighten", "darken", "complement", "desaturate",
+        ):
+            with self.subTest(name=name):
+                issues = sass_compat.find_unsupported_constructs(
+                    ".a{filter:%s(1)}" % name
+                )
+                self.assertEqual(
+                    [issue["name"] for issue in issues],
+                    ["sass-builtin-as-css-function"],
+                )
+
+    def test_custom_property_values_are_exempt(self):
+        # Sass does not evaluate a custom property's value, so Tailwind's own
+        # filter variables are not a compile hazard and must not be flagged.
+        css = ".grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-grayscale,)}"
+
+        self.assertEqual(sass_compat.find_unsupported_constructs(css), [])
+
+    def test_builtin_name_inside_a_longer_identifier_is_not_flagged(self):
+        css = ".a{filter:var(--brand-invert)}.b{background:url(no-invert(1).png)}"
+
+        self.assertEqual(sass_compat.find_unsupported_constructs(css), [])
+
     def test_generated_main_css_has_no_banned_constructs(self):
         css = (ROOT / "assets" / "main.css").read_text()
 

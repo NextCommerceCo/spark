@@ -32,6 +32,7 @@ css/input.css → [tailwindcss CLI] → assets/main.css → [sass-compat.py] →
 
 - Tailwind v4 uses CSS-based config. All theme tokens, custom colors, and component styles live in `css/input.css` using `@theme`, `@layer base`, and `@layer components`.
 - `scripts/sass-compat.py` post-processes the output to strip `@property` declarations, convert `oklch()` to hex, and replace `color-mix()` — necessary because the platform's Sass parser doesn't support these modern CSS features.
+- The same script's `--check` mode rejects constructs the platform compiler evaluates rather than passes through: standalone `min()`/`max()`/`clamp()`, and CSS functions named like Sass built-ins (`invert()`, `saturate()`, `grayscale()`, `opacity()`, `lighten()`, `darken()`, `complement()`, `desaturate()`). Both fail only at upload time otherwise. Custom-property values are exempt from the built-in-name rule: Sass does not evaluate them.
 - After any change to `css/input.css`, you must: compile → sass-compat → commit → push:
   ```bash
   make release           # compiles, runs sass-compat, stages assets/main.css

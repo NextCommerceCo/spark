@@ -6,6 +6,9 @@ Spark follows human-readable release notes rather than a package-manager version
 
 ## Unreleased
 
+- `scripts/sass-compat.py --check` now rejects CSS functions whose names collide with Sass built-ins: `invert()`, `saturate()`, `grayscale()`, `opacity()`, `lighten()`, `darken()`, `complement()`, and `desaturate()`. The platform Sass compiler evaluates them as Sass colour calls and rejects the CSS argument, so a valid `filter: brightness(0) invert(1)` fails the upload with "Could not compile CSS. Please check Scss Syntax." while `make css-check` passes locally. Custom-property declarations are exempt, because Sass leaves a custom property's value alone; that is why Tailwind's own `--tw-grayscale: grayscale(100%)` compiles and stays accepted.
+- Rebuilt `assets/main.css`. Tailwind scans the repo's own docs and scripts for class candidates, so naming the banned functions in this change's prose generates an unused `.invert` utility. The committed CSS has to match a fresh build for the `css-drift` gate, so the rebuild ships with the change.
+
 ## 1.2.0 - 2026-09-01
 
 - `scripts/sass-compat.py --check` now rejects any standalone CSS `min()`/`max()`/`clamp()`. The platform Sass compiler evaluates these as Sass math and fails the upload on mixed units; same-unit calls are also blocked to keep the guard simple and safe. `minmax()` grid tracks are still accepted. This makes `make css`/`make css-check` fail locally where the upload would previously have been the first failure point.

@@ -2,7 +2,7 @@
 
 All notable public Spark changes should be recorded here.
 
-Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
+Spark follows human-readable release notes rather than a package-manager version contract. The release version is stored in `manifest.json` and mirrored in [README.md](README.md) and `CLAUDE.md`. When releasing, update all three version markers, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
 ## Unreleased
 

@@ -48,27 +48,44 @@ SCIENTIFIC_NOTATION_LENGTH = re.compile(
     re.IGNORECASE,
 )
 
-# Sass evaluates these names as its own colour functions, so a valid CSS filter
-# or colour function that shares a name is parsed as a Sass call and its CSS
-# argument is rejected. Custom-property declarations are exempt: Sass does not
-# evaluate a custom property's value, which is why Tailwind's
+# Sass evaluates these names as its own colour functions, so anything sharing a
+# name is parsed as a Sass call and its CSS argument is rejected. The two rules
+# below differ in what the author should do about it: invert/saturate/grayscale/
+# opacity are genuine CSS filter functions that need a non-colliding substitute,
+# while lighten/darken/complement/desaturate are not CSS at all and mean Sass
+# source reached the generated output.
+#
+# Custom-property declarations are exempt from both: Sass does not evaluate a
+# custom property's value, which is why Tailwind's
 # `--tw-grayscale: grayscale(100%)` compiles today. Scanned against
 # custom-property-masked CSS for that reason.
 BANNED_DECLARATION_PATTERNS = (
     (
-        "sass-builtin-as-css-function",
+        "sass-builtin-as-css-filter",
         re.compile(
-            r'(?<![\w-])'
-            r'(?:invert|saturate|grayscale|opacity|lighten|darken|complement|desaturate)\(',
+            r'(?<![\w-])(?:invert|saturate|grayscale|opacity)\(',
             re.IGNORECASE,
         ),
-        "Sass treats this name as a built-in colour function, so the platform "
-        "compiler evaluates the CSS function as a Sass call and the upload fails "
-        "with 'Could not compile CSS. Please check Scss Syntax.' (`make css-check` "
-        "passes locally, so this only surfaces at push time). Use a filter "
-        "function Sass does not claim - brightness(), contrast(), blur(), sepia(), "
-        "hue-rotate(), drop-shadow() - or assign the value through a custom "
-        "property, whose value Sass leaves alone.",
+        "This is a real CSS filter function, but Sass claims the same name as a "
+        "built-in colour function, so the platform compiler evaluates it as a Sass "
+        "call and the upload fails with 'Could not compile CSS. Please check Scss "
+        "Syntax.' (`make css-check` passes locally, so it only surfaces at push "
+        "time). Use a filter function Sass does not claim - brightness(), "
+        "contrast(), blur(), sepia(), hue-rotate(), drop-shadow() - or assign the "
+        "value through a custom property, whose value Sass leaves alone. For "
+        "opacity() specifically, the `opacity` property is usually what you want.",
+    ),
+    (
+        "sass-colour-function-in-css",
+        re.compile(
+            r'(?<![\w-])(?:lighten|darken|complement|desaturate)\(',
+            re.IGNORECASE,
+        ),
+        "There is no CSS function by this name: it is a Sass colour function that "
+        "reached the generated CSS, and the platform compiler will evaluate it and "
+        "reject the argument. Emit the computed colour instead - a hex or rgba() "
+        "literal, or a custom property the theme sets - rather than asking the "
+        "platform's Sass pass to compute it.",
     ),
 )
 

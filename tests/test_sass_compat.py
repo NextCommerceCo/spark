@@ -99,47 +99,62 @@ class SassCompatTests(unittest.TestCase):
             [],
         )
 
-    def test_check_mode_rejects_sass_builtin_filter_functions(self):
+    def check_css(self, css):
+        """Run --check over one CSS string, cleaning up the temp file."""
         with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
-            css_file.write(".logo{filter:brightness(0) invert(1)}")
-            path = css_file.name
+            css_file.write(css)
+            css_path = css_file.name
 
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT), "--check", path],
-            capture_output=True,
-            text=True,
-        )
+        try:
+            return subprocess.run(
+                [sys.executable, str(SCRIPT), "--check", css_path],
+                capture_output=True,
+                text=True,
+            )
+        finally:
+            Path(css_path).unlink(missing_ok=True)
+
+    def test_check_mode_rejects_sass_builtin_filter_functions(self):
+        result = self.check_css(".logo{filter:brightness(0) invert(1)}")
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("sass-builtin-as-css-function", result.stderr)
+        self.assertIn("sass-builtin-as-css-filter", result.stderr)
         self.assertIn("brightness()", result.stderr)
 
-    def test_check_mode_accepts_non_colliding_filter_functions(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
-            css_file.write(".logo{filter:contrast(0) brightness(10)}")
-            path = css_file.name
+    def test_check_mode_rejects_sass_only_colour_functions(self):
+        result = self.check_css(".a{color:darken(#ffffff, 10%)}")
 
-        result = subprocess.run(
-            [sys.executable, str(SCRIPT), "--check", path],
-            capture_output=True,
-            text=True,
-        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("sass-colour-function-in-css", result.stderr)
+        # darken() is not CSS, so the filter-substitution advice would be wrong.
+        self.assertIn("There is no CSS function by this name", result.stderr)
+        self.assertNotIn("hue-rotate()", result.stderr)
+
+    def test_check_mode_accepts_non_colliding_filter_functions(self):
+        result = self.check_css(".logo{filter:contrast(0) brightness(10)}")
 
         self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_every_sass_builtin_name_is_covered(self):
-        for name in (
-            "invert", "saturate", "grayscale", "opacity",
-            "lighten", "darken", "complement", "desaturate",
-        ):
+        # The two rules split on what the author should do: the first four are
+        # real CSS filter functions needing a substitute, the last four are not
+        # CSS at all and mean Sass source reached the generated output.
+        expected = {
+            "invert": "sass-builtin-as-css-filter",
+            "saturate": "sass-builtin-as-css-filter",
+            "grayscale": "sass-builtin-as-css-filter",
+            "opacity": "sass-builtin-as-css-filter",
+            "lighten": "sass-colour-function-in-css",
+            "darken": "sass-colour-function-in-css",
+            "complement": "sass-colour-function-in-css",
+            "desaturate": "sass-colour-function-in-css",
+        }
+        for name, rule in expected.items():
             with self.subTest(name=name):
                 issues = sass_compat.find_unsupported_constructs(
                     ".a{filter:%s(1)}" % name
                 )
-                self.assertEqual(
-                    [issue["name"] for issue in issues],
-                    ["sass-builtin-as-css-function"],
-                )
+                self.assertEqual([issue["name"] for issue in issues], [rule])
 
     def test_custom_property_values_are_exempt(self):
         # Sass does not evaluate a custom property's value, so Tailwind's own

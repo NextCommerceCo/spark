@@ -1,10 +1,19 @@
 {# Spark Theme -- Catalogue Filters #}
-<form id="productFilters" novalidate>
+{# Rendered twice on a category page: once in the desktop rail and once  #}
+{# inside the mobile filter drawer. Pass filter_form_id so the two       #}
+{# copies do not share an element id.                                    #}
+<form id="{{ filter_form_id|default:'productFilters' }}" method="get" novalidate>
     <div class="flex flex-wrap gap-2 mb-4">
         <div class="flex justify-between w-full items-center">
-            <h5 class="text-sm font-semibold text-slate-800">{% t "store.catalogue.filters" %}</h5>
+            {# The drawer already has a heading, so it hides this one and keeps #}
+            {# the empty span so "Clear" stays on the right.                    #}
+            {% if hide_heading %}
+                <span></span>
+            {% else %}
+                <h5 class="text-sm font-semibold text-slate-800">{% t "store.catalogue.filters" %}</h5>
+            {% endif %}
             {% if has_active_filter %}
-                <a class="text-xs text-slate-500 hover:text-slate-800" href="{% url 'catalogue:index' %}">
+                <a class="text-xs text-slate-500 hover:text-slate-800" href="{{ request.path }}">
                     {% t "store.catalogue.filter_clear" %}
                 </a>
             {% endif %}

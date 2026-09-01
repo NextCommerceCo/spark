@@ -662,6 +662,212 @@
         line-height: 1.25rem;
     }
 
+    /* ─── Catalogue Filters ─── */
+
+    /* Desktop puts the filter form in a rail beside the grid. Below the
+       1024px breakpoint the rail collapses into the mobile drawer. */
+    @media (min-width: 1024px) {
+        .catalogue-layout {
+            display: grid;
+            grid-template-columns: 15rem minmax(0, 1fr);
+            gap: 2rem;
+            align-items: start;
+        }
+    }
+
+    .catalogue-rail {
+        display: none;
+    }
+
+    @media (min-width: 1024px) {
+        .catalogue-rail {
+            display: block;
+            position: sticky;
+            /* Clears the 64px sticky header plus breathing room. */
+            top: 5.5rem;
+        }
+    }
+
+    /* The inline trigger is the primary mobile entry point. It remains
+       reachable for empty and short result sets where the sticky bar does not
+       appear. */
+    .catalogue-filter-inline {
+        display: flex;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+        .catalogue-filter-inline {
+            display: none;
+        }
+    }
+
+    .catalogue-filter-button {
+        width: 100%;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 0.25rem;
+        color: #1E293B;
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        cursor: pointer;
+    }
+
+    /* ─── Supplemental Sticky Mobile Filter Bar ─── */
+    /* Same mechanics as .sticky-atc: fixed to the bottom, translated out of
+       view, slid in when the grid has scrolled under the header. */
+
+    .catalogue-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: white;
+        border-top: 1px solid #E2E8F0;
+        transform: translateY(100%);
+        visibility: hidden;
+        pointer-events: none;
+        transition: transform 250ms ease-in, visibility 0s linear 250ms;
+    }
+
+    .catalogue-bar-visible {
+        transform: translateY(0);
+        visibility: visible;
+        pointer-events: auto;
+        transition: transform 250ms ease-out;
+    }
+
+    .catalogue-bar-inner {
+        display: flex;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .catalogue-bar-control {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .catalogue-bar-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.25rem;
+        border-radius: 9999px;
+        background: var(--primary-color);
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    /* Desktop keeps the filter rail instead. */
+    @media (min-width: 1024px) {
+        .catalogue-bar {
+            display: none;
+        }
+    }
+
+    /* ─── Filter Drawer ─── */
+    /* Panel tier, same as the mobile nav and search overlay, so it covers
+       the sticky bar while it is open. */
+
+    .filter-drawer {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .filter-drawer-visible {
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .filter-drawer-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 200ms ease-out;
+    }
+
+    .filter-drawer-visible .filter-drawer-backdrop {
+        opacity: 1;
+    }
+
+    .filter-drawer-panel {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        border-top: 1px solid #E2E8F0;
+        transform: translateY(100%);
+        transition: transform 250ms ease-out;
+    }
+
+    .filter-drawer-visible .filter-drawer-panel {
+        transform: translateY(0);
+    }
+
+    .filter-drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .filter-drawer-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1E293B;
+    }
+
+    .filter-drawer-close {
+        width: 44px;
+        height: 44px;
+        margin-right: -0.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .filter-drawer-body {
+        padding: 1rem;
+        overflow-y: auto;
+    }
+
+    @media (min-width: 1024px) {
+        .filter-drawer {
+            display: none;
+        }
+    }
+
     /* ─── Focus Visible ─── */
 
     :focus-visible {

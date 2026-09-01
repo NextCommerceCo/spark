@@ -31,35 +31,71 @@
         {% endif %}
     </div>
 
-    {# Skeleton loading — hidden by JS after content paints #}
-    <div id="product-skeleton" class="product-grid" aria-hidden="true">
-        {% for i in "123456" %}
-        <div class="skeleton-card">
-            <div class="skeleton-image"></div>
-            <div class="skeleton-text" style="width: 60%;"></div>
-            <div class="skeleton-text-short"></div>
-        </div>
-        {% endfor %}
-    </div>
-
-    {# Product grid #}
-    {% if products %}
-        <div class="product-grid" id="product-grid">
-            {% for product in products %}
-                {% include 'partials/product_card.html' with product=product %}
-            {% endfor %}
-        </div>
-
-        {# Pagination #}
-        {% include 'partials/pagination.html' %}
-    {% else %}
-        <div class="py-16 text-center">
-            <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
-            <a href="{{ homepage_url }}" class="btn btn-secondary">{% t 'navigation.main.home' %}</a>
+    {# Primary mobile filter entry point. The sticky bar below is supplemental. #}
+    {% if filters %}
+        <div class="catalogue-filter-inline">
+            {% include 'partials/catalogue_filter_button.html' with button_class='catalogue-inline-filter-btn' %}
         </div>
     {% endif %}
 
+    {# Filter rail beside the grid from 1024px up. Below that the rail is #}
+    {# hidden and the same form is reached through the mobile drawer.     #}
+    <div class="catalogue-layout">
+        {% if filters %}
+            <aside class="catalogue-rail" aria-label="{% t 'store.catalogue.filters' %}">
+                {% include 'partials/catalogue_filters.html' %}
+            </aside>
+        {% endif %}
+
+        <div>
+            {# Skeleton loading — hidden by JS after content paints #}
+            <div id="product-skeleton" class="product-grid" aria-hidden="true">
+                {% for i in "123456" %}
+                <div class="skeleton-card">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-text" style="width: 60%;"></div>
+                    <div class="skeleton-text-short"></div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {# Product grid #}
+            {% if products %}
+                <div class="product-grid" id="product-grid">
+                    {% for product in products %}
+                        {% include 'partials/product_card.html' with product=product %}
+                    {% endfor %}
+                </div>
+
+                {# Pagination #}
+                {% include 'partials/pagination.html' %}
+            {% else %}
+                <div class="py-16 text-center">
+                    <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+                    <a href="{{ homepage_url }}" class="btn btn-secondary">{% t 'navigation.main.home' %}</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
     {% app_hook 'collection_review_feed' %}
+
+    {# Supplemental sticky filter bar - mobile and tablet only. #}
+    {% include 'partials/catalogue_bar.html' %}
 
 </div>
 {% endblock %}
+
+{% block modals %}
+    {{ block.super }}
+    {% if filters %}
+        {% include 'partials/catalogue_filter_drawer.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block component_scripts %}
+    {{ block.super }}
+    {% if filters %}
+        <script type="text/javascript" src="{{ 'js/spark-catalogue.js'|asset_url }}"></script>
+    {% endif %}
+{% endblock component_scripts %}

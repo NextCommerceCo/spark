@@ -203,6 +203,18 @@ Desktop (768px+): 5-column grid, images 3-span, info 2-span
 Info sidebar: sticky, top-24
 ```
 
+### Catalogue Layout
+```
+Mobile (<1024px): filter trigger above the grid, so filters remain reachable
+                  for empty and short result sets. A supplemental sticky filter
+                  bar appears while scrolling long grids and slides out again
+                  before the pagination.
+Desktop (1024px+): 15rem filter rail (sticky, top-22) + product grid.
+Filter drawer: bottom sheet, max-height 85vh, slide up 250ms ease-out.
+               Backdrop black/30, fade 200ms. Escape and backdrop close.
+Controls: 44px minimum height, 4px radius (form-control rounding).
+```
+
 ---
 
 ## Motion Language
@@ -286,10 +298,14 @@ Animation: translateX(-100%→100%), 1.5s infinite ease-in-out
 
 ```
 z-40: Announcement bar
-z-50: Sticky header
-z-60: Search overlay + backdrop, Mobile nav + backdrop
+z-50: Sticky header, PDP sticky ATC bar, catalogue filter bar
+z-60: Search overlay + backdrop, Mobile nav + backdrop, Filter drawer + backdrop
 z-70: Side cart + backdrop (highest — always accessible)
 ```
+
+The two bottom bars share z-50 and never appear on the same page: the sticky
+ATC is PDP-only, the catalogue bar is category-only. Both hide from
+1024px up.
 
 **Panel rule:** One panel at a time. Opening any panel auto-closes others.
 

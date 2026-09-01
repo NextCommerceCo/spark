@@ -169,7 +169,8 @@ function createEnvironment() {
         mobileNav: mobileNav,
         pendingTimers: function() { return timers.size; },
         runTimers: runTimers,
-        toggle: toggle
+        toggle: toggle,
+        window: context
     };
 }
 
@@ -249,12 +250,24 @@ function testJsAssetStaysAscii() {
     assert.equal(offender, undefined, 'theme.js must stay ASCII-only');
 }
 
+function testSharedScrollLockWaitsForEveryPanel() {
+    const env = createEnvironment();
+    env.window.SparkBodyScrollLock.lock();
+    env.window.SparkBodyScrollLock.lock();
+    assert.equal(env.document.body.style.overflow, 'hidden');
+    env.window.SparkBodyScrollLock.unlock();
+    assert.equal(env.document.body.style.overflow, 'hidden');
+    env.window.SparkBodyScrollLock.unlock();
+    assert.equal(env.document.body.style.overflow, 'scroll');
+}
+
 const tests = [
     ['template seam and hooks', testTemplateSeamAndHooks],
     ['Escape uses one close path', testEscapeUsesOneClosePath],
     ['Tab and Shift+Tab stay inside panel', testTabAndShiftTabStayInsidePanel],
     ['closing cancels delayed focus', testClosingCancelsDelayedFocus],
     ['desktop breakpoint closes silently', testDesktopBreakpointClosesSilently],
+    ['shared scroll lock waits for every panel', testSharedScrollLockWaitsForEveryPanel],
     ['JavaScript asset stays ASCII', testJsAssetStaysAscii]
 ];
 

@@ -6,6 +6,30 @@
 (function() {
     'use strict';
 
+    /* Shared body scroll lock */
+
+    window.SparkBodyScrollLock = (function() {
+        var lockCount = 0;
+        var previousOverflow = '';
+
+        return {
+            lock: function() {
+                if (lockCount === 0) {
+                    previousOverflow = document.body.style.overflow;
+                    document.body.style.overflow = 'hidden';
+                }
+                lockCount += 1;
+            },
+            unlock: function() {
+                if (lockCount === 0) return;
+                lockCount -= 1;
+                if (lockCount === 0) {
+                    document.body.style.overflow = previousOverflow;
+                }
+            }
+        };
+    })();
+
     /* Mobile Navigation */
 
     const DESKTOP_NAV_MEDIA_QUERY = '(min-width: 48rem)';
@@ -34,7 +58,6 @@
         const toggleBtn = document.querySelector('[data-toggle="mobile-nav"]');
         const mobileNav = document.getElementById('mobile-nav');
         const desktopNavQuery = window.matchMedia(DESKTOP_NAV_MEDIA_QUERY);
-        var mobileNavPreviousOverflow = '';
         var mobileNavLockedBody = false;
         var mobileNavFocusTimer = null;
         if (!toggleBtn || !mobileNav) return;
@@ -49,10 +72,9 @@
             mobileNav.classList.remove('hidden');
             toggleBtn.setAttribute('aria-expanded', 'true');
             if (!mobileNavLockedBody) {
-                mobileNavPreviousOverflow = document.body.style.overflow;
+                window.SparkBodyScrollLock.lock();
                 mobileNavLockedBody = true;
             }
-            document.body.style.overflow = 'hidden';
             // Match the cart drawer: move focus into the panel once it is visible.
             var closeBtn = mobileNav.querySelector('[data-close="mobile-nav"][type="button"]');
             var target = closeBtn || visibleFocusable(panel)[0];
@@ -73,9 +95,8 @@
             }
             mobileNav.classList.add('hidden');
             toggleBtn.setAttribute('aria-expanded', 'false');
-            // Restore the inline overflow value that existed before mobile nav opened.
             if (mobileNavLockedBody) {
-                document.body.style.overflow = mobileNavPreviousOverflow;
+                window.SparkBodyScrollLock.unlock();
             }
             mobileNavLockedBody = false;
             // Return focus to the toggle unless the viewport just went desktop.
@@ -151,11 +172,15 @@
     function initSearchOverlay() {
         var overlay = document.getElementById('search-overlay');
         var input = document.getElementById('search-input');
+        var searchLockedBody = false;
         if (!overlay) return;
 
         function openSearch() {
             overlay.classList.add('search-overlay-visible');
-            document.body.style.overflow = 'hidden';
+            if (!searchLockedBody) {
+                window.SparkBodyScrollLock.lock();
+                searchLockedBody = true;
+            }
             if (input) {
                 setTimeout(function() { input.focus(); }, 150);
             }
@@ -163,7 +188,10 @@
 
         function closeSearch() {
             overlay.classList.remove('search-overlay-visible');
-            document.body.style.overflow = '';
+            if (searchLockedBody) {
+                window.SparkBodyScrollLock.unlock();
+                searchLockedBody = false;
+            }
         }
 
         // Open button

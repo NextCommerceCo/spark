@@ -4,7 +4,7 @@ This catalog lists the Spark partials, homepage section partials, and setting-ba
 
 ## Mechanical Scope
 
-- Spark has 20 partial files that reference `settings.*` directly.
+- Spark has 19 partial files that reference `settings.*` directly.
 - Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
@@ -65,8 +65,11 @@ These are reusable implementation helpers. They are not directly controlled by T
 | `partials/form_field.html` | Shared form field renderer. |
 | `partials/cart_content.html` | Legacy/full cart content helper. |
 | `partials/cart_summary.html` | Cart total summary helper. |
-| `partials/catalogue_filters.html` | Catalogue filter form. |
-| `partials/pagination.html` | Pagination controls. |
+| `partials/catalogue_filters.html` | Catalogue filter form. Accepts `filter_form_id` and `hide_heading`. See `docs/catalogue-filters.md`. |
+| `partials/catalogue_filter_button.html` | Shared mobile filter opener used above the grid and in the supplemental sticky bar. |
+| `partials/catalogue_filter_drawer.html` | Mobile bottom-sheet dialog wrapping the filter form. |
+| `partials/catalogue_bar.html` | Supplemental sticky mobile filter opener for long category result lists. |
+| `partials/pagination.html` | Pagination controls. Uses the platform query tag to preserve active filters. |
 | `partials/alert_messages.html` | Flash/message renderer. |
 | `partials/product_carousel.html` | Legacy PDP carousel placeholder; Spark PDP currently uses `spark-gallery` directly. |
 | `partials/section_heading.html` | Shared heading helper for section heading size and alignment. |

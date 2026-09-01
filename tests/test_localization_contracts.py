@@ -25,6 +25,7 @@ LOCALIZED_DEFAULT_OVERRIDE_SETTINGS = {
     "step_1_message",
     "step_2_message",
     "upsell_section_title",
+    "variant_size_guide_text",
 }
 
 STARTER_COPY_SETTINGS = LOCALIZED_DEFAULT_OVERRIDE_SETTINGS

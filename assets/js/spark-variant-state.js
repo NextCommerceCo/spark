@@ -138,6 +138,44 @@
         return this.getVariantFromSelection(this.getSelection());
     };
 
+    /**
+     * Availability of every option value, given the rest of the current
+     * selection. Returns { 'attr_<code>': { '<value id>': true|false } }.
+     * A value is available when at least one purchasable child carries it
+     * while matching every other selected attribute.
+     */
+    SparkVariantState.prototype.getOptionAvailability = function(selection) {
+        var result = {};
+        var product = this.product;
+        if (!product || !product.children || !product.children.length) return result;
+        selection = selection || this.getSelection();
+
+        product.children.forEach(function(child) {
+            var attributes = child.variant_attribute_values || [];
+            var purchasable = SparkVariantState.isPurchasable(child);
+
+            attributes.forEach(function(attribute) {
+                var name = 'attr_' + attribute.code;
+                if (!result[name]) result[name] = {};
+                if (result[name][attribute.id] === undefined) {
+                    result[name][attribute.id] = false;
+                }
+
+                var othersMatch = attributes.every(function(other) {
+                    if (other.code === attribute.code) return true;
+                    var chosen = selection['attr_' + other.code];
+                    if (chosen === undefined || chosen === null || chosen === '') return true;
+                    return valuesMatch(chosen, other.id);
+                });
+                if (!othersMatch) return;
+
+                result[name][attribute.id] = result[name][attribute.id] || purchasable;
+            });
+        });
+
+        return result;
+    };
+
     SparkVariantState.prototype.emitChange = function(variant) {
         if (!variant) return;
         if (window.SparkEvents) {

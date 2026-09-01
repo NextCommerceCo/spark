@@ -12,6 +12,9 @@ Spark follows human-readable release notes rather than a strict package-manager 
 - Pagination links now use the platform `add_query_param` tag so active filters survive paging.
 - "Clear" in the filter form now clears filters on the current path instead of navigating to the shop index.
 - Mobile navigation, search, and the catalogue filter drawer now share a reference-counted body scroll lock, so closing one overlapping panel cannot re-enable scrolling behind another.
+- Extracted the PDP variant picker into `partials/variant_picker.html` and added a third `variant_picker` style, `chips`: content-width option buttons with a filled selected state, unavailable combinations greyed and struck through in place, and an echo of the selected value beside the option name. `select` remains the default and `radio` is unchanged.
+- Added an optional size guide link on the option label row, pointed at a merchant page through `variant_size_guide_url`.
+- `SparkVariantState` gained `getOptionAvailability()` so pickers can render availability without re-deriving child matching.
 - Extracted the mobile navigation drawer from `partials/header.html` into `partials/mobile_menu.html` and hardened its accessibility contract: `aria-expanded`/`aria-controls` on the toggle, `role="dialog"` and `aria-modal` on the drawer, a focus trap while open, Escape to close, focus moved into the panel on open and returned to the toggle on close. The `data-toggle="mobile-nav"`, `data-close="mobile-nav"`, and `#mobile-nav` hooks are unchanged.
 
 ## 1.1.3 - 2026-08-27

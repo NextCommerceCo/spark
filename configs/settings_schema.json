@@ -773,10 +773,14 @@
                     {
                         "name": "Buttons",
                         "value": "radio"
+                    },
+                    {
+                        "name": "Chips (option buttons)",
+                        "value": "chips"
                     }
                 ],
                 "default": "select",
-                "help_text": "How product variants (size, color, etc.) are displayed."
+                "help_text": "How variant options are presented. Chips render each option as a tappable button and mark unavailable combinations."
             },
             {
                 "name": "product_description_placement",
@@ -794,6 +798,27 @@
                 ],
                 "default": "column",
                 "help_text": "Where the product description appears relative to the image gallery."
+            },
+            {
+                "name": "variant_size_guide_url",
+                "label": "Size Guide Link",
+                "type": "url",
+                "max_length": 500,
+                "help_text": "Page the size guide link opens. Leave blank to hide the link."
+            },
+            {
+                "name": "variant_size_guide_text",
+                "label": "Size Guide Link Text",
+                "type": "text",
+                "max_length": 40,
+                "help_text": "Label for the size guide link. Defaults to a translated 'Size guide'."
+            },
+            {
+                "name": "variant_size_guide_option",
+                "label": "Size Guide Option Group",
+                "type": "text",
+                "max_length": 100,
+                "help_text": "Variant attribute code the size guide link sits beside, for example 'size'. Leave blank to show it on every option group."
             }
         ],
         "Product Cards": [

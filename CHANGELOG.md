@@ -2,9 +2,11 @@
 
 All notable public Spark changes should be recorded here.
 
-Spark follows human-readable release notes rather than a strict package-manager version contract. The current public version is shown in [README.md](README.md). When releasing a new version, update the README version, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
+Spark follows human-readable release notes rather than a package-manager version contract. The release version is stored in `manifest.json` and mirrored in [README.md](README.md) and `CLAUDE.md`. When releasing, update all three version markers, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
 ## Unreleased
+
+## 1.2.0 - 2026-09-01
 
 - `scripts/sass-compat.py --check` now rejects any standalone CSS `min()`/`max()`/`clamp()`. The platform Sass compiler evaluates these as Sass math and fails the upload on mixed units; same-unit calls are also blocked to keep the guard simple and safe. `minmax()` grid tracks are still accepted. This makes `make css`/`make css-check` fail locally where the upload would previously have been the first failure point.
 - Wired up `partials/catalogue_filters.html`, which existed but was never included by any template. Category pages now render the filter form in a sticky rail from 1024px up, and in a bottom-sheet drawer below that.

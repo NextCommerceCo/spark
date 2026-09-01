@@ -57,6 +57,48 @@ class SassCompatTests(unittest.TestCase):
         self.assertIn("unsafe for the platform compiler", result.stderr)
         self.assertIn("color-mix()", result.stderr)
 
+    def test_check_mode_rejects_mixed_unit_min(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
+            css_file.write(".a{width:min(100%,390px)}")
+            css_path = css_file.name
+
+        try:
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), "--check", css_path],
+                capture_output=True,
+                text=True,
+            )
+        finally:
+            Path(css_path).unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("min()/max()/clamp()", result.stderr)
+
+    def test_check_mode_rejects_clamp_and_max(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".css", delete=False) as css_file:
+            css_file.write(".a{font-size:clamp(1rem,2vw,2rem)} .b{height:max(10vh,80px)}")
+            css_path = css_file.name
+
+        try:
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), "--check", css_path],
+                capture_output=True,
+                text=True,
+            )
+        finally:
+            Path(css_path).unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("min()/max()/clamp()", result.stderr)
+
+    def test_minmax_grid_tracks_are_not_flagged(self):
+        self.assertEqual(
+            sass_compat.find_unsupported_constructs(
+                ".g{grid-template-columns:repeat(4,minmax(0,1fr))}"
+            ),
+            [],
+        )
+
     def test_generated_main_css_has_no_banned_constructs(self):
         css = (ROOT / "assets" / "main.css").read_text()
 

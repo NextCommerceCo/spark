@@ -155,6 +155,12 @@
             var purchasable = SparkVariantState.isPurchasable(child);
 
             attributes.forEach(function(attribute) {
+                var name = 'attr_' + attribute.code;
+                if (!result[name]) result[name] = {};
+                if (result[name][attribute.id] === undefined) {
+                    result[name][attribute.id] = false;
+                }
+
                 var othersMatch = attributes.every(function(other) {
                     if (other.code === attribute.code) return true;
                     var chosen = selection['attr_' + other.code];
@@ -163,28 +169,11 @@
                 });
                 if (!othersMatch) return;
 
-                var name = 'attr_' + attribute.code;
-                if (!result[name]) result[name] = {};
                 result[name][attribute.id] = result[name][attribute.id] || purchasable;
             });
         });
 
         return result;
-    };
-
-    /**
-     * First child carrying an option value, used to resolve swatch imagery.
-     */
-    SparkVariantState.prototype.getVariantForOption = function(name, value) {
-        var product = this.product;
-        if (!product || !product.children || !product.children.length) return null;
-        var code = String(name).replace(/^attr_/, '');
-
-        return product.children.find(function(child) {
-            return (child.variant_attribute_values || []).some(function(attribute) {
-                return attribute.code === code && valuesMatch(attribute.id, value);
-            });
-        }) || null;
     };
 
     SparkVariantState.prototype.emitChange = function(variant) {

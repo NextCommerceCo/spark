@@ -11,18 +11,19 @@
                     {{ field.label }}{% if settings.variant_picker == 'chips' %}<span class="variant-option-value ml-1" data-variant-selected-label></span>{% endif %}
                 </label>
                 {% if settings.variant_size_guide_url %}
-                    {% if not settings.variant_size_guide_option or settings.variant_size_guide_option in field.html_name %}
-                        <a href="{{ settings.variant_size_guide_url }}" class="variant-size-guide flex-shrink-0">
-                            {{ settings.variant_size_guide_text|default:default_variant_size_guide_text }}
-                        </a>
-                    {% endif %}
+                    {% with option_code=field.html_name|slice:"5:" %}
+                        {% if not settings.variant_size_guide_option or settings.variant_size_guide_option == option_code %}
+                            <a data-variant-size-guide-url="{{ settings.variant_size_guide_url }}" class="variant-size-guide flex-shrink-0">
+                                {{ settings.variant_size_guide_text|default:default_variant_size_guide_text }}
+                            </a>
+                        {% endif %}
+                    {% endwith %}
                 {% endif %}
             </div>
             {% if settings.variant_picker == 'chips' %}
                 <div class="variant-option-list"
                      role="radiogroup"
-                     aria-label="{{ field.label }}"
-                     {% if settings.variant_swatch_options and field.html_name in settings.variant_swatch_options %}data-variant-swatch{% endif %}>
+                     aria-label="{{ field.label }}">
                     {% for choice in field.field.choices %}
                         <span class="variant-option"
                               data-variant-option
@@ -31,10 +32,14 @@
                                    id="{{ field.html_name }}-{{ choice.0 }}"
                                    name="{{ field.html_name }}"
                                    value="{{ choice.0 }}"
+                                   aria-describedby="{{ field.html_name }}-{{ choice.0 }}-availability"
                                    {% if forloop.first %}checked{% endif %} />
                             <label class="variant-option-label" for="{{ field.html_name }}-{{ choice.0 }}">
                                 <span data-variant-option-text>{{ choice.1 }}</span>
                             </label>
+                            <span id="{{ field.html_name }}-{{ choice.0 }}-availability"
+                                  class="sr-only"
+                                  data-variant-option-status></span>
                         </span>
                     {% endfor %}
                 </div>

@@ -780,7 +780,7 @@
                     }
                 ],
                 "default": "select",
-                "help_text": "How variant options are presented. Chips render each option as a tappable button, mark unavailable combinations, and can upgrade nominated option groups to image swatches."
+                "help_text": "How variant options are presented. Chips render each option as a tappable button and mark unavailable combinations."
             },
             {
                 "name": "product_description_placement",
@@ -798,13 +798,6 @@
                 ],
                 "default": "column",
                 "help_text": "Where the product description appears relative to the image gallery."
-            },
-            {
-                "name": "variant_swatch_options",
-                "label": "Swatch Option Groups",
-                "type": "text",
-                "max_length": 200,
-                "help_text": "Comma-separated variant attribute codes rendered as image swatches instead of text chips, for example 'colour, color'. Chips picker only. A group without variant imagery stays a text chip."
             },
             {
                 "name": "variant_size_guide_url",

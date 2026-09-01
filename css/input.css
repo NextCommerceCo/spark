@@ -1395,11 +1395,15 @@
     color: #FFFFFF;
 }
 
+[data-light-primary] .variant-option input:checked + .variant-option-label {
+    color: #1E293B;
+}
+
 /* Unavailable combinations stay in place, greyed and struck through, so the
    option row never changes length. The input is not disabled: selecting an
    unavailable combination still disables the add-to-cart button, which is
    the behavior the theme already had. */
-.variant-option[data-variant-unavailable="true"] .variant-option-label {
+.variant-option[data-variant-unavailable="true"] input:not(:checked) + .variant-option-label {
     opacity: 0.55;
     color: #64748B;
 }
@@ -1416,23 +1420,8 @@
     background-image: linear-gradient(to top right, rgb(255 255 255 / 0%) 47.5%, #FFFFFF 47.5%, #FFFFFF 52.5%, rgb(255 255 255 / 0%) 52.5%);
 }
 
-/* Swatch upgrade: applied by theme.js only when a variant image resolves for
-   the option value, so a group with no imagery stays a readable text chip. */
-.variant-option-label--swatch {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
-    padding: 0;
-    border-radius: 9999px;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-
-.variant-option input:checked + .variant-option-label--swatch {
-    background-color: transparent;
-    border-color: #FFFFFF;
-    box-shadow: 0 0 0 2px var(--primary-color);
+[data-light-primary] .variant-option input:checked + .variant-option-label::after {
+    background-image: linear-gradient(to top right, rgb(255 255 255 / 0%) 47.5%, #1E293B 47.5%, #1E293B 52.5%, rgb(255 255 255 / 0%) 52.5%);
 }
 
 .variant-option-value {

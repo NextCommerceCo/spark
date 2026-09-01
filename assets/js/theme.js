@@ -135,6 +135,7 @@
             options = options || {};
             theme.product.messages.addToCart = options.add_to_cart_msg || theme.product.messages.addToCart;
             theme.product.messages.unavailable = options.unavailable_msg || theme.product.messages.unavailable;
+            theme.product.initSizeGuideLinks();
             if (typeof SparkVariantState === 'undefined') return;
 
             var state = SparkVariantState.fromPage();
@@ -150,7 +151,6 @@
             }
 
             theme.product.updateOptionStates();
-            theme.product.upgradeSwatches();
 
             state.onChange(function(variant) {
                 theme.product.updateForm(variant);
@@ -200,14 +200,14 @@
                     var value = option.getAttribute('data-variant-option-value');
                     var input = option.querySelector('input');
                     var text = option.querySelector('[data-variant-option-text]');
-                    var label = option.querySelector('label');
+                    var status = option.querySelector('[data-variant-option-status]');
 
                     if (values && values[value] === false) {
                         option.setAttribute('data-variant-unavailable', 'true');
-                        if (label) label.setAttribute('aria-disabled', 'true');
+                        if (status) status.textContent = theme.product.messages.unavailable;
                     } else {
                         option.removeAttribute('data-variant-unavailable');
-                        if (label) label.removeAttribute('aria-disabled');
+                        if (status) status.textContent = '';
                     }
 
                     if (input && input.checked && text) {
@@ -220,34 +220,33 @@
             });
         },
         /**
-         * Chips picker only. Turns text chips into circular image swatches
-         * for merchant-nominated option groups, but only where a variant
-         * image actually resolves - otherwise the readable text chip stays.
+         * Returns a trimmed HTTP(S) or relative storefront URL. Browser URL
+         * parsing closes scheme-obfuscation gaps that string prefix checks
+         * miss. Protocol-relative URLs are rejected to keep the setting
+         * explicit about external destinations.
          */
-        upgradeSwatches: function() {
-            var state = theme.product.variantState;
-            if (!state || !state.getVariantForOption) return;
+        normalizeSizeGuideUrl: function(value) {
+            var candidate = String(value || '').trim();
+            if (!candidate || /^(?:\/\/|\\\\)/.test(candidate)) return null;
 
-            document.querySelectorAll('[data-variant-swatch]').forEach(function(list) {
-                var group = list.closest('[data-variant-option-group]');
-                var name = group ? group.getAttribute('data-variant-option-name') : null;
-                if (!name) return;
-
-                list.querySelectorAll('[data-variant-option]').forEach(function(option) {
-                    var value = option.getAttribute('data-variant-option-value');
-                    var variant = state.getVariantForOption(name, value);
-                    var image = SparkVariantState.getVariantImageUrl(variant);
-                    if (!image) return;
-
-                    var label = option.querySelector('label');
-                    var text = option.querySelector('[data-variant-option-text]');
-                    if (!label || !text) return;
-
-                    label.classList.add('variant-option-label--swatch');
-                    label.style.backgroundImage = 'url("' + image.replace(/"/g, '%22') + '")';
-                    label.setAttribute('title', text.textContent.trim());
-                    text.classList.add('sr-only');
-                });
+            try {
+                var parsed = new URL(candidate, window.location.href);
+                if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+                return candidate;
+            } catch (error) {
+                return null;
+            }
+        },
+        initSizeGuideLinks: function() {
+            document.querySelectorAll('[data-variant-size-guide-url]').forEach(function(link) {
+                var safeUrl = theme.product.normalizeSizeGuideUrl(
+                    link.getAttribute('data-variant-size-guide-url')
+                );
+                if (safeUrl) {
+                    link.setAttribute('href', safeUrl);
+                    return;
+                }
+                if (link.parentNode) link.parentNode.removeChild(link);
             });
         }
     };

@@ -36,6 +36,7 @@
         const desktopNavQuery = window.matchMedia(DESKTOP_NAV_MEDIA_QUERY);
         var mobileNavPreviousOverflow = '';
         var mobileNavLockedBody = false;
+        var mobileNavFocusTimer = null;
         if (!toggleBtn || !mobileNav) return;
 
         var panel = mobileNav.querySelector('[data-mobile-nav-panel]') || mobileNav;
@@ -56,12 +57,20 @@
             var closeBtn = mobileNav.querySelector('[data-close="mobile-nav"][type="button"]');
             var target = closeBtn || visibleFocusable(panel)[0];
             if (target) {
-                setTimeout(function() { target.focus(); }, 50);
+                if (mobileNavFocusTimer !== null) clearTimeout(mobileNavFocusTimer);
+                mobileNavFocusTimer = setTimeout(function() {
+                    mobileNavFocusTimer = null;
+                    if (isOpen()) target.focus();
+                }, 50);
             }
         }
 
         function closeMobileNav(options) {
             var wasOpen = isOpen();
+            if (mobileNavFocusTimer !== null) {
+                clearTimeout(mobileNavFocusTimer);
+                mobileNavFocusTimer = null;
+            }
             mobileNav.classList.add('hidden');
             toggleBtn.setAttribute('aria-expanded', 'false');
             // Restore the inline overflow value that existed before mobile nav opened.

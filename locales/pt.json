@@ -71,11 +71,6 @@
         "menu": {
             "toggle": "Menu"
         },
-        "mobile_menu": {
-            "bestsellers": "Mais vendidos",
-            "badge": "Mais vendido",
-            "shop_all": "Ver todos os produtos"
-        },
         "breadcrumb": "Breadcrumb"
     },
     "tables": {

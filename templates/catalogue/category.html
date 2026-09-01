@@ -31,8 +31,15 @@
         {% endif %}
     </div>
 
-    {# Filter rail beside the grid from 1024px up. Below that the rail is    #}
-    {# hidden and the same form is reached through the sticky catalogue bar. #}
+    {# Primary mobile filter entry point. The sticky bar below is supplemental. #}
+    {% if filters %}
+        <div class="catalogue-filter-inline">
+            {% include 'partials/catalogue_filter_button.html' with button_class='catalogue-inline-filter-btn' %}
+        </div>
+    {% endif %}
+
+    {# Filter rail beside the grid from 1024px up. Below that the rail is #}
+    {# hidden and the same form is reached through the mobile drawer.     #}
     <div class="catalogue-layout">
         {% if filters %}
             <aside class="catalogue-rail" aria-label="{% t 'store.catalogue.filters' %}">
@@ -41,10 +48,6 @@
         {% endif %}
 
         <div>
-            {% if settings.catalogue_sort %}
-                {% include 'partials/catalogue_sort.html' with sort_id='catalogue-sort' select_class='catalogue-sort-select' form_class='catalogue-sort' %}
-            {% endif %}
-
             {# Skeleton loading — hidden by JS after content paints #}
             <div id="product-skeleton" class="product-grid" aria-hidden="true">
                 {% for i in "123456" %}
@@ -77,7 +80,7 @@
 
     {% app_hook 'collection_review_feed' %}
 
-    {# Sticky filter/sort bar — mobile and tablet only #}
+    {# Supplemental sticky filter bar - mobile and tablet only. #}
     {% include 'partials/catalogue_bar.html' %}
 
 </div>
@@ -89,3 +92,10 @@
         {% include 'partials/catalogue_filter_drawer.html' %}
     {% endif %}
 {% endblock %}
+
+{% block component_scripts %}
+    {{ block.super }}
+    {% if filters %}
+        <script type="text/javascript" src="{{ 'js/spark-catalogue.js'|asset_url }}"></script>
+    {% endif %}
+{% endblock component_scripts %}

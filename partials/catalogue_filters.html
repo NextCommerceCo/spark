@@ -3,10 +3,6 @@
 {# inside the mobile filter drawer. Pass filter_form_id so the two       #}
 {# copies do not share an element id.                                    #}
 <form id="{{ filter_form_id|default:'productFilters' }}" method="get" novalidate>
-    {# Keep the active sort when the filters are re-applied. #}
-    {% if request.GET.sort_by %}
-        <input type="hidden" name="sort_by" value="{{ request.GET.sort_by }}" />
-    {% endif %}
     <div class="flex flex-wrap gap-2 mb-4">
         <div class="flex justify-between w-full items-center">
             {# The drawer already has a heading, so it hides this one and keeps #}

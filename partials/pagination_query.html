@@ -1,1 +1,0 @@
-{% for key, values in request.GET.lists %}{% if key != "page" %}{% for value in values %}&amp;{{ key|urlencode }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}

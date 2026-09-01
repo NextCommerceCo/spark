@@ -178,13 +178,7 @@
             "subscription_frequency_error": "Please choose a valid subscription frequency.",
             "view_image": "View image {{ count }}",
             "select_variant": "Select variant",
-            "product_image_alt": "{{ title }} - image {{ count }}",
-            "sort_label": "Lajittele",
-            "sort_featured": "Suositellut",
-            "sort_price_asc": "Hinta: halvin ensin",
-            "sort_price_desc": "Hinta: kallein ensin",
-            "sort_title_asc": "Nimi: A-Ö",
-            "sort_apply": "Käytä lajittelua"
+            "product_image_alt": "{{ title }} - image {{ count }}"
         },
         "review": {
             "reviews": "Arvostelut",

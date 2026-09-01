@@ -23,7 +23,7 @@ This directory contains Spark's theme-developer, design-team, and architecture d
 | [cart-events.md](cart-events.md) | Cart event Interface for cart badge, add-to-cart, side cart, and apps. |
 | [cart-rewards.md](cart-rewards.md) | Side-cart reward and upsell rules. |
 | [cart-drawer-architecture.md](cart-drawer-architecture.md) | Side-cart Module split and public drawer API guidance. |
-| [catalogue-filters-and-sort.md](catalogue-filters-and-sort.md) | Category filter rail, mobile filter drawer, sticky catalogue bar, and the theme-level sort contract. |
+| [catalogue-filters.md](catalogue-filters.md) | Category filter rail, always-reachable mobile filter drawer, sticky supplemental opener, and filter pagination state. |
 
 ## Platform Path
 

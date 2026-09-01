@@ -178,13 +178,7 @@
             "subscription_frequency_error": "Please choose a valid subscription frequency.",
             "view_image": "View image {{ count }}",
             "select_variant": "Select variant",
-            "product_image_alt": "{{ title }} - image {{ count }}",
-            "sort_label": "Sorter",
-            "sort_featured": "Anbefalt",
-            "sort_price_asc": "Pris: lav til høy",
-            "sort_price_desc": "Pris: høy til lav",
-            "sort_title_asc": "Navn: A til Å",
-            "sort_apply": "Bruk sortering"
+            "product_image_alt": "{{ title }} - image {{ count }}"
         },
         "review": {
             "reviews": "Vurderinger",

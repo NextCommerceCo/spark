@@ -4,8 +4,8 @@ This catalog lists the Spark partials, homepage section partials, and setting-ba
 
 ## Mechanical Scope
 
-- Spark has 19 partial files that reference `settings.*` directly.
-- Spark has 5 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, `templates/catalogue/product.html`, `templates/catalogue/category.html`, and `templates/catalogue/index.html`.
+- Spark has 18 partial files that reference `settings.*` directly.
+- Spark has 3 setting-backed layout/template surfaces outside `partials/`: `layouts/base.html`, `templates/index.html`, and `templates/catalogue/product.html`.
 - Utility partials and inline icon partials are listed separately because they support the rendering system without owning Theme Settings.
 
 ## Homepage Section Partials
@@ -52,8 +52,6 @@ These files are not partials, but they are important setting-backed surfaces des
 | `layouts/base.html` | Advanced / Theme Styles / Navigation / Membership Pricing | Global document shell, critical-path load order, typography variables, custom CSS, account-only routing, announcement placement, and optional membership pricing bootstrapping. | `site_index`, `font_script`, `font_body`, `font_header`, `body_text_color`, `body_header_color`, `body_link_color`, `custom_css`, `account_only`, `ab_placement`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label`, `membership_detail_text` |
 | `templates/index.html` | Homepage | Homepage shell that includes the homepage section partials in the current fixed order. | `home_page_css`, `account_only`, `ab_text`, `ab_placement` |
 | `templates/catalogue/product.html` | Product Pages / Membership Pricing | Product detail layout, gallery behavior, variant selector, reviews, page-scoped CSS, and member price surfaces for the PDP and sticky add-to-cart bar. Variant behavior is coordinated by `assets/js/spark-variant-state.js`; custom redesigns should follow `docs/pdp-customization.md`. | `product_page_css`, `product_description_placement`, `product_gallery_layout`, `product_reviews`, `variant_picker`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label`, `membership_detail_text` |
-| `templates/catalogue/category.html` | Catalogue | Category layout: filter rail from 1024px up, sort control above the grid, product grid, pagination, and the sticky filter/sort bar plus filter drawer below 1024px. See `docs/catalogue-filters-and-sort.md`. | `catalogue_sort` |
-| `templates/catalogue/index.html` | Catalogue | Shop index. Receives no `filters` context, so it renders the sort control and sticky bar only. | `catalogue_sort` |
 
 ## Utility Partials
 
@@ -65,12 +63,11 @@ These are reusable implementation helpers. They are not directly controlled by T
 | `partials/form_field.html` | Shared form field renderer. |
 | `partials/cart_content.html` | Legacy/full cart content helper. |
 | `partials/cart_summary.html` | Cart total summary helper. |
-| `partials/catalogue_filters.html` | Catalogue filter form. Accepts `filter_form_id` and `hide_heading`. See `docs/catalogue-filters-and-sort.md`. |
+| `partials/catalogue_filters.html` | Catalogue filter form. Accepts `filter_form_id` and `hide_heading`. See `docs/catalogue-filters.md`. |
+| `partials/catalogue_filter_button.html` | Shared mobile filter opener used above the grid and in the supplemental sticky bar. |
 | `partials/catalogue_filter_drawer.html` | Mobile bottom-sheet dialog wrapping the filter form. |
-| `partials/catalogue_bar.html` | Sticky mobile filter/sort bar for catalogue and category pages. |
-| `partials/catalogue_sort.html` | Catalogue sort control. Gated by `catalogue_sort`. |
-| `partials/pagination_query.html` | Query-string suffix that preserves filters and sort across pagination links. |
-| `partials/pagination.html` | Pagination controls. |
+| `partials/catalogue_bar.html` | Supplemental sticky mobile filter opener for long category result lists. |
+| `partials/pagination.html` | Pagination controls. Uses the platform query tag to preserve active filters. |
 | `partials/alert_messages.html` | Flash/message renderer. |
 | `partials/product_carousel.html` | Legacy PDP carousel placeholder; Spark PDP currently uses `spark-gallery` directly. |
 | `partials/section_heading.html` | Shared heading helper for section heading size and alignment. |

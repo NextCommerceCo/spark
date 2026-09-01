@@ -1,7 +1,6 @@
 # Schema settings intentionally omitted from settings_data.json.
 ab_link_text # template applies a default filter
 cart_header_title # template applies a default filter
-catalogue_sort # schema default applies
 enable_membership_pricing # schema default applies
 featured_categories_header # template applies a default filter
 featured_product_cta_text # template applies a default filter

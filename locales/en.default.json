@@ -178,13 +178,7 @@
             "subscription_frequency_error": "Please choose a valid subscription frequency.",
             "view_image": "View image {{ count }}",
             "select_variant": "Select variant",
-            "product_image_alt": "{{ title }} - image {{ count }}",
-            "sort_label": "Sort",
-            "sort_featured": "Featured",
-            "sort_price_asc": "Price: low to high",
-            "sort_price_desc": "Price: high to low",
-            "sort_title_asc": "Name: A to Z",
-            "sort_apply": "Apply sort"
+            "product_image_alt": "{{ title }} - image {{ count }}"
         },
         "review": {
             "reviews": "Reviews",

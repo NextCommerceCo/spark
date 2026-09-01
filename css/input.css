@@ -662,10 +662,10 @@
         line-height: 1.25rem;
     }
 
-    /* ─── Catalogue Toolbar (filters + sort) ─── */
+    /* ─── Catalogue Filters ─── */
 
     /* Desktop puts the filter form in a rail beside the grid. Below the
-       1024px breakpoint the rail collapses and .catalogue-bar takes over. */
+       1024px breakpoint the rail collapses into the mobile drawer. */
     @media (min-width: 1024px) {
         .catalogue-layout {
             display: grid;
@@ -688,74 +688,21 @@
         }
     }
 
-    /* Sort control above the grid on desktop; the sticky bar owns it below. */
-    .catalogue-sort {
-        display: none;
+    /* The inline trigger is the primary mobile entry point. It remains
+       reachable for empty and short result sets where the sticky bar does not
+       appear. */
+    .catalogue-filter-inline {
+        display: flex;
+        margin-bottom: 1.5rem;
     }
 
     @media (min-width: 1024px) {
-        .catalogue-sort {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
+        .catalogue-filter-inline {
+            display: none;
         }
     }
 
-    .catalogue-sort-label {
-        font-size: 0.875rem;
-        color: #475569;
-    }
-
-    .catalogue-sort-select {
-        min-height: 44px;
-        padding: 0.5rem 0.75rem;
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 0.25rem;
-        color: #1E293B;
-        font-family: inherit;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-    }
-
-    /* ─── Sticky Mobile Filter / Sort Bar ─── */
-    /* Same mechanics as .sticky-atc: fixed to the bottom, translated out of
-       view, slid in when the grid has scrolled under the header. */
-
-    .catalogue-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 50;
-        background: white;
-        border-top: 1px solid #E2E8F0;
-        transform: translateY(100%);
-        transition: transform 250ms ease-out;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-    }
-
-    .catalogue-bar-visible {
-        transform: translateY(0);
-    }
-
-    .catalogue-bar-inner {
-        display: flex;
-        align-items: stretch;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
-        max-width: 1280px;
-        margin: 0 auto;
-    }
-
-    .catalogue-bar-control {
-        flex: 1 1 0;
-        min-width: 0;
-    }
-
-    .catalogue-bar-btn {
+    .catalogue-filter-button {
         width: 100%;
         min-height: 44px;
         display: inline-flex;
@@ -774,18 +721,43 @@
         cursor: pointer;
     }
 
-    .catalogue-bar-select {
-        width: 100%;
-        min-height: 44px;
-        padding: 0.625rem 1rem;
+    /* ─── Supplemental Sticky Mobile Filter Bar ─── */
+    /* Same mechanics as .sticky-atc: fixed to the bottom, translated out of
+       view, slid in when the grid has scrolled under the header. */
+
+    .catalogue-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
         background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 0.25rem;
-        color: #1E293B;
-        font-family: inherit;
-        font-size: 0.875rem;
-        font-weight: 500;
-        line-height: 1.25rem;
+        border-top: 1px solid #E2E8F0;
+        transform: translateY(100%);
+        visibility: hidden;
+        pointer-events: none;
+        transition: transform 250ms ease-in, visibility 0s linear 250ms;
+    }
+
+    .catalogue-bar-visible {
+        transform: translateY(0);
+        visibility: visible;
+        pointer-events: auto;
+        transition: transform 250ms ease-out;
+    }
+
+    .catalogue-bar-inner {
+        display: flex;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .catalogue-bar-control {
+        flex: 1 1 0;
+        min-width: 0;
     }
 
     .catalogue-bar-count {
@@ -803,7 +775,7 @@
         line-height: 1;
     }
 
-    /* Desktop keeps the rail and the inline sort control instead. */
+    /* Desktop keeps the filter rail instead. */
     @media (min-width: 1024px) {
         .catalogue-bar {
             display: none;

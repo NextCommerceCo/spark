@@ -65,6 +65,11 @@ BANNED_GENERATED_PATTERNS = (
         "Tailwind layer wrappers must be unwrapped before upload.",
     ),
     (
+        "min()/max()/clamp()",
+        re.compile(r'(?<![a-z-])(?:min|max|clamp)\(', re.IGNORECASE),
+        "The platform Sass compiler evaluates CSS min()/max()/clamp() as Sass math and rejects mixed units (the upload fails with 'Could not compile CSS. Please check Scss Syntax.'). Use a fixed value plus max-width/min-width instead. minmax() grid tracks are fine.",
+    ),
+    (
         "oklch()",
         re.compile(r'oklch\(', re.IGNORECASE),
         "Convert OKLCH colors to hex or another legacy color format.",

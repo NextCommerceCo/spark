@@ -57,16 +57,32 @@
         return { check: check };
     }
 
-    function initFilterDrawer(doc) {
+    function initFilterDrawer(doc, scrollLock) {
         var drawer = doc.getElementById('filter-drawer');
         if (!drawer) return null;
 
         var panel = drawer.querySelector('.filter-drawer-panel');
         var closeButton = drawer.querySelector('.filter-drawer-close');
         var toggles = toArray(doc.querySelectorAll('[data-toggle="filter-drawer"]'));
-        var previousOverflow = '';
         var lastFocused = null;
         var open = false;
+
+        function lockBodyScroll() {
+            if (scrollLock) {
+                scrollLock.lock();
+                return;
+            }
+            drawer._sparkPreviousOverflow = doc.body.style.overflow;
+            doc.body.style.overflow = 'hidden';
+        }
+
+        function unlockBodyScroll() {
+            if (scrollLock) {
+                scrollLock.unlock();
+                return;
+            }
+            doc.body.style.overflow = drawer._sparkPreviousOverflow || '';
+        }
 
         function setExpanded(value) {
             toggles.forEach(function(button) {
@@ -78,12 +94,11 @@
             if (open) return;
             open = true;
             lastFocused = doc.activeElement;
-            previousOverflow = doc.body.style.overflow;
             drawer.removeAttribute('inert');
             drawer.classList.add('filter-drawer-visible');
             drawer.setAttribute('aria-hidden', 'false');
             setExpanded('true');
-            doc.body.style.overflow = 'hidden';
+            lockBodyScroll();
             if (closeButton) closeButton.focus();
         }
 
@@ -94,7 +109,7 @@
             drawer.setAttribute('aria-hidden', 'true');
             drawer.setAttribute('inert', '');
             setExpanded('false');
-            doc.body.style.overflow = previousOverflow;
+            unlockBodyScroll();
             if (lastFocused && lastFocused.focus) lastFocused.focus();
         }
 
@@ -159,7 +174,7 @@
 
     function init(doc, win) {
         return {
-            drawer: initFilterDrawer(doc),
+            drawer: initFilterDrawer(doc, root.SparkBodyScrollLock),
             bar: initCatalogueBar(doc, win),
             activeFilterCount: updateFilterCount(doc)
         };

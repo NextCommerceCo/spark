@@ -11,6 +11,8 @@ Spark follows human-readable release notes rather than a strict package-manager 
 - Added a primary mobile filter opener above the category grid plus a supplemental sticky filter bar for long result lists. Both open the same accessible bottom-sheet drawer.
 - Pagination links now use the platform `add_query_param` tag so active filters survive paging.
 - "Clear" in the filter form now clears filters on the current path instead of navigating to the shop index.
+- Mobile navigation, search, and the catalogue filter drawer now share a reference-counted body scroll lock, so closing one overlapping panel cannot re-enable scrolling behind another.
+- Extracted the mobile navigation drawer from `partials/header.html` into `partials/mobile_menu.html` and hardened its accessibility contract: `aria-expanded`/`aria-controls` on the toggle, `role="dialog"` and `aria-modal` on the drawer, a focus trap while open, Escape to close, focus moved into the panel on open and returned to the toggle on close. The `data-toggle="mobile-nav"`, `data-close="mobile-nav"`, and `#mobile-nav` hooks are unchanged.
 
 ## 1.1.3 - 2026-08-27
 

@@ -80,7 +80,7 @@ function makeBarFixture(rect) {
     return { bar, doc, listeners, win };
 }
 
-function makeDrawerFixture() {
+function makeDrawerFixture(scrollLock) {
     const doc = {
         activeElement: null,
         body: { style: { overflow: 'auto' } },
@@ -108,7 +108,7 @@ function makeDrawerFixture() {
         return selector === '[data-toggle="filter-drawer"]' ? [opener] : [];
     };
 
-    return { applyButton, backdrop, closeButton, doc, drawer, opener };
+    return { applyButton, backdrop, closeButton, doc, drawer, opener, scrollLock };
 }
 
 // Empty grids keep their primary inline opener, while the supplemental bar
@@ -185,6 +185,21 @@ function makeDrawerFixture() {
     assert.strictEqual(fixture.opener.getAttribute('aria-expanded'), 'false');
     assert.strictEqual(fixture.doc.body.style.overflow, 'auto');
     assert.strictEqual(fixture.doc.activeElement, fixture.opener);
+}
+
+// The drawer participates in the theme-wide lock when core JavaScript is present.
+{
+    const calls = [];
+    const scrollLock = {
+        lock() { calls.push('lock'); },
+        unlock() { calls.push('unlock'); }
+    };
+    const fixture = makeDrawerFixture(scrollLock);
+    const controller = catalogue.initFilterDrawer(fixture.doc, fixture.scrollLock);
+    fixture.opener.dispatch('click');
+    controller.close();
+    assert.deepStrictEqual(calls, ['lock', 'unlock']);
+    assert.strictEqual(fixture.doc.body.style.overflow, 'auto');
 }
 
 // Template contracts cover the reachable opener and native query preservation.

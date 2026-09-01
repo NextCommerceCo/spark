@@ -7,6 +7,7 @@ Spark follows human-readable release notes rather than a strict package-manager 
 ## Unreleased
 
 - `scripts/sass-compat.py --check` now rejects any standalone CSS `min()`/`max()`/`clamp()`. The platform Sass compiler evaluates these as Sass math and fails the upload on mixed units; same-unit calls are also blocked to keep the guard simple and safe. `minmax()` grid tracks are still accepted. This makes `make css`/`make css-check` fail locally where the upload would previously have been the first failure point.
+- Extracted the mobile navigation drawer from `partials/header.html` into `partials/mobile_menu.html` and hardened its accessibility contract: `aria-expanded`/`aria-controls` on the toggle, `role="dialog"` and `aria-modal` on the drawer, a focus trap while open, Escape to close, focus moved into the panel on open and returned to the toggle on close. The `data-toggle="mobile-nav"`, `data-close="mobile-nav"`, and `#mobile-nav` hooks are unchanged.
 
 ## 1.1.3 - 2026-08-27
 

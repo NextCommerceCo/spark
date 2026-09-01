@@ -259,20 +259,6 @@
             });
         });
 
-        // Keyboard nav: Escape closes mobile nav
-        // (Side cart Escape handling is in side_cart.html via SparkSideCart)
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                var mobileNav = document.getElementById('mobile-nav');
-                if (mobileNav && !mobileNav.classList.contains('hidden')) {
-                    mobileNav.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
-                    var toggle = document.querySelector('[data-toggle="mobile-nav"]');
-                    if (toggle) toggle.focus();
-                }
-            }
-        });
-
     })();
     </script>
     {% endblock delight_scripts %}

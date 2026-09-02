@@ -22,9 +22,12 @@ LITERAL_RE = re.compile(
 # The platform renders such a template without error, so the defect is silent
 # until real settings data flows through the filter.
 DTL_EXPRESSION_RE = re.compile(r"{{.*?}}|{%.*?%}", re.DOTALL)
+# The value pattern consumes any backslash escape as a unit, so an escaped
+# quote (\" or \') inside the argument does not truncate the capture and hide
+# a later escape from the gate.
 FILTER_ARGUMENT_RE = re.compile(
     r"\|\s*(?P<filter>\w+)\s*:\s*"
-    r"(?P<quote>['\"])(?P<value>(?:(?!(?P=quote)).)*)(?P=quote)",
+    r"(?P<quote>['\"])(?P<value>(?:\\.|(?!(?P=quote))[^\\])*)(?P=quote)",
     re.DOTALL,
 )
 INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")

@@ -523,6 +523,31 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Template integrity gate passed", result.stdout)
 
+    def test_escape_after_an_escaped_quote_is_still_detected(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "quoted.html").write_text(
+                "{{ settings.notice|split:\"\\\"foo\\nbar\" }}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[escape-in-filter-argument]", result.stderr)
+        self.assertIn("quoted.html:1", result.stderr)
+        self.assertIn('split:"\\n"', result.stderr)
+
     def test_escape_gate_covers_variable_expressions_and_ignores_comments(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             fixture_dir = Path(temp_dir)

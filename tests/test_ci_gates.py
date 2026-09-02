@@ -523,6 +523,33 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Template integrity gate passed", result.stdout)
 
+    def test_escaped_other_quote_is_not_a_supported_escape(self):
+        # Django unescapes only the DELIMITING quote, so \' inside a
+        # double-quoted literal reaches the filter as two literal characters.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "quotes.html").write_text(
+                "{{ settings.notice|split:\"\\'\" }}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[escape-in-filter-argument]", result.stderr)
+        self.assertIn("quotes.html:1", result.stderr)
+        self.assertIn("split:\"\\'\"", result.stderr)
+
     def test_escape_after_an_escaped_quote_is_still_detected(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             fixture_dir = Path(temp_dir)

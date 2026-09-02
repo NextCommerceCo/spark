@@ -465,6 +465,143 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("Template integrity gate passed", result.stdout)
         self.assertIn("skipped 0 include tag(s)", result.stdout)
 
+    def test_backslash_escape_in_filter_argument_fails_naming_the_line(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "steps.html").write_text(
+                "<ul>\n"
+                "{% for item in settings.step_list|split:\"\\n\" %}\n"
+                "<li>{{ item }}</li>\n"
+                "{% endfor %}\n"
+                "</ul>\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[escape-in-filter-argument]", result.stderr)
+        self.assertIn("steps.html:2", result.stderr)
+        self.assertIn('split:"\\n"', result.stderr)
+        self.assertIn('|linebreaksbr|split:"<br>"', result.stderr)
+
+    def test_linebreaksbr_split_form_and_supported_escapes_pass(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "steps.html").write_text(
+                "{% for item in settings.step_list|linebreaksbr"
+                "|split:\"<br>\" %}\n"
+                "<li>{{ item|striptags }}</li>\n"
+                "{% endfor %}\n"
+                "{{ value|default:\"a \\\" quote and a \\\\ backslash\" }}\n"
+                "<p>Not a template literal: C:\\new\\path stays untouched</p>\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+
+    def test_escaped_other_quote_is_not_a_supported_escape(self):
+        # Django unescapes only the DELIMITING quote, so \' inside a
+        # double-quoted literal reaches the filter as two literal characters.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "quotes.html").write_text(
+                "{{ settings.notice|split:\"\\'\" }}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[escape-in-filter-argument]", result.stderr)
+        self.assertIn("quotes.html:1", result.stderr)
+        self.assertIn("split:\"\\'\"", result.stderr)
+
+    def test_escape_after_an_escaped_quote_is_still_detected(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "quoted.html").write_text(
+                "{{ settings.notice|split:\"\\\"foo\\nbar\" }}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[escape-in-filter-argument]", result.stderr)
+        self.assertIn("quoted.html:1", result.stderr)
+        self.assertIn('split:"\\n"', result.stderr)
+
+    def test_escape_gate_covers_variable_expressions_and_ignores_comments(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            templates_dir = fixture_dir / "templates"
+            templates_dir.mkdir()
+            (templates_dir / "mixed.html").write_text(
+                "{{ settings.notice|split:\"\\t\"|first }}\n"
+                "{# {{ settings.notice|split:\"\\n\" }} #}\n"
+                "{% comment %}{{ x|split:\"\\n\" }}{% endcomment %}\n",
+                encoding="utf-8",
+            )
+            allowlist_path = fixture_dir / "allowlist.txt"
+            allowlist_path.write_text("", encoding="utf-8")
+
+            result = run_checker(
+                "check-templates.py",
+                "--root",
+                fixture_dir,
+                "--allowlist",
+                allowlist_path,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("with 1 violation(s)", result.stderr)
+        self.assertIn("mixed.html:1", result.stderr)
+        self.assertIn('split:"\\t"', result.stderr)
+
     def test_cart_add_rejects_a_bare_parent_product_pk(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             fixture_dir = Path(temp_dir)

@@ -16,6 +16,21 @@ LITERAL_RE = re.compile(
     r"""\s*(?P<quote>['"])(?P<value>(?:(?!(?P=quote)).)*)(?P=quote)(?:\s|$)""",
     re.DOTALL,
 )
+# Django's unescape_string_literal handles ONLY \\ and the escaped DELIMITING
+# quote (\" inside "...", \' inside '...') of a template string literal. Every
+# other backslash sequence reaches the filter as two literal characters:
+# split:"\n" splits on backslash-n, never on a newline, and split:"\'" splits
+# on backslash-apostrophe. The platform renders such a template without error,
+# so the defect is silent until real settings data flows through the filter.
+DTL_EXPRESSION_RE = re.compile(r"{{.*?}}|{%.*?%}", re.DOTALL)
+# The value pattern consumes any backslash escape as a unit, so an escaped
+# quote (\" or \') inside the argument cannot cut the capture short and hide
+# a later escape from the gate.
+FILTER_ARGUMENT_RE = re.compile(
+    r"\|\s*(?P<filter>\w+)\s*:\s*"
+    r"(?P<quote>['\"])(?P<value>(?:\\.|(?!(?P=quote))[^\\])*)(?P=quote)",
+    re.DOTALL,
+)
 INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")
 BLOCK_COMMENT_RE = re.compile(
     r"{%\s*comment(?:\s+.*?)?\s*%}.*?{%\s*endcomment\s*%}",
@@ -101,6 +116,49 @@ def inspect_block_structure(text):
     return block_names, errors
 
 
+def unsupported_escape(value, quote):
+    """Return the first backslash sequence Django will not unescape, if any.
+
+    Django only unescapes ``\\\\`` and the backslash-escaped delimiting quote,
+    so ``\\'`` inside a double-quoted literal is NOT unescaped.
+    """
+    index = 0
+    while index < len(value) - 1:
+        if value[index] == "\\":
+            following = value[index + 1]
+            if following == "\\" or following == quote:
+                index += 2
+                continue
+            return "\\" + following
+        index += 1
+    return None
+
+
+def inspect_filter_arguments(masked, relative_path):
+    violations = []
+    for expression in DTL_EXPRESSION_RE.finditer(masked):
+        for match in FILTER_ARGUMENT_RE.finditer(expression.group(0)):
+            escape = unsupported_escape(match.group("value"), match.group("quote"))
+            if escape is None:
+                continue
+            offset = expression.start() + match.start()
+            line_number = masked.count("\n", 0, offset) + 1
+            filter_name = match.group("filter")
+            advice = (
+                ' Split on newlines with |linebreaksbr|split:"<br>".'
+                if escape == "\\n" and filter_name == "split"
+                else ""
+            )
+            violations.append(
+                f"[escape-in-filter-argument] {relative_path}:{line_number}: "
+                f"{filter_name}:\"{escape}\" - Django template string literals "
+                "unescape only \\\\ and the escaped delimiting quote, so the "
+                "filter receives the two "
+                f"literal characters {escape!r}.{advice}"
+            )
+    return violations
+
+
 def load_allowlist(path):
     names = set()
     with path.open(encoding="utf-8") as handle:
@@ -162,6 +220,8 @@ def inspect_templates(root, allowlist):
         _, block_errors = inspect_block_structure(masked)
         for error in block_errors:
             violations.append(f"[block-structure] {relative_path}: {error}")
+
+        violations.extend(inspect_filter_arguments(masked, relative_path))
 
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)

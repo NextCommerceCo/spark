@@ -17,6 +17,10 @@ config.yml
 .claude/
 .preview/
 
+# Python bytecode from the tooling tests (`make test`, `make verify-theme`)
+__pycache__/
+*.pyc
+
 # OS files
 .DS_Store
 Thumbs.db

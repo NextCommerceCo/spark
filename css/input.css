@@ -1,6 +1,26 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 
 /* Spark Theme — Tailwind v4 CSS-based configuration */
+
+/* Tailwind v4 auto-detects content in every non-ignored file, so any word that
+   happens to match a utility name — "collapse" in a section-roster bullet,
+   "grayscale" in a sass-compat comment, "z-70" in a DESIGN.md layer table —
+   compiles a utility nobody asked for into assets/main.css. That is what forced
+   the comment reword in 7e6f446 (#52) to get the drift gate green.
+
+   source(none) turns auto-detection off, so the scan set is exactly the four
+   directories below and prose can no longer reach the artifact. The cost is that
+   a NEW directory containing class attributes generates nothing until it is
+   listed here; tests/test_tailwind_source_guard.py pins this list so the omission
+   surfaces as a failing test rather than as missing styles in the storefront.
+
+   assets/js is a source, not an exclusion: the components set real utilities at
+   runtime (theme.js toggles `hidden`, `border-slate-200`, `border-slate-800`),
+   and those classes appear in no template. */
+@source "../templates";
+@source "../partials";
+@source "../layouts";
+@source "../assets/js";
 
 @theme {
     /* Override default font to system stack */

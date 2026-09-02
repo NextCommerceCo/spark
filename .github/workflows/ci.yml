@@ -49,9 +49,6 @@ jobs:
               print(f"OK: {path}")
           PY
 
-      - name: Run tests
-        run: python -m unittest discover -s tests
-
       - name: Run JavaScript module tests
         run: |
           for test_file in tests/js/*.test.js; do
@@ -106,6 +103,12 @@ jobs:
           fi
 
           validate_tailwind
+
+      # Runs after the CLI is installed: tests/test_tailwind_source_guard.py
+      # compiles CSS to prove the @source scan set excludes docs/scripts/tests,
+      # and it fails rather than skipping when ./tailwindcss is missing.
+      - name: Run tests
+        run: python -m unittest discover -s tests
 
       - name: CSS drift gate
         run: make css-drift

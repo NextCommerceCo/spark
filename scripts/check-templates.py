@@ -23,7 +23,7 @@ LITERAL_RE = re.compile(
 # until real settings data flows through the filter.
 DTL_EXPRESSION_RE = re.compile(r"{{.*?}}|{%.*?%}", re.DOTALL)
 # The value pattern consumes any backslash escape as a unit, so an escaped
-# quote (\" or \') inside the argument does not truncate the capture and hide
+# quote (\" or \') inside the argument cannot cut the capture short and hide
 # a later escape from the gate.
 FILTER_ARGUMENT_RE = re.compile(
     r"\|\s*(?P<filter>\w+)\s*:\s*"

@@ -58,6 +58,19 @@
         setCookie(CART_ID_KEY, id, 30);
     }
 
+    /**
+     * Forget the stored cart id. Called once the platform reports the cart is
+     * gone, so the next addToCart creates a fresh cart instead of retrying a
+     * consumed one. Checkout completion does not clear this on its own: the
+     * order-confirmation page is rendered by the platform, not the theme.
+     */
+    function clearCartId() {
+        try {
+            sessionStorage.removeItem(CART_ID_KEY);
+        } catch(e) {}
+        setCookie(CART_ID_KEY, '', -1);
+    }
+
     /* --- Currency formatting --- */
 
     function formatMoney(amount, currency) {
@@ -222,6 +235,49 @@
     }
 
     /**
+     * Helper: check if a *resolved* mutation result reports a missing cart.
+     * The platform answers a consumed cart id with HTTP 200 and
+     * `{ success: false, errors: { nonFieldErrors: [[{ code: 'cart_not_found' }]] }, cart: null }`,
+     * which never reaches the rejection path that isCartExpiredError guards.
+     * Walks whatever shape `errors` takes (object, nested arrays, strings).
+     */
+    function isCartNotFoundResult(result) {
+        if (!result || result.success !== false || !result.errors) return false;
+        var found = false;
+        (function walk(node, depth) {
+            if (found || node == null || depth > 6) return;
+            if (typeof node === 'string') {
+                found = isCartExpiredError({ message: node });
+                return;
+            }
+            if (typeof node !== 'object') return;
+            if (node.code === 'cart_not_found' || (node.message && isCartExpiredError(node))) {
+                found = true;
+                return;
+            }
+            var keys = Object.keys(node);
+            for (var i = 0; i < keys.length && !found; i++) walk(node[keys[i]], depth + 1);
+        })(result.errors, 0);
+        return found;
+    }
+
+    /**
+     * Helper: shared post-mutation handling. Clears the stored id when the
+     * platform says the cart is gone; otherwise persists the id and notifies.
+     */
+    function noteMutationResult(client, result, action) {
+        if (isCartNotFoundResult(result)) {
+            clearCartId();
+            return result;
+        }
+        if (result && result.cart) {
+            setCartId(result.cart.id);
+            client._dispatchCartUpdated(result.cart, action);
+        }
+        return result;
+    }
+
+    /**
      * Create a new empty cart. Stores the cart ID for future requests.
      * @returns {Promise<Object>} Full cart object
      */
@@ -244,9 +300,18 @@
         var id = cartId || getCartId();
         if (!id) return Promise.resolve(null);
         return this._request(GET_CART, { id: id }).then(function(data) {
-            return data.cart || null;
+            if (!data.cart) {
+                // The platform no longer knows this cart (typically consumed by
+                // checkout). Forget it so the next add starts a fresh cart.
+                clearCartId();
+                return null;
+            }
+            return data.cart;
         }).catch(function(err) {
-            if (isCartExpiredError(err)) return null;
+            if (isCartExpiredError(err)) {
+                clearCartId();
+                return null;
+            }
             throw err;
         });
     };
@@ -263,7 +328,14 @@
         var self = this;
         quantity = quantity || 1;
 
-        function doAdd(cartId) {
+        function recreateAndRetry() {
+            clearCartId();
+            return self.createCart().then(function(cart) {
+                return doAdd(cart.id, false);
+            });
+        }
+
+        function doAdd(cartId, recover) {
             var lineInput = { productPk: productPk, quantity: quantity };
     
             if (isUpsell) lineInput.isUpsell = true;
@@ -289,30 +361,33 @@
                 cartId: cartId,
                 lines: [lineInput]
             };
+            // Settle the request into an outcome first so the recovery below
+            // runs exactly once: a failure inside recreateAndRetry must not
+            // re-enter this branch.
             return self._request(ADD_CART_LINES, { input: input }).then(function(data) {
-                var result = data.addCartLines;
-                if (result && result.cart) {
-                    setCartId(result.cart.id);
-                    self._dispatchCartUpdated(result.cart, 'add');
+                return { data: data };
+            }, function(err) {
+                return { err: err };
+            }).then(function(outcome) {
+                if (outcome.err) {
+                    if (recover && isCartExpiredError(outcome.err)) return recreateAndRetry();
+                    throw outcome.err;
                 }
-                return result;
+                var result = outcome.data.addCartLines;
+                // The platform answers a consumed cart id with a resolved
+                // `success: false` / `cart_not_found` payload, not a rejection.
+                if (recover && isCartNotFoundResult(result)) return recreateAndRetry();
+                return noteMutationResult(self, result, 'add');
             });
         }
 
         var cartId = getCartId();
         if (cartId) {
-            return doAdd(cartId).catch(function(err) {
-                if (isCartExpiredError(err)) {
-                    return self.createCart().then(function(cart) {
-                        return doAdd(cart.id);
-                    });
-                }
-                throw err;
-            });
+            return doAdd(cartId, true);
         }
 
         return this.createCart().then(function(cart) {
-            return doAdd(cart.id);
+            return doAdd(cart.id, false);
         });
     };
 
@@ -326,12 +401,7 @@
         var self = this;
         var input = { cartId: cartId, lines: lines };
         return this._request(UPDATE_CART_LINES, { input: input }).then(function(data) {
-            var result = data.updateCartLines;
-            if (result && result.cart) {
-                setCartId(result.cart.id);
-                self._dispatchCartUpdated(result.cart, 'update');
-            }
-            return result;
+            return noteMutationResult(self, data.updateCartLines, 'update');
         });
     };
 
@@ -345,12 +415,7 @@
         var self = this;
         var input = { cartId: cartId, lineIds: lineIds };
         return this._request(REMOVE_CART_LINES, { input: input }).then(function(data) {
-            var result = data.removeCartLines;
-            if (result && result.cart) {
-                setCartId(result.cart.id);
-                self._dispatchCartUpdated(result.cart, 'remove');
-            }
-            return result;
+            return noteMutationResult(self, data.removeCartLines, 'remove');
         });
     };
 
@@ -365,6 +430,10 @@
         var input = { cartId: cartId, vouchers: [code] };
         return this._request(ADD_VOUCHER, { input: input }).then(function(data) {
             var result = data.addVoucher;
+            if (isCartNotFoundResult(result)) {
+                clearCartId();
+                return result;
+            }
             if (result && result.cart) {
                 self._dispatchCartUpdated(result.cart, 'voucher_add');
             }
@@ -383,6 +452,10 @@
         var input = { cartId: cartId, vouchers: [voucherCode] };
         return this._request(REMOVE_VOUCHER, { input: input }).then(function(data) {
             var result = data.removeVoucher;
+            if (isCartNotFoundResult(result)) {
+                clearCartId();
+                return result;
+            }
             if (result && result.cart) {
                 self._dispatchCartUpdated(result.cart, 'voucher_remove');
             }

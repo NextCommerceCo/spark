@@ -22,7 +22,7 @@ Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + va
 - **Performance load order:** `layouts/base.html` separates metadata, LCP preloads, CSS, rare priority JS, body content, ordered theme JS, footer app hooks, and tracking. See `docs/performance-load-order.md` before adding head scripts or preloads.
 - **Templates:** Django Template Language (DTL)
 - **Icons:** SVG partials in `partials/icons/`
-- **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS.
+- **jQuery:** REMOVED. Zero jQuery, zero Bootstrap. `spark-platform.js` replaces `{% core_js %}` with vanilla JS. The one piece of `core_js` that Spark still needs is the platform's `{% pixels %}` tag (app event-tracker iframes + `customerEventManager`); `layouts/base.html` renders it in its own `pixels` block before the theme script stack. Do not remove it.
 - **Design System:** See [DESIGN.md](DESIGN.md) for all visual decisions.
 
 ## CSS Pipeline

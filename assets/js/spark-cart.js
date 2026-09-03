@@ -240,18 +240,30 @@
      * `{ success: false, errors: { nonFieldErrors: [[{ code: 'cart_not_found' }]] }, cart: null }`,
      * which never reaches the rejection path that isCartExpiredError guards.
      * Walks whatever shape `errors` takes (object, nested arrays, strings).
+     *
+     * Deliberately stricter than isCartExpiredError: resolved results also
+     * carry ordinary validation errors ("Invalid quantity", "Invalid voucher
+     * code"), and the broad 'invalid' substring there would wipe a live cart.
+     * Only the cart_not_found code, or a message naming the cart as not found,
+     * counts.
      */
+    function isCartNotFoundMessage(message) {
+        if (typeof message !== 'string') return false;
+        var msg = message.toLowerCase();
+        return msg.indexOf('cart') !== -1 && msg.indexOf('not found') !== -1;
+    }
+
     function isCartNotFoundResult(result) {
         if (!result || result.success !== false || !result.errors) return false;
         var found = false;
         (function walk(node, depth) {
             if (found || node == null || depth > 6) return;
             if (typeof node === 'string') {
-                found = isCartExpiredError({ message: node });
+                found = isCartNotFoundMessage(node);
                 return;
             }
             if (typeof node !== 'object') return;
-            if (node.code === 'cart_not_found' || (node.message && isCartExpiredError(node))) {
+            if (node.code === 'cart_not_found' || isCartNotFoundMessage(node.message)) {
                 found = true;
                 return;
             }

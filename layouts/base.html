@@ -169,6 +169,11 @@
         {% include 'partials/side_cart.html' %}
     {% endblock side_cart %}
 
+    {# Platform event trackers (GA4, GTM, Klaviyo, Taboola apps subscribe through these frames). Rendered by core_js in Intro Bootstrap; Spark dropped core_js and must render it itself. #}
+    {% block pixels %}
+        {% pixels %}
+    {% endblock pixels %}
+
     {# Theme JS - dependency ordered, zero jQuery, zero Bootstrap. #}
     {% block scripts %}
         <script type="text/javascript" src="{{ 'js/spark-events.js'|asset_url }}"></script>

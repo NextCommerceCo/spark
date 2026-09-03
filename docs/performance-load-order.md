@@ -15,8 +15,9 @@ The goal is simple: the browser should discover metadata, LCP assets, and CSS be
 5. `extrahead` and `head_app_hooks` for platform-critical head snippets.
 6. Body content through `content_wrapper`.
 7. Non-critical UI shells such as the side cart.
-8. Minimal global JavaScript: `SparkEvents`, `SparkCartLoader`, `theme.js`, and platform compatibility.
-9. Page `component_scripts`, page `extrascripts`, inline Spark enhancements, footer app hooks, and `tracking`.
+8. `pixels`: the platform's `{% pixels %}` tag, which renders one hidden iframe per installed app event tracker (GA4, GTM, Klaviyo, Taboola) and `customerEventManager`. It runs before the theme script stack so its `fetch` hook is in place before `spark-cart` and friends make requests. Intro Bootstrap gets this through `{% core_js %}`; Spark dropped `core_js` and renders the tag itself.
+9. Minimal global JavaScript: `SparkEvents`, `SparkCartLoader`, `theme.js`, and platform compatibility.
+10. Page `component_scripts`, page `extrascripts`, inline Spark enhancements, footer app hooks, and `tracking`.
 
 ## Theme-Side Rules
 
@@ -45,6 +46,7 @@ Other templates should add a `critical_preloads` override only when they have a 
 
 Spark's global layout loads only:
 
+- the platform `{% pixels %}` output (`pixels.min.js` plus the app tracker iframes; not a theme asset)
 - `spark-events.js`
 - `spark-cart-loader.js`
 - `theme.js`

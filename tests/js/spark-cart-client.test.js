@@ -44,6 +44,10 @@ function createEnvironment(options = {}) {
         setItem: function(key, value) {
             if (options.storageThrows) throw new Error('storage unavailable');
             storage[key] = String(value);
+        },
+        removeItem: function(key) {
+            if (options.storageThrows) throw new Error('storage unavailable');
+            delete storage[key];
         }
     };
 
@@ -376,6 +380,128 @@ async function testStaticUtilities() {
     assert.equal(env.Client.MAX_QTY_PER_LINE, 15);
 }
 
+// Exact payload the platform returned on aptest.29next.store on 2026-09-03 for
+// every addCartLines after checkout consumed the stored cart: HTTP 200, no
+// top-level GraphQL errors, so _request resolves instead of rejecting.
+const CART_NOT_FOUND_RESULT = {
+    success: false,
+    errors: { nonFieldErrors: [[{ message: 'Cart not found.', code: 'cart_not_found' }]] },
+    cart: null
+};
+
+async function testAddToCartRecoversFromResolvedCartNotFound() {
+    const env = createEnvironment({ cookies: { storefront_cart_id: 'consumed-cart' } });
+    env.storage.storefront_cart_id = 'consumed-cart';
+    const client = new env.Client();
+    const calls = [];
+    client._request = function(query, variables) {
+        if (query.indexOf('CreateCart') !== -1) {
+            calls.push('createCart');
+            return Promise.resolve({ createCart: { cart: { id: 'fresh-cart' } } });
+        }
+        calls.push('addCartLines:' + variables.input.cartId);
+        if (variables.input.cartId === 'consumed-cart') {
+            return Promise.resolve({ addCartLines: CART_NOT_FOUND_RESULT });
+        }
+        return Promise.resolve({ addCartLines: { success: true, cart: { id: 'fresh-cart', numItems: 1 } } });
+    };
+
+    const result = await client.addToCart(7, 1);
+    assert.equal(result.success, true);
+    assert.deepEqual(calls, ['addCartLines:consumed-cart', 'createCart', 'addCartLines:fresh-cart']);
+    assert.equal(env.storage.storefront_cart_id, 'fresh-cart');
+    assert.equal(env.cookieJar.storefront_cart_id, 'fresh-cart');
+    assert.equal(env.events.length, 1);
+    assert.equal(env.events[0].detail.action, 'add');
+}
+
+async function testAddToCartRecoveryRunsOnlyOnce() {
+    const env = createEnvironment({ cookies: { storefront_cart_id: 'consumed-cart' } });
+    const client = new env.Client();
+    let adds = 0;
+    client._request = function(query) {
+        if (query.indexOf('CreateCart') !== -1) {
+            return Promise.resolve({ createCart: { cart: { id: 'fresh-cart' } } });
+        }
+        adds += 1;
+        return Promise.resolve({ addCartLines: CART_NOT_FOUND_RESULT });
+    };
+
+    const result = await client.addToCart(7, 1);
+    assert.equal(result.success, false);
+    assert.equal(adds, 2, 'one recovery attempt, then the platform answer is returned as-is');
+    assert.equal(env.storage.storefront_cart_id, undefined, 'a second miss leaves no stale id behind');
+}
+
+async function testGoneCartClearsStoredId() {
+    // getCart: the first storefront request after the platform's own
+    // order-confirmation page is badge hydration, which must forget the id.
+    const nullEnv = createEnvironment({ cookies: { storefront_cart_id: 'consumed-cart' } });
+    nullEnv.storage.storefront_cart_id = 'consumed-cart';
+    const nullClient = new nullEnv.Client();
+    nullClient._request = function() { return Promise.resolve({ cart: null }); };
+    assert.equal(await nullClient.getCart(), null);
+    assert.equal(nullClient.getCartId(), null);
+    assert.equal(nullEnv.storage.storefront_cart_id, undefined);
+
+    const rejectEnv = createEnvironment({ cookies: { storefront_cart_id: 'consumed-cart' } });
+    const rejectClient = new rejectEnv.Client();
+    rejectClient._request = function() { return Promise.reject(new Error('Cart not found')); };
+    assert.equal(await rejectClient.getCart(), null);
+    assert.equal(rejectClient.getCartId(), null);
+
+    // Explicit-id mutations do not recreate (the caller is editing a cart it
+    // believes exists) but must stop the stale id from leaking into the next add.
+    for (const [method, field, args] of [
+        ['updateCartLines', 'updateCartLines', ['consumed-cart', [{ lineId: '1', quantity: 2 }]]],
+        ['removeCartLines', 'removeCartLines', ['consumed-cart', ['1']]],
+        ['addVoucher', 'addVoucher', ['consumed-cart', 'SAVE']],
+        ['removeVoucher', 'removeVoucher', ['consumed-cart', 'SAVE']]
+    ]) {
+        const env = createEnvironment({ cookies: { storefront_cart_id: 'consumed-cart' } });
+        env.storage.storefront_cart_id = 'consumed-cart';
+        const client = new env.Client();
+        client._request = function() {
+            const data = {};
+            data[field] = CART_NOT_FOUND_RESULT;
+            return Promise.resolve(data);
+        };
+        const result = await client[method].apply(client, args);
+        assert.equal(result.success, false, method);
+        assert.equal(client.getCartId(), null, method + ' clears the stored id');
+        assert.equal(env.events.length, 0, method + ' dispatches nothing for a gone cart');
+    }
+}
+
+async function testValidationErrorsKeepTheStoredId() {
+    // Ordinary resolved validation errors carry no cart_not_found code and
+    // often contain "invalid"; they must not be mistaken for a missing cart.
+    const cases = [
+        ['addCartLines', 'addToCart', [7, 1], { lines: [[{ message: 'Invalid quantity', code: 'invalid' }]] }],
+        ['addVoucher', 'addVoucher', ['live-cart', 'NOPE'], { vouchers: [[{ message: 'Invalid voucher code' }]] }],
+        ['updateCartLines', 'updateCartLines', ['live-cart', [{ lineId: '1', quantity: 99 }]], { nonFieldErrors: ['Invalid quantity for line 1'] }]
+    ];
+    for (const [field, method, args, errors] of cases) {
+        const env = createEnvironment({ cookies: { storefront_cart_id: 'live-cart' } });
+        env.storage.storefront_cart_id = 'live-cart';
+        const client = new env.Client();
+        let creates = 0;
+        client._request = function(query) {
+            if (query.indexOf('CreateCart') !== -1) {
+                creates += 1;
+                return Promise.resolve({ createCart: { cart: { id: 'unwanted-cart' } } });
+            }
+            const data = {};
+            data[field] = { success: false, errors: errors, cart: null };
+            return Promise.resolve(data);
+        };
+        const result = await client[method].apply(client, args);
+        assert.equal(result.success, false, method);
+        assert.equal(creates, 0, method + ' must not recreate the cart');
+        assert.equal(client.getCartId(), 'live-cart', method + ' keeps the stored id');
+    }
+}
+
 const tests = [
     ['createCart persistence paths', testCreateCartPersistencePaths],
     ['getCart outcomes', testGetCartOutcomes],
@@ -383,6 +509,10 @@ const tests = [
     ['zero quantity is promoted', testZeroQuantityIsPromoted],
     ['unvalidated quantities are forwarded', testUnvalidatedQuantitiesAreForwarded],
     ['addToCart expired retry', testAddToCartExpiredRetry],
+    ['addToCart recovers from resolved cart_not_found', testAddToCartRecoversFromResolvedCartNotFound],
+    ['addToCart recovery runs only once', testAddToCartRecoveryRunsOnlyOnce],
+    ['gone cart clears stored id', testGoneCartClearsStoredId],
+    ['validation errors keep the stored id', testValidationErrorsKeepTheStoredId],
     ['subscription validation and input', testSubscriptionValidationAndInput],
     ['mutation variables and events', testMutationVariablesAndEvents],
     ['request errors and retries', testRequestErrorsAndRetries],

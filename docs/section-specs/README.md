@@ -16,3 +16,9 @@ Each spec should describe one merchant-configurable section across Figma, Theme 
 | [Promo banner](promo-banner.md) | First pass | `partials/section_promo_banner.html` |
 
 Use `docs/figma-section-library-plan.md` for the overall workflow and library structure, and [`docs/section-roster.md`](../section-roster.md) for the full Tier 1/2/3 partial roster Spark should ship to fully cover modern D2C storefronts.
+
+## Authoring contract: consume the tokens
+
+New section partials must use the Style token utilities instead of repeating design literals. Use `py-section-y md:py-section-y-md` for standard section rhythm or `py-band-y md:py-band-y-md` for promotion bands; use `gap-content*`, `rounded-card` or `rounded-control`, `text-h1`, `text-h2`, `text-h3`, or `text-display`, adding `md:text-h1-md` or `md:text-display-md` where applicable; and use `border-border`. Do not substitute literal utilities such as `py-12`, `gap-6`, `rounded`, `border-slate-200`, or `text-2xl` for those design decisions.
+
+Placeholder and empty-state chrome stays literal on purpose because it communicates missing configuration rather than the merchant-facing design language. See [`css/input.css`](../../css/input.css) under `@theme` for the complete token list and [`DESIGN.md`](../../DESIGN.md) for defaults.

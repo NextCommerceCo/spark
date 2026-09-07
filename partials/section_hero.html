@@ -20,7 +20,7 @@
              style="color: {{ settings.homepage_hero_text_color|default:'#ffffff' }};">
             <div class="{% if settings.homepage_hero_content_width == 'narrow' %}max-w-xl{% elif settings.homepage_hero_content_width == 'wide' %}max-w-4xl{% elif settings.homepage_hero_content_width == 'full' %}max-w-none{% else %}max-w-2xl{% endif %} {% if settings.homepage_hero_text_align == 'center' %}text-center{% elif settings.homepage_hero_text_align == 'right' %}text-right{% else %}text-left{% endif %}">
                 {% if settings.homepage_hero_heading %}
-                    <h1 class="text-3xl md:text-5xl font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
+                    <h1 class="text-display md:text-display-md font-semibold mb-2" style="text-shadow: 0 1px 3px rgba(0,0,0,0.3);">{{ settings.homepage_hero_heading }}</h1>
                 {% endif %}
                 {% if settings.homepage_hero_subheading %}
                     <p class="text-base md:text-lg mb-4" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ settings.homepage_hero_subheading }}</p>

@@ -1,7 +1,7 @@
 {# Spark homepage on-sale product grid. #}
 {% if settings.show_on_sale %}
     {% if settings.on_sale_products|length > 0 %}
-    <section class="py-12 md:py-16" {% if settings.on_sale_bg_color %}style="background-color: {{ settings.on_sale_bg_color }};"{% endif %}>
+    <section class="py-section-y md:py-section-y-md" {% if settings.on_sale_bg_color %}style="background-color: {{ settings.on_sale_bg_color }};"{% endif %}>
         <div class="container">
             {% t "homepage.heading.on_sale" as default_on_sale %}
             {% include "partials/section_heading.html" with heading=settings.on_sale_header|default:default_on_sale size=settings.on_sale_header_size align=settings.on_sale_header_align %}

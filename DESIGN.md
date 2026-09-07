@@ -16,6 +16,17 @@ Spark is a storefront theme for Next Commerce. This document is the single sourc
 
 Merchants can override body and heading fonts via dashboard settings (`font_body`, `font_header`). The system stack is the default.
 
+### Heading scale
+
+| Utility | Default size |
+|---------|--------------|
+| `text-h3` | 1.25rem |
+| `text-h2` | 1.5rem |
+| `text-h1` / `md:text-h1-md` | 1.875rem / 2.25rem |
+| `text-display` / `md:text-display-md` | 1.875rem / 3rem |
+
+Each heading token carries Tailwind's line-height ratio. The `heading_scale` setting in Theme Settings > Style > Type Scale multiplies these sizes through `--heading-scale`: small is 0.875, default is 1, and large is 1.125. Body copy stays on the utility scale. The `body_size` setting accepts 15px through 18px and sets the body font-size through `--body-size`; its 16px default is the browser default. The page background comes from `body_bg_color` through `--body-bg-color`.
+
 | Role | Size | Weight | Line-height | Usage |
 |------|------|--------|-------------|-------|
 | Page heading | text-2xl / text-3xl | 600 (semibold) | 1.2 | h1 on category, PDP, blog post |
@@ -97,13 +108,17 @@ These are functional signals, not brand expression. Never let merchants change t
 | 12 | 48px | Major section padding (py-12) |
 | 16 | 64px | Footer top margin (mt-16) |
 
+### Section rhythm and content gap (merchant-adjustable)
+
+Standard sections use 3rem vertical padding and 4rem at 768px and above. The promo band uses 4rem and 5rem at the same breakpoint. The default content gap is 1.5rem; its `sm`, `md`, and `lg` steps use 2/3, 4/3, and 2x ratios.
+
+Theme Settings > Style > Layout controls these values. `section_padding` sets `--section-padding-y` to compact (2rem), default (3rem), or roomy (5rem). `content_gap` sets `--content-gap` to tight (1rem), default (1.5rem), or loose (2rem).
+
 ### Container
 
-```
-max-width: 1280px
-padding: 1rem (mobile) → 1.5rem (768px+)
-margin: auto (centered)
-```
+**Max-width:** 1280px default; `container_max_width` offers 1120px / 1280px / 1440px via `--container-max`.
+
+**Gutters:** 1rem (mobile) → 1.5rem (768px+). Margin remains auto (centered).
 
 ---
 
@@ -113,11 +128,12 @@ margin: auto (centered)
 
 | Element | Radius | Rationale |
 |---------|--------|-----------|
-| Buttons | 4px (0.25rem) | Only rounded element — subtle, functional |
-| Form inputs | 4px (0.25rem) | Matches buttons |
+| Buttons (`.btn`) | 4px default, `radius_control` (0-16px) via `--control-radius` | Subtle, functional rounding |
+| Form inputs | 4px (0.25rem), literal | Matches the button default; not yet on the token |
+| Product cards, featured image, category tiles | 0 default, `radius_card` (0-16px) via `--card-radius` | Sharp by default |
 | Everything else | 0 | Sharp, architectural feel |
 
-**Border style:** 1px solid slate-200 (`#E2E8F0`) for all layout dividers — header bottom, footer sections, form fields, card boundaries.
+**Border style:** 1px solid slate-200 (`#E2E8F0`) for all layout dividers — header bottom, footer sections, form fields, card boundaries. `border_color` via `--border-color` drives the secondary button and bordered product cards today; the other dividers stay literal until they move onto the token.
 
 **Box shadow:** Almost never. Clean flat aesthetic. Exception: side cart legacy CSS (platform dependency).
 
@@ -341,7 +357,7 @@ These patterns are banned. If you see them in a PR, reject it.
 2. **Centered-everything layout** — left-align text. Only center: empty states, footer copyright.
 3. **Generic hero text** — "Welcome to our store." The hero IS a product image.
 4. **Decorative gradients or blobs** — zero decorative elements.
-5. **Rounded-everything** — sharp corners (0px). Only buttons get 4px.
+5. **Rounded-everything** — the default is 0px for cards and 4px for controls. Merchant radius settings are the sanctioned way to add rounding.
 6. **Drop shadows for depth** — flat aesthetic. Borders for separation.
 7. **Ratings/badges/tags on product cards** — image + title + price. Nothing else.
 8. **Hover zoom on product images** — let photos breathe. group-hover:text-slate-600 on title is enough.
@@ -387,6 +403,15 @@ Applied to support articles and cart page. Hide chrome, clean layout, readable t
 | `body_text_color` | color | #1E293B | Body text |
 | `body_header_color` | color | #1E293B | Headings |
 | `body_link_color` | color | primary | Links |
+| `body_bg_color` | color | #FFFFFF | Page background via `--body-bg-color` |
+| `border_color` | color | #E2E8F0 | Secondary button and bordered product card borders via `--border-color` |
+| `radius_control` | select | 4px | Button (`.btn`) radius via `--control-radius` |
+| `radius_card` | select | 0 | Product card, featured image, and category tile radius via `--card-radius` |
+| `section_padding` | select | default (3rem) | Homepage section and promo-band vertical rhythm via `--section-padding-y` |
+| `content_gap` | select | default (1.5rem) | Product grids, category grids, and content-column gaps via `--content-gap` |
+| `container_max_width` | select | 1280px | Container maximum width via `--container-max` |
+| `heading_scale` | select | default (1) | Display and section heading tokens via `--heading-scale` |
+| `body_size` | select | 16px | Body font-size via `--body-size` |
 | `navbar_bg_color` | color | white | Header background |
 | `navbar_link_color` | color | #475569 | Nav icon/link color |
 | `footer_bg_color` | color | #F8FAFC | Footer background |

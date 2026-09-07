@@ -32,6 +32,31 @@
     --color-success: #22C55E;
     --color-error: #EF4444;
     --color-warning: #F59E0B;
+
+    /* Style tokens (spark#56) */
+    --color-border: var(--border-color, #E2E8F0);
+    --radius-control: var(--control-radius, 4px);
+    --radius-card: var(--card-radius, 0);
+    --spacing-section-y: var(--section-padding-y, 3rem);
+    --spacing-section-y-md: calc(var(--section-padding-y, 3rem) * 4 / 3);
+    --spacing-band-y: calc(var(--section-padding-y, 3rem) * 4 / 3);
+    --spacing-band-y-md: calc(var(--section-padding-y, 3rem) * 5 / 3);
+    --spacing-content: var(--content-gap, 1.5rem);
+    --spacing-content-sm: calc(var(--content-gap, 1.5rem) * 2 / 3);
+    --spacing-content-md: calc(var(--content-gap, 1.5rem) * 4 / 3);
+    --spacing-content-lg: calc(var(--content-gap, 1.5rem) * 2);
+    --text-h3: calc(1.25rem * var(--heading-scale, 1));
+    --text-h3--line-height: calc(1.75 / 1.25);
+    --text-h2: calc(1.5rem * var(--heading-scale, 1));
+    --text-h2--line-height: calc(2 / 1.5);
+    --text-h1: calc(1.875rem * var(--heading-scale, 1));
+    --text-h1--line-height: calc(2.25 / 1.875);
+    --text-h1-md: calc(2.25rem * var(--heading-scale, 1));
+    --text-h1-md--line-height: calc(2.5 / 2.25);
+    --text-display: calc(1.875rem * var(--heading-scale, 1));
+    --text-display--line-height: calc(2.25 / 1.875);
+    --text-display-md: calc(3rem * var(--heading-scale, 1));
+    --text-display-md--line-height: 1;
 }
 
 @layer base {
@@ -43,9 +68,10 @@
 
     body {
         font-family: var(--font-sans);
+        font-size: var(--body-size, 1rem);
         color: #1E293B;
         line-height: 1.6;
-        background-color: #FFFFFF;
+        background-color: var(--body-bg-color, #FFFFFF);
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -79,7 +105,7 @@
         font-weight: 500;
         font-size: 0.875rem;
         line-height: 1.25rem;
-        border-radius: 0.25rem;
+        border-radius: var(--control-radius, 0.25rem);
         transition: opacity 150ms ease-out;
         cursor: pointer;
     }
@@ -114,7 +140,7 @@
     .btn-secondary {
         background-color: transparent;
         color: var(--primary-color);
-        border: 1px solid #E2E8F0;
+        border: 1px solid var(--border-color, #E2E8F0);
     }
 
     .btn-secondary:hover {
@@ -124,7 +150,7 @@
     /* Container */
     .container {
         width: 100%;
-        max-width: 1280px;
+        max-width: var(--container-max, 1280px);
         margin-left: auto;
         margin-right: auto;
         padding-left: 1rem;
@@ -142,10 +168,12 @@
     .product-card {
         display: flex;
         flex-direction: column;
+        border-radius: var(--card-radius, 0);
+        overflow: hidden;
     }
 
     .product-card-bordered {
-        border: 1px solid #E2E8F0;
+        border: 1px solid var(--border-color, #E2E8F0);
     }
 
     .product-card-bordered .product-title {
@@ -230,7 +258,7 @@
     .product-grid {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        gap: 1.5rem;
+        gap: var(--content-gap, 1.5rem);
     }
 
     @media (min-width: 768px) {
@@ -249,7 +277,7 @@
     .category-grid {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        gap: 1rem;
+        gap: calc(var(--content-gap, 1.5rem) * 2 / 3);
     }
 
     @media (min-width: 768px) {

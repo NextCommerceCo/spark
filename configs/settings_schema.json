@@ -1177,6 +1177,189 @@
                 "type": "color",
                 "help_text": "Default color for links."
             }
+        ],
+        "Layout": [
+            {
+                "name": "body_bg_color",
+                "label": "Page Background Color",
+                "type": "color",
+                "help_text": "Background color for the page. Default white."
+            },
+            {
+                "name": "border_color",
+                "label": "Border Color",
+                "type": "color",
+                "help_text": "Color for secondary button and bordered product card borders. Default slate-200 (#E2E8F0)."
+            },
+            {
+                "name": "radius_control",
+                "label": "Control Radius",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "None",
+                        "value": "0"
+                    },
+                    {
+                        "name": "4px",
+                        "value": "4px"
+                    },
+                    {
+                        "name": "8px",
+                        "value": "8px"
+                    },
+                    {
+                        "name": "12px",
+                        "value": "12px"
+                    },
+                    {
+                        "name": "16px",
+                        "value": "16px"
+                    }
+                ],
+                "default": "4px",
+                "help_text": "Corner radius for buttons. Default 4px."
+            },
+            {
+                "name": "radius_card",
+                "label": "Card Radius",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "None",
+                        "value": "0"
+                    },
+                    {
+                        "name": "4px",
+                        "value": "4px"
+                    },
+                    {
+                        "name": "8px",
+                        "value": "8px"
+                    },
+                    {
+                        "name": "12px",
+                        "value": "12px"
+                    },
+                    {
+                        "name": "16px",
+                        "value": "16px"
+                    }
+                ],
+                "default": "0",
+                "help_text": "Corner radius for product cards. Default none."
+            },
+            {
+                "name": "section_padding",
+                "label": "Section Padding",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Compact",
+                        "value": "compact"
+                    },
+                    {
+                        "name": "Default",
+                        "value": "default"
+                    },
+                    {
+                        "name": "Roomy",
+                        "value": "roomy"
+                    }
+                ],
+                "default": "default",
+                "help_text": "Vertical padding for homepage sections. Default 3rem."
+            },
+            {
+                "name": "content_gap",
+                "label": "Content Gap",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Tight",
+                        "value": "tight"
+                    },
+                    {
+                        "name": "Default",
+                        "value": "default"
+                    },
+                    {
+                        "name": "Loose",
+                        "value": "loose"
+                    }
+                ],
+                "default": "default",
+                "help_text": "Gap between products and content columns. Default 1.5rem."
+            },
+            {
+                "name": "container_max_width",
+                "label": "Container Max Width",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "1120px",
+                        "value": "1120px"
+                    },
+                    {
+                        "name": "1280px",
+                        "value": "1280px"
+                    },
+                    {
+                        "name": "1440px",
+                        "value": "1440px"
+                    }
+                ],
+                "default": "1280px",
+                "help_text": "Maximum width for page content. Default 1280px."
+            }
+        ],
+        "Type Scale": [
+            {
+                "name": "heading_scale",
+                "label": "Heading Scale",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Small",
+                        "value": "small"
+                    },
+                    {
+                        "name": "Default",
+                        "value": "default"
+                    },
+                    {
+                        "name": "Large",
+                        "value": "large"
+                    }
+                ],
+                "default": "default",
+                "help_text": "Scale applied to display and section headings. Default 1."
+            },
+            {
+                "name": "body_size",
+                "label": "Body Size",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "15px",
+                        "value": "15px"
+                    },
+                    {
+                        "name": "16px",
+                        "value": "16px"
+                    },
+                    {
+                        "name": "17px",
+                        "value": "17px"
+                    },
+                    {
+                        "name": "18px",
+                        "value": "18px"
+                    }
+                ],
+                "default": "16px",
+                "help_text": "Base font size for body text. Default 16px."
+            }
         ]
     },
     "Side Cart": {

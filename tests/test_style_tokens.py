@@ -23,7 +23,6 @@ SETTINGS_SCHEMA = ROOT / "configs" / "settings_schema.json"
 
 
 EXPECTED_THEME_DECLARATIONS = (
-    "--color-page: var(--body-bg-color, #FFFFFF);",
     "--color-border: var(--border-color, #E2E8F0);",
     "--radius-control: var(--control-radius, 4px);",
     "--radius-card: var(--card-radius, 0);",

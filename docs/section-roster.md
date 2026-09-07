@@ -395,6 +395,7 @@ extension points — and are not blocked by this roster.
 - [`theme-settings-partials.md`](./theme-settings-partials.md) — settings-to-partials mapping
 - [`design-block-authoring.md`](./design-block-authoring.md) — how blocks compose
 - [`sections-architecture-proposal.md`](./sections-architecture-proposal.md) — future runtime sections
+- [`next-theme-figma/references/spark-section-roster.json`](https://github.com/NextCommerceCo/skills/blob/main/next-theme-figma/references/spark-section-roster.json) — the design-side map from Figma frame families (`hero`, `faq`, `howto`, …) onto this roster, with each section's ship status. Lives in the public `skills` repo, where `next-theme-figma`'s `infer-section` and `validate-package` read it and `next-theme-dev` routes shipped / unshipped / chrome sections by it. When a section here ships or is renamed, update that JSON (its markdown twin is generated) so the two lists keep referencing each other.
 
 ## Reference — Shopify theme section catalogs
 

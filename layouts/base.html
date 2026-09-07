@@ -62,6 +62,40 @@
                 {% if settings.body_link_color %}
                     --body-link-color: {{ settings.body_link_color }};
                 {% endif %}
+                {# Style tokens (spark#56): bridge properties read by @theme in css/input.css #}
+                {% if settings.body_bg_color %}
+                    --body-bg-color: {{ settings.body_bg_color }};
+                {% endif %}
+                {% if settings.border_color %}
+                    --border-color: {{ settings.border_color }};
+                {% endif %}
+                {% if settings.radius_control %}
+                    --control-radius: {{ settings.radius_control }};
+                {% endif %}
+                {% if settings.radius_card %}
+                    --card-radius: {{ settings.radius_card }};
+                {% endif %}
+                {% if settings.section_padding == "compact" %}
+                    --section-padding-y: 2rem;
+                {% elif settings.section_padding == "roomy" %}
+                    --section-padding-y: 5rem;
+                {% endif %}
+                {% if settings.content_gap == "tight" %}
+                    --content-gap: 1rem;
+                {% elif settings.content_gap == "loose" %}
+                    --content-gap: 2rem;
+                {% endif %}
+                {% if settings.heading_scale == "small" %}
+                    --heading-scale: 0.875;
+                {% elif settings.heading_scale == "large" %}
+                    --heading-scale: 1.125;
+                {% endif %}
+                {% if settings.body_size and settings.body_size != "16px" %}
+                    --body-size: {{ settings.body_size }};
+                {% endif %}
+                {% if settings.container_max_width %}
+                    --container-max: {{ settings.container_max_width }};
+                {% endif %}
             }
             {% if settings.font_body %}
                 body { font-family: var(--font-body); }

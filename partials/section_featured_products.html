@@ -1,7 +1,7 @@
 {# Spark homepage featured products grid. #}
 {% if settings.show_featured_products %}
     {% if settings.featured_products|length > 0 %}
-    <section class="py-12 md:py-16" {% if settings.featured_products_bg_color %}style="background-color: {{ settings.featured_products_bg_color }};"{% endif %}>
+    <section class="py-section-y md:py-section-y-md" {% if settings.featured_products_bg_color %}style="background-color: {{ settings.featured_products_bg_color }};"{% endif %}>
         <div class="container">
             {% t "homepage.heading.featured_products" as default_featured_products_heading %}
             {% include "partials/section_heading.html" with heading=settings.featured_products_header|default:default_featured_products_heading size=settings.featured_products_header_size align=settings.featured_products_header_align %}

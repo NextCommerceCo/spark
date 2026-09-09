@@ -6,7 +6,7 @@ Spark follows human-readable release notes rather than a package-manager version
 
 The GitHub release body is a summary, not a copy of the changelog section. Write one sentence framing the release, then a `### Highlights` list of at most five bullets, then a link to `CHANGELOG.md` at the release tag for the full record. A changelog entry stays as long as the change needs it to be, but the release page is scanned rather than read, so pasting a long entry into it produces notes nobody can follow. That is what happened to 1.3.0 and 1.4.0, both since rewritten. Use the 1.2.0 release as the reference format.
 
-## Unreleased
+## 1.4.1 - 2026-09-09
 
 - Fixed custom Pages rendering empty titles, breadcrumbs, and content because the page template referenced `flatpage` instead of the platform-provided `page` object. This also restores page content in Account Only mode.
 

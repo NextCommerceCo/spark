@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+"""Assert a theme still carries the platform integration points Spark declares.
+
+Spark-derived store themes never update from this repo, so a fix that lands
+here does not reach them. The failures this gate targets are silent: the
+storefront renders, the dashboard shows the app installed and enabled, and only
+the events go missing. Nothing surfaces it until someone looks.
+
+Two modes:
+
+    check-theme-contract.py                       # a working copy, before push
+    check-theme-contract.py --store ... --theme-id N   # a live theme, after it
+
+The remote mode is the one that matters. A store carries several theme copies,
+and republishing an old one silently undoes a patch applied to the active theme.
+"""
+
+import argparse
+import importlib.util
+import json
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+
+CONTRACT_FILENAME = "theme-contract.json"
+# The contract ships with Spark, beside this script. A derived theme being
+# checked does not carry one, and in remote mode there is no local theme at all.
+DEFAULT_CONTRACT = Path(__file__).resolve().parents[1] / CONTRACT_FILENAME
+TEMPLATE_DIRECTORIES = ("layouts", "templates", "partials")
+REQUEST_TIMEOUT = 30
+
+
+def load_masking():
+    """Reuse check-templates.py's comment masking rather than restating it.
+
+    The module name has a hyphen, so it cannot be imported normally. Masking
+    matters here: a required tag sitting inside {# ... #} is commented out and
+    must not satisfy the contract.
+    """
+    path = Path(__file__).with_name("check-templates.py")
+    spec = importlib.util.spec_from_file_location("spark_check_templates", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.mask_ignored_regions
+
+
+def load_contract(path):
+    with open(path, encoding="utf-8") as handle:
+        contract = json.load(handle)
+
+    requirements = contract.get("requirements")
+    if not isinstance(requirements, list) or not requirements:
+        raise ValueError(f"{path}: 'requirements' must be a non-empty list")
+
+    for requirement in requirements:
+        for field in ("id", "file", "must_contain", "why"):
+            if not requirement.get(field):
+                raise ValueError(
+                    f"{path}: requirement {requirement.get('id', '?')!r} "
+                    f"is missing {field!r}"
+                )
+
+    return contract
+
+
+def block_override_re(block_name):
+    # A child template may override the block and drop the tag inside it. The
+    # tag is then present in the base layout and absent from every rendered
+    # page, so the text search alone would pass a broken theme.
+    return re.compile(
+        r"{%\s*block\s+" + re.escape(block_name) + r"\s*%}"
+        r"(?P<body>.*?)"
+        r"{%\s*endblock(?:\s+" + re.escape(block_name) + r")?\s*%}",
+        re.DOTALL,
+    )
+
+
+def check_sources(sources, contract, mask):
+    """Check {path: text} against the contract. Returns a list of failures."""
+    failures = []
+
+    for requirement in contract["requirements"]:
+        target = requirement["file"]
+        needle = requirement["must_contain"]
+        text = sources.get(target)
+
+        if text is None:
+            failures.append(
+                (requirement, f"{target} is missing from the theme")
+            )
+            continue
+
+        if needle not in mask(text):
+            failures.append(
+                (requirement, f"{target} does not contain {needle}")
+            )
+            continue
+
+        block_name = requirement.get("block")
+        if not block_name:
+            continue
+
+        pattern = block_override_re(block_name)
+        for path, other in sorted(sources.items()):
+            if path == target:
+                continue
+            for match in pattern.finditer(mask(other)):
+                if needle not in match.group("body"):
+                    failures.append(
+                        (
+                            requirement,
+                            f"{path} overrides block {block_name!r} without "
+                            f"{needle}, which removes it from every page that "
+                            "template renders",
+                        )
+                    )
+
+    return failures
+
+
+def read_local_sources(root):
+    sources = {}
+    for directory in TEMPLATE_DIRECTORIES:
+        for path in sorted((root / directory).rglob("*.html")):
+            if path.is_file():
+                key = path.relative_to(root).as_posix()
+                sources[key] = path.read_text(encoding="utf-8")
+    return sources
+
+
+def read_remote_sources(store, theme_id, apikey):
+    """Fetch a live theme's templates from the store admin API.
+
+    The API's ?name= filter is ignored and returns the whole list, so the
+    filtering happens here.
+    """
+    url = f"{store.rstrip('/')}/api/admin/themes/{theme_id}/templates/"
+    request = urllib.request.Request(
+        url, headers={"Authorization": f"Bearer {apikey}"}
+    )
+
+    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+
+    entries = payload if isinstance(payload, list) else payload.get("results", [])
+    sources = {}
+    for entry in entries:
+        name = entry.get("name", "")
+        if name.endswith(".html") and entry.get("content") is not None:
+            sources[name] = entry["content"]
+    return sources
+
+
+def report(failures, subject):
+    if not failures:
+        print(f"Theme contract gate passed: {subject}.")
+        return 0
+
+    print(
+        f"Theme contract gate failed for {subject} "
+        f"with {len(failures)} violation(s):",
+        file=sys.stderr,
+    )
+    for requirement, detail in failures:
+        print(f"\n- [{requirement['id']}] {detail}", file=sys.stderr)
+        print(f"  Why it matters: {requirement['why']}", file=sys.stderr)
+        since = requirement.get("since")
+        if since:
+            print(f"  Required since Spark {since}.", file=sys.stderr)
+        verify = requirement.get("verify_on_storefront")
+        if verify:
+            print(
+                "  Confirm on the published storefront (never the Theme "
+                f"Editor preview): {verify}",
+                file=sys.stderr,
+            )
+    return 1
+
+
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--root", default=".", help="theme directory to check (default: .)"
+    )
+    parser.add_argument(
+        "--contract",
+        default=None,
+        help=f"contract file (default: Spark's own {CONTRACT_FILENAME})",
+    )
+    parser.add_argument("--store", help="store URL, e.g. https://x.29next.store")
+    parser.add_argument("--theme-id", help="theme id to check on that store")
+    parser.add_argument(
+        "--apikey",
+        default=os.environ.get("NTK_APIKEY"),
+        help="store API key (default: $NTK_APIKEY)",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    root = Path(args.root)
+    contract_path = Path(args.contract) if args.contract else DEFAULT_CONTRACT
+
+    try:
+        contract = load_contract(contract_path)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        print(f"Theme contract gate failed: {error}", file=sys.stderr)
+        return 1
+
+    remote = bool(args.store or args.theme_id)
+    if remote:
+        if not (args.store and args.theme_id and args.apikey):
+            print(
+                "Theme contract gate failed: --store, --theme-id and an API "
+                "key (--apikey or $NTK_APIKEY) are all required to check a "
+                "live theme.",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            sources = read_remote_sources(args.store, args.theme_id, args.apikey)
+        except (urllib.error.URLError, json.JSONDecodeError, OSError) as error:
+            print(
+                f"Theme contract gate failed: could not read theme "
+                f"{args.theme_id} from {args.store} ({error})",
+                file=sys.stderr,
+            )
+            return 1
+        subject = f"theme {args.theme_id} on {args.store}"
+    else:
+        try:
+            sources = read_local_sources(root)
+        except OSError as error:
+            print(f"Theme contract gate failed: {error}", file=sys.stderr)
+            return 1
+        subject = f"{len(sources)} template file(s) under {root}"
+
+    if not sources:
+        print(
+            "Theme contract gate failed: no template files were found, so "
+            "nothing was actually checked.",
+            file=sys.stderr,
+        )
+        return 1
+
+    return report(check_sources(sources, contract, load_masking()), subject)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

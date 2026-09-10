@@ -6,6 +6,10 @@ Spark follows human-readable release notes rather than a package-manager version
 
 The GitHub release body is a summary, not a copy of the changelog section. Write one sentence framing the release, then a `### Highlights` list of at most five bullets, then a link to `CHANGELOG.md` at the release tag for the full record. A changelog entry stays as long as the change needs it to be, but the release page is scanned rather than read, so pasting a long entry into it produces notes nobody can follow. That is what happened to 1.3.0 and 1.4.0, both since rewritten. Use the 1.2.0 release as the reference format.
 
+## Unreleased
+
+- Added a theme contract so a Spark-derived store theme can prove it still carries the platform integration points Spark declares. `theme-contract.json` lists them (today: `{% pixels %}` in `layouts/base.html`, required since 1.3.0, with the reason the gate prints on failure) and `scripts/check-theme-contract.py` asserts them against a working copy (`--root`) or a live theme (`--store` + `--theme-id`, reading the store admin API). This exists because a derived theme never updates from this repo and the resulting failure is silent: the storefront renders, apps stay installed and enabled, and only the events go missing. A theme can also stop satisfying the contract without anyone editing it, when an older working copy is republished over the active theme, so the live mode matters as much as the local one. The gate reads more than the tag: it masks comments, so a commented-out tag does not satisfy the contract, and it fails a child template that overrides the block without the tag, which a plain text search would pass. `pixels` was also added to `REQUIRED_BASE_BLOCKS` in `scripts/check-templates.py`, so dropping the block from Spark itself fails CI. Run it with `make contract`; it is part of `make verify-theme` and runs in CI against Spark's own copy.
+
 ## 1.4.1 - 2026-09-09
 
 - Fixed custom Pages rendering empty titles, breadcrumbs, and content because the page template referenced `flatpage` instead of the platform-provided `page` object. This also restores page content in Account Only mode.

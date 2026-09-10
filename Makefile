@@ -6,7 +6,7 @@ COMPAT = python3 scripts/sass-compat.py
 TAILWIND_VERSION = v4.2.2
 CSS_INPUT = css/input.css
 
-.PHONY: dev build css css-drift css-check verify-theme test watch push release install-tailwind
+.PHONY: dev build css css-drift css-check contract verify-theme test watch push release install-tailwind
 
 # Run both Tailwind watcher and ntk watcher in parallel
 dev:
@@ -45,8 +45,14 @@ push: css-check
 test:
 	python3 -m unittest discover -s tests
 
+# Assert the platform integration points in theme-contract.json.
+# Point it at a live theme before or after a push:
+#   make contract THEME_ARGS="--store https://x.29next.store --theme-id 68"
+contract:
+	python3 scripts/check-theme-contract.py $(THEME_ARGS)
+
 # Full pre-upload verification for generated theme artifacts.
-verify-theme: css-check test
+verify-theme: css-check test contract
 	@echo "Theme verification complete."
 
 # Watch Tailwind only (useful when running ntk watch separately)

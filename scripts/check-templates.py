@@ -50,6 +50,7 @@ REQUIRED_BASE_BLOCKS = {
     "content_wrapper",
     "footer",
     "side_cart",
+    "pixels",
     "custom_css",
     "platform_compatibility",
     "preview_indicator",

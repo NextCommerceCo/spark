@@ -38,10 +38,10 @@ theme with `make contract THEME_ARGS="--root ../my-theme"`.
 ## Why the live check is the one that matters
 
 A store carries several theme copies. Republishing an old one silently undoes a
-patch applied to the active theme, which is exactly how one store lost storefront
-tracking for six days after being fixed and verified. Checking a working copy
-proves what you are about to push; checking the live theme proves what the
-merchant is actually serving.
+patch applied to the active theme, so a theme can satisfy the contract one week
+and stop satisfying it the next without anyone editing it. Checking a working
+copy proves what you are about to push; checking the live theme proves what the
+store is actually serving.
 
 Run it against every theme on the store, not only the active one. A copy without
 the block is a regression waiting for the next promote.
@@ -62,9 +62,9 @@ not for style or structure.
 
 ## Verifying on a storefront
 
-Check the published storefront, never the Theme Editor preview:
-`customer_event_iframes.py` returns empty lists when `request.is_setting_preview`,
-so the preview shows the fault whether or not it is there.
+Check the published storefront, never the Theme Editor preview. The preview does
+not render the tracker frames, so it shows this fault whether or not the theme
+actually has it.
 
 ```js
 document.getElementsByName('customer_event_iframe').length > 0

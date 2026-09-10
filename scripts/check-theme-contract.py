@@ -4,7 +4,7 @@
 Spark-derived store themes never update from this repo, so a fix that lands
 here does not reach them. The failures this gate targets are silent: the
 storefront renders, the dashboard shows the app installed and enabled, and only
-the events go missing. A merchant finds it weeks later, if at all.
+the events go missing. Nothing surfaces it until someone looks.
 
 Two modes:
 

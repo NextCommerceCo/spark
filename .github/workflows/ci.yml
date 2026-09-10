@@ -118,3 +118,6 @@ jobs:
 
       - name: Template integrity gate
         run: python scripts/check-templates.py
+
+      - name: Theme contract gate
+        run: python scripts/check-theme-contract.py

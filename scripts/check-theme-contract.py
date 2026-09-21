@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert a theme still carries the platform integration points Spark declares.
+"""Assert a theme still carries the integration points Spark declares.
 
 Spark-derived store themes never update from this repo, so a fix that lands
 here does not reach them. The failures this gate targets are silent: the
@@ -13,6 +13,14 @@ Two modes:
 
 The remote mode is the one that matters. A store carries several theme copies,
 and republishing an old one silently undoes a patch applied to the active theme.
+
+Every requirement carries a scope. `fleet` binds every Spark-derived theme and
+is what the live check enforces by default; `spark` binds Spark's own working
+copy only, because derived themes are forks that may carry the same hook in a
+different file. Local mode checks both by default (it is Spark's CI gate);
+`--scope` overrides either default. A live check of Spark's own copy (a dev
+store, not a fork) therefore needs `--scope spark` to run the same rules the
+working-copy check did.
 """
 
 import argparse
@@ -32,6 +40,12 @@ CONTRACT_FILENAME = "theme-contract.json"
 DEFAULT_CONTRACT = Path(__file__).resolve().parents[1] / CONTRACT_FILENAME
 TEMPLATE_DIRECTORIES = ("layouts", "templates", "partials")
 REQUEST_TIMEOUT = 30
+# A fleet requirement binds every Spark-derived theme; a spark requirement binds
+# only Spark's own working copy. Nothing else is a valid scope, and a requirement
+# without one is a load error rather than a silent default.
+SCOPE_FLEET = "fleet"
+SCOPE_SPARK = "spark"
+SCOPES = (SCOPE_FLEET, SCOPE_SPARK)
 
 
 def load_masking():
@@ -57,14 +71,32 @@ def load_contract(path):
         raise ValueError(f"{path}: 'requirements' must be a non-empty list")
 
     for requirement in requirements:
-        for field in ("id", "file", "must_contain", "why"):
+        for field in ("id", "file", "must_contain", "why", "scope"):
             if not requirement.get(field):
                 raise ValueError(
                     f"{path}: requirement {requirement.get('id', '?')!r} "
                     f"is missing {field!r}"
                 )
+        if requirement["scope"] not in SCOPES:
+            raise ValueError(
+                f"{path}: requirement {requirement['id']!r} has scope "
+                f"{requirement['scope']!r}; expected one of {', '.join(SCOPES)}"
+            )
 
     return contract
+
+
+def select_requirements(contract, scope):
+    """Return the requirements a check at `scope` enforces.
+
+    `fleet` keeps only fleet requirements. `spark` keeps everything: Spark's own
+    copy must satisfy the fleet rules too, since it is what the fleet derives from.
+    """
+    if scope not in SCOPES:
+        raise ValueError(f"unknown scope {scope!r}; expected one of {', '.join(SCOPES)}")
+    if scope == SCOPE_SPARK:
+        return list(contract["requirements"])
+    return [r for r in contract["requirements"] if r["scope"] == SCOPE_FLEET]
 
 
 def block_override_re(block_name):
@@ -79,11 +111,11 @@ def block_override_re(block_name):
     )
 
 
-def check_sources(sources, contract, mask):
-    """Check {path: text} against the contract. Returns a list of failures."""
+def check_sources(sources, requirements, mask):
+    """Check {path: text} against the requirements. Returns a list of failures."""
     failures = []
 
-    for requirement in contract["requirements"]:
+    for requirement in requirements:
         target = requirement["file"]
         needle = requirement["must_contain"]
         text = sources.get(target)
@@ -155,13 +187,14 @@ def read_remote_sources(store, theme_id, apikey):
     return sources
 
 
-def report(failures, subject):
+def report(failures, subject, scope, checked, total):
+    applied = f"{scope} scope, {checked} of {total} requirement(s)"
     if not failures:
-        print(f"Theme contract gate passed: {subject}.")
+        print(f"Theme contract gate passed: {subject} ({applied}).")
         return 0
 
     print(
-        f"Theme contract gate failed for {subject} "
+        f"Theme contract gate failed for {subject} ({applied}) "
         f"with {len(failures)} violation(s):",
         file=sys.stderr,
     )
@@ -198,6 +231,16 @@ def parse_args(argv):
         default=os.environ.get("NTK_APIKEY"),
         help="store API key (default: $NTK_APIKEY)",
     )
+    parser.add_argument(
+        "--scope",
+        choices=SCOPES,
+        default=None,
+        help=(
+            "which requirements to enforce: 'fleet' (every Spark-derived theme) "
+            "or 'spark' (Spark's own copy: fleet rules plus its runtime hooks). "
+            "Default: 'fleet' for a live theme, 'spark' for a working copy."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -213,6 +256,18 @@ def main(argv=None):
         return 1
 
     remote = bool(args.store or args.theme_id)
+    # A live theme is a derived copy unless the caller says otherwise, so the
+    # live default is the fleet scope; the working-copy default is Spark's own
+    # gate. `--scope` overrides either way.
+    scope = args.scope or (SCOPE_FLEET if remote else SCOPE_SPARK)
+    requirements = select_requirements(contract, scope)
+    if not requirements:
+        print(
+            f"Theme contract gate failed: no requirement carries scope "
+            f"{scope!r}, so nothing would be checked.",
+            file=sys.stderr,
+        )
+        return 1
     if remote:
         if not (args.store and args.theme_id and args.apikey):
             print(
@@ -248,7 +303,13 @@ def main(argv=None):
         )
         return 1
 
-    return report(check_sources(sources, contract, load_masking()), subject)
+    return report(
+        check_sources(sources, requirements, load_masking()),
+        subject,
+        scope,
+        len(requirements),
+        len(contract["requirements"]),
+    )
 
 
 if __name__ == "__main__":

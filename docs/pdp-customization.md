@@ -85,11 +85,11 @@ first child and a standalone product submits itself.
 
 Test on the `.29next.store` domain or use `?preview_theme={theme_id}&skip_cache=1` when previewing unpublished changes.
 
-1. Load a PDP with multiple variants. Select each option. Confirm price, compare-at price, gallery image, add-to-cart form action, and button disabled state update.
-2. Select every variant option combination that the product exposes. Confirm unavailable variants do not submit and available variants can be added.
-3. Add to cart with quantity greater than 1. Confirm the side cart or cart page receives the selected child product and quantity.
-4. If the product supports subscriptions, choose subscribe and a delivery interval. Confirm add-to-cart sends subscription data.
-5. Test a sold-out product and a product with no image. Confirm the page renders a usable sold-out or fallback state.
+1. Load a PDP with multiple variants (FX-P05). Select each option. Confirm price, compare-at price, gallery image, add-to-cart form action, and button disabled state update.
+2. Select every variant option combination that the product exposes (FX-P08 for the sold-out option). Confirm unavailable variants do not submit and available variants can be added.
+3. Add to cart with quantity greater than 1 (FX-P05, then FX-K03 for the many-lines cart). Confirm the side cart or cart page receives the selected child product and quantity.
+4. If the product supports subscriptions (FX-P11), choose subscribe and a delivery interval. Confirm add-to-cart sends subscription data.
+5. Test a sold-out product (FX-P07) and a product with no image (FX-P02). Confirm the page renders a usable sold-out or fallback state.
 6. On mobile widths around 375-430px, scroll past the main CTA. Confirm sticky CTA appears, does not cover important content at rest, and triggers the real submit button.
 7. Confirm no horizontal overflow: `document.documentElement.scrollWidth <= window.innerWidth`.
 8. Confirm review and app hook surfaces still render or remain present for apps to target.

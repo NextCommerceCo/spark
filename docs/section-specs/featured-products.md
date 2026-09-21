@@ -95,11 +95,13 @@ Recommended component properties:
 
 ## QA Checklist
 
-- Verify product grid at 1440px, 768px, and mobile width.
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
+- Verify product grid at 1440px, 768px, and mobile width (select the FX-C03 products: FX-P01, FX-P02, FX-P10).
 - Confirm desktop columns 2, 3, 4, and 5.
 - Confirm tablet remains two columns regardless of desktop setting.
 - Confirm CTA only renders when `featured_products_cta_url` is present.
-- Confirm card background does not break product image or rating app-hook areas.
+- Confirm card background does not break product image or rating app-hook areas (FX-P02 placeholder included).
 - Confirm product card app hooks remain visually contained.
 
 ## Future Theme Section Migration

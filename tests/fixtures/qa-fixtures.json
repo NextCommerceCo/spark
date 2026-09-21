@@ -1,0 +1,765 @@
+{
+  "$comment": "Machine-readable companion to docs/qa-fixtures.md. Every state here must have a matching '### <id> <name>' heading in the doc; tests/test_qa_fixtures.py enforces it. Field names follow the Admin API product management guide. Placeholders such as <location id> are filled by a seeding script from its environment, never committed.",
+  "version": 1,
+  "id_pattern": "^FX-[PCTKNS][0-9]{2}$",
+  "groups": {
+    "P": "product",
+    "C": "collection",
+    "T": "content",
+    "K": "cart",
+    "N": "navigation",
+    "S": "section-settings"
+  },
+  "defaults": {
+    "currency": "USD",
+    "category_root_slug": "qa-fixtures",
+    "sku_prefix": "FX-",
+    "theme_settings": {
+      "enable_progress_bar": true,
+      "usd_goal_1": 50,
+      "usd_goal_2": 100,
+      "gift_product": "FX-P09",
+      "sidecart_open_on_add": true
+    }
+  },
+  "states": [
+    {
+      "id": "FX-P01",
+      "group": "product",
+      "name": "long-name-product",
+      "description": "Product with a 124-character title.",
+      "fields": {
+        "title": "Everyday Organic Cotton Crew Neck Long Sleeve Layering Tee with Reinforced Seams, Tagless Label and a Pre-Shrunk Relaxed Fit",
+        "description": "<p>Fixture product with a deliberately long title.</p>",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P01", "price": "24.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/cart_content.html",
+        "assets/js/spark-cart-drawer-renderer.js"
+      ]
+    },
+    {
+      "id": "FX-P02",
+      "group": "product",
+      "name": "missing-primary-image",
+      "description": "Purchasable product with no images.",
+      "fields": {
+        "title": "Fixture Product Without Images",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 0,
+        "variants": [
+          {"sku": "FX-P02", "price": "18.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/section_featured_product.html",
+        "partials/cart_content.html",
+        "assets/js/spark-cart-drawer-renderer.js"
+      ]
+    },
+    {
+      "id": "FX-P03",
+      "group": "product",
+      "name": "single-image",
+      "description": "Exactly one image, so the gallery has no thumbnails or arrows.",
+      "fields": {
+        "title": "Fixture Product With One Image",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P03", "price": "18.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html",
+        "assets/js/spark-gallery.js"
+      ]
+    },
+    {
+      "id": "FX-P04",
+      "group": "product",
+      "name": "many-images",
+      "description": "Twelve numbered images for thumbnail strip overflow.",
+      "fields": {
+        "title": "Fixture Product With Twelve Images",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 12,
+        "variants": [
+          {"sku": "FX-P04", "price": "18.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html",
+        "assets/js/spark-gallery.js"
+      ]
+    },
+    {
+      "id": "FX-P05",
+      "group": "product",
+      "name": "large-variant-matrix",
+      "description": "Three attributes with four values each; all 64 combinations in stock.",
+      "fields": {
+        "title": "Fixture Product With 64 Variants",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 2,
+        "variant_attributes": [
+          {"name": "Colour", "values": ["Black", "White", "Navy", "Sand"]},
+          {"name": "Size", "values": ["XS", "S", "M", "L"]},
+          {"name": "Material", "values": ["Cotton", "Linen", "Wool", "Blend"]}
+        ],
+        "variant_template": {
+          "sku": "FX-P05-{Colour}-{Size}-{Material}",
+          "price": "30.00",
+          "num_in_stock": 10
+        }
+      },
+      "exercises": [
+        "partials/variant_picker.html",
+        "assets/js/spark-variant-state.js"
+      ]
+    },
+    {
+      "id": "FX-P06",
+      "group": "product",
+      "name": "single-variant",
+      "description": "No variant attributes; the default variant carries price and stock.",
+      "fields": {
+        "title": "Fixture Single Variant Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P06", "price": "12.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html"
+      ]
+    },
+    {
+      "id": "FX-P07",
+      "group": "product",
+      "name": "sold-out-parent",
+      "description": "Every variant tracks stock at zero with no backorders.",
+      "fields": {
+        "title": "Fixture Sold Out Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variant_attributes": [
+          {"name": "Size", "values": ["S", "M"]}
+        ],
+        "variants": [
+          {"sku": "FX-P07-S", "variant_attribute_values": {"Size": "S"}, "price": "20.00", "track_stock": true, "allow_backorders": false, "num_in_stock": 0},
+          {"sku": "FX-P07-M", "variant_attribute_values": {"Size": "M"}, "price": "20.00", "track_stock": true, "allow_backorders": false, "num_in_stock": 0}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html",
+        "partials/product_card.html"
+      ]
+    },
+    {
+      "id": "FX-P08",
+      "group": "product",
+      "name": "partially-sold-out-variants",
+      "description": "Three sizes; the middle size is sold out.",
+      "fields": {
+        "title": "Fixture Partially Sold Out Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variant_attributes": [
+          {"name": "Size", "values": ["S", "M", "L"]}
+        ],
+        "variants": [
+          {"sku": "FX-P08-S", "variant_attribute_values": {"Size": "S"}, "price": "20.00", "num_in_stock": 10},
+          {"sku": "FX-P08-M", "variant_attribute_values": {"Size": "M"}, "price": "20.00", "track_stock": true, "allow_backorders": false, "num_in_stock": 0},
+          {"sku": "FX-P08-L", "variant_attribute_values": {"Size": "L"}, "price": "20.00", "num_in_stock": 10}
+        ]
+      },
+      "exercises": [
+        "partials/variant_picker.html",
+        "assets/js/theme.js",
+        "assets/js/spark-variant-state.js"
+      ]
+    },
+    {
+      "id": "FX-P09",
+      "group": "product",
+      "name": "free-product",
+      "description": "Zero-price product; also the free gift for FX-K04.",
+      "fields": {
+        "title": "Fixture Free Sample",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P09", "price": "0.00", "num_in_stock": 1000}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/section_featured_product.html",
+        "assets/js/spark-cart-rewards.js"
+      ]
+    },
+    {
+      "id": "FX-P10",
+      "group": "product",
+      "name": "sale-price",
+      "description": "Retail (compare-at) price above the selling price.",
+      "fields": {
+        "title": "Fixture Sale Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P10", "price": "15.00", "retail": "25.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/section_on_sale.html"
+      ]
+    },
+    {
+      "id": "FX-P11",
+      "group": "product",
+      "name": "subscription-enabled",
+      "description": "Subscription product with monthly intervals 1, 2, 3.",
+      "fields": {
+        "title": "Fixture Subscription Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "enable_subscription": true,
+        "interval": "month",
+        "interval_counts": [1, 2, 3],
+        "variants": [
+          {"sku": "FX-P11", "price": "20.00", "subscription": "17.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html",
+        "partials/cart_content.html",
+        "partials/cart_summary.html"
+      ]
+    },
+    {
+      "id": "FX-P12",
+      "group": "product",
+      "name": "no-category",
+      "description": "Public product with no category, reachable by direct URL only.",
+      "fields": {
+        "title": "Fixture Uncategorised Product",
+        "is_public": true,
+        "categories": [],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P12", "price": "18.00", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "templates/catalogue/product.html",
+        "templates/reviews/index.html",
+        "partials/recommended_products.html"
+      ]
+    },
+    {
+      "id": "FX-P13",
+      "group": "product",
+      "name": "no-price",
+      "description": "Public product whose variant has no price record at all, so session.price.exists is false.",
+      "fields": {
+        "title": "Fixture Unpriced Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P13", "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/section_featured_product.html"
+      ]
+    },
+    {
+      "id": "FX-C01",
+      "group": "collection",
+      "name": "empty-collection",
+      "description": "Public category with no products.",
+      "fields": {
+        "name": "Fixture Empty Collection",
+        "slug": "qa-fixtures/empty",
+        "is_public": true,
+        "products": []
+      },
+      "exercises": [
+        "templates/catalogue/category.html",
+        "partials/catalogue_filter_button.html",
+        "partials/section_featured_categories.html"
+      ]
+    },
+    {
+      "id": "FX-C02",
+      "group": "collection",
+      "name": "one-product-collection",
+      "description": "Category with a single product.",
+      "fields": {
+        "name": "Fixture One Product Collection",
+        "slug": "qa-fixtures/one",
+        "is_public": true,
+        "products": ["FX-P03"]
+      },
+      "exercises": [
+        "partials/product_grid.html",
+        "partials/section_featured_products.html"
+      ]
+    },
+    {
+      "id": "FX-C03",
+      "group": "collection",
+      "name": "three-product-collection",
+      "description": "Long title, missing image, and sale badge side by side.",
+      "fields": {
+        "name": "Fixture Three Product Collection",
+        "slug": "qa-fixtures/three",
+        "is_public": true,
+        "products": ["FX-P01", "FX-P02", "FX-P10"]
+      },
+      "exercises": [
+        "partials/product_grid.html",
+        "partials/section_on_sale.html",
+        "partials/section_featured_products.html"
+      ]
+    },
+    {
+      "id": "FX-C04",
+      "group": "collection",
+      "name": "paginated-collection",
+      "description": "Sixty simple products so the category paginates.",
+      "fields": {
+        "name": "Fixture Paginated Collection",
+        "slug": "qa-fixtures/paginated",
+        "is_public": true,
+        "generated_products": {
+          "count": 60,
+          "title": "Fixture Paginated Product {nn:02d}",
+          "sku": "FX-C04-{nn:02d}",
+          "price": "10.00",
+          "num_in_stock": 100,
+          "images": 1
+        }
+      },
+      "exercises": [
+        "partials/pagination.html",
+        "partials/catalogue_bar.html",
+        "assets/js/spark-catalogue.js"
+      ]
+    },
+    {
+      "id": "FX-C05",
+      "group": "collection",
+      "name": "long-collection-name",
+      "description": "Category with a 90-character name and an image.",
+      "fields": {
+        "name": "Seasonal Clearance and Last Chance Essentials for Home, Kitchen, Garden and Outdoor Living",
+        "slug": "qa-fixtures/long-name",
+        "is_public": true,
+        "image": 1,
+        "products": ["FX-P06"]
+      },
+      "exercises": [
+        "templates/catalogue/category.html",
+        "partials/section_featured_categories.html",
+        "partials/header.html",
+        "partials/mobile_menu.html"
+      ]
+    },
+    {
+      "id": "FX-C06",
+      "group": "collection",
+      "name": "no-image-collection",
+      "description": "Category with no image for the featured-categories placeholder.",
+      "fields": {
+        "name": "Fixture Collection Without Image",
+        "slug": "qa-fixtures/no-image",
+        "is_public": true,
+        "image": 0,
+        "products": ["FX-P06"]
+      },
+      "exercises": [
+        "partials/section_featured_categories.html"
+      ]
+    },
+    {
+      "id": "FX-T01",
+      "group": "content",
+      "name": "long-page",
+      "description": "Page with about 3,600 words of plain paragraphs.",
+      "fields": {
+        "title": "Fixture Long Page",
+        "slug": "fixture-long-page",
+        "content": {"paragraphs": 30, "words_per_paragraph": 120}
+      },
+      "exercises": [
+        "templates/pages/page.html",
+        "layouts/base.html"
+      ]
+    },
+    {
+      "id": "FX-T02",
+      "group": "content",
+      "name": "rich-page",
+      "description": "Page with headings, lists, a table, a blockquote, a link, and a wide image.",
+      "fields": {
+        "title": "Fixture Rich Page",
+        "slug": "fixture-rich-page",
+        "content": {"elements": ["h2", "h3", "ul:5", "ol:5", "table:4x6", "blockquote", "a", "img:wide"]}
+      },
+      "exercises": [
+        "templates/pages/page.html"
+      ]
+    },
+    {
+      "id": "FX-T03",
+      "group": "content",
+      "name": "empty-page",
+      "description": "Page with a title and no content.",
+      "fields": {
+        "title": "Fixture Empty Page",
+        "slug": "fixture-empty-page",
+        "content": ""
+      },
+      "exercises": [
+        "templates/pages/page.html"
+      ]
+    },
+    {
+      "id": "FX-K01",
+      "group": "cart",
+      "name": "empty-cart",
+      "description": "Fresh session with nothing in the cart.",
+      "fields": {
+        "lines": []
+      },
+      "exercises": [
+        "partials/side_cart.html",
+        "assets/js/spark-cart-drawer-renderer.js",
+        "templates/cart.html",
+        "assets/js/spark-cart-rewards.js"
+      ]
+    },
+    {
+      "id": "FX-K02",
+      "group": "cart",
+      "name": "one-line-cart",
+      "description": "One line below the free shipping threshold.",
+      "fields": {
+        "lines": [{"product": "FX-P06", "quantity": 1}]
+      },
+      "exercises": [
+        "assets/js/spark-cart-drawer-renderer.js",
+        "partials/cart_content.html",
+        "assets/js/components/spark-progress-bar.js"
+      ]
+    },
+    {
+      "id": "FX-K03",
+      "group": "cart",
+      "name": "many-lines-cart",
+      "description": "Ten distinct lines.",
+      "fields": {
+        "lines": [
+          {"product": "FX-P01", "quantity": 1},
+          {"product": "FX-P02", "quantity": 1},
+          {"product": "FX-P03", "quantity": 1},
+          {"product": "FX-P04", "quantity": 1},
+          {"product": "FX-P05", "quantity": 1},
+          {"product": "FX-P06", "quantity": 1},
+          {"product": "FX-P08", "variant": "S", "quantity": 1},
+          {"product": "FX-P10", "quantity": 1},
+          {"product": "FX-P11", "purchase": "one-time", "quantity": 1},
+          {"product": "FX-C04-01", "quantity": 1}
+        ]
+      },
+      "exercises": [
+        "assets/js/spark-cart-drawer-renderer.js",
+        "templates/cart.html",
+        "partials/cart_summary.html"
+      ]
+    },
+    {
+      "id": "FX-K04",
+      "group": "cart",
+      "name": "gift-threshold-reached",
+      "description": "Cart total 120.00, above the 100.00 gift threshold; FX-P09 auto-added.",
+      "fields": {
+        "lines": [{"product": "FX-P05", "quantity": 4}],
+        "expected_total": "120.00"
+      },
+      "exercises": [
+        "assets/js/components/spark-progress-bar.js",
+        "assets/js/spark-cart-rewards.js"
+      ]
+    },
+    {
+      "id": "FX-K05",
+      "group": "cart",
+      "name": "shipping-threshold-reached",
+      "description": "Cart total 60.00, between the shipping and gift thresholds.",
+      "fields": {
+        "lines": [{"product": "FX-P05", "quantity": 2}],
+        "expected_total": "60.00"
+      },
+      "exercises": [
+        "assets/js/components/spark-progress-bar.js",
+        "assets/js/spark-cart-rewards.js"
+      ]
+    },
+    {
+      "id": "FX-K06",
+      "group": "cart",
+      "name": "long-name-line",
+      "description": "Cart line whose product title is 124 characters.",
+      "fields": {
+        "lines": [{"product": "FX-P01", "quantity": 2}]
+      },
+      "exercises": [
+        "assets/js/spark-cart-drawer-renderer.js",
+        "partials/cart_content.html"
+      ]
+    },
+    {
+      "id": "FX-N01",
+      "group": "navigation",
+      "name": "deep-menu",
+      "description": "Three-level menu; Spark renders two levels.",
+      "fields": {
+        "menu": [
+          {"label": "Shop", "url": "/shop/"},
+          {"label": "Fixtures", "children": [
+            {"label": "FX-C03", "category": "FX-C03"},
+            {"label": "FX-C04", "category": "FX-C04"},
+            {"label": "FX-C05", "category": "FX-C05", "children": [
+              {"label": "Nested Child A", "category": "FX-C02"},
+              {"label": "Nested Child B", "category": "FX-C06"}
+            ]},
+            {"label": "FX-C01", "category": "FX-C01"}
+          ]},
+          {"label": "Pages", "children": [
+            {"label": "FX-T01", "page": "FX-T01"},
+            {"label": "FX-T02", "page": "FX-T02"},
+            {"label": "FX-T03", "page": "FX-T03"}
+          ]}
+        ]
+      },
+      "exercises": [
+        "partials/header.html",
+        "partials/mobile_menu.html"
+      ]
+    },
+    {
+      "id": "FX-N02",
+      "group": "navigation",
+      "name": "long-menu-labels",
+      "description": "46-character top-level label with a 69-character child.",
+      "fields": {
+        "menu": [
+          {"label": "Everything for Home, Garden and Outdoor Living", "category": "FX-C05", "children": [
+            {"label": "Seasonal Clearance and Last Chance Essentials for the Whole Household", "category": "FX-C05"}
+          ]}
+        ]
+      },
+      "exercises": [
+        "partials/header.html",
+        "partials/mobile_menu.html"
+      ]
+    },
+    {
+      "id": "FX-S01",
+      "group": "section-settings",
+      "name": "hero-long-copy",
+      "description": "Hero heading at 100 characters and subheading at 200, across every content width.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
+        "homepage_hero_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
+        "homepage_hero_subheading": {"repeat": "Fixture subheading copy that fills the field. ", "max_length": 200},
+        "homepage_hero_content_width": ["narrow", "medium", "wide", "full"],
+        "homepage_hero_cta": "Shop now",
+        "homepage_hero_link": "/shop/"
+      },
+      "exercises": [
+        "partials/section_hero.html"
+      ]
+    },
+    {
+      "id": "FX-S02",
+      "group": "section-settings",
+      "name": "hero-no-cta",
+      "description": "Hero with a CTA label but no CTA URL.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
+        "homepage_hero_link": "",
+        "homepage_hero_cta": "Shop now"
+      },
+      "exercises": [
+        "partials/section_hero.html",
+        "partials/cta_button.html"
+      ]
+    },
+    {
+      "id": "FX-S03",
+      "group": "section-settings",
+      "name": "hero-image-only",
+      "description": "Hero with an image and no heading, subheading, or CTA.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
+        "homepage_hero_heading": "",
+        "homepage_hero_subheading": "",
+        "homepage_hero_link": ""
+      },
+      "exercises": [
+        "partials/section_hero.html"
+      ]
+    },
+    {
+      "id": "FX-S04",
+      "group": "section-settings",
+      "name": "hero-heading-only",
+      "description": "Hero with a heading and nothing else.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
+        "homepage_hero_heading": "Fixture heading only",
+        "homepage_hero_subheading": "",
+        "homepage_hero_link": ""
+      },
+      "exercises": [
+        "partials/section_hero.html"
+      ]
+    },
+    {
+      "id": "FX-S05",
+      "group": "section-settings",
+      "name": "hero-missing-image",
+      "description": "Hero enabled with no image; the section renders the dashed setup placeholder instead of the hero.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": ""
+      },
+      "exercises": [
+        "partials/section_hero.html"
+      ]
+    },
+    {
+      "id": "FX-S06",
+      "group": "section-settings",
+      "name": "hero-mobile-fallback",
+      "description": "Desktop image set, mobile image empty.",
+      "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
+        "homepage_hero_image_mobile": ""
+      },
+      "exercises": [
+        "partials/section_hero.html"
+      ]
+    },
+    {
+      "id": "FX-S07",
+      "group": "section-settings",
+      "name": "promo-long-copy",
+      "description": "Promo banner with the FX-S01 heading and subheading.",
+      "fields": {
+        "show_promo_banner": true,
+        "promo_banner_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
+        "promo_banner_subheading": {"repeat": "Fixture subheading copy that fills the field. ", "max_length": 200},
+        "promo_banner_cta_text": "Shop now",
+        "promo_banner_cta_url": "/shop/"
+      },
+      "exercises": [
+        "partials/section_promo_banner.html"
+      ]
+    },
+    {
+      "id": "FX-S08",
+      "group": "section-settings",
+      "name": "image-text-long-copy",
+      "description": "Image with Text at the 100-character heading with body, eyebrow, outline CTA, and custom background and text colours.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "<square image>",
+        "image_text_image_position": "right",
+        "image_text_image_ratio": "square",
+        "image_text_eyebrow": "Fixture eyebrow",
+        "image_text_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
+        "image_text_body": {
+          "repeat": "Fixture body copy that fills the field. ",
+          "max_length": 1000
+        },
+        "image_text_cta_url": "/shop/",
+        "image_text_cta_style": "outline",
+        "image_text_bg_color": "#1E293B",
+        "image_text_text_color": "#F8FAFC"
+      },
+      "exercises": [
+        "partials/section_image_text.html",
+        "partials/cta_button.html"
+      ]
+    },
+    {
+      "id": "FX-S09",
+      "group": "section-settings",
+      "name": "image-text-missing-image",
+      "description": "Image with Text with copy but no image; the neutral block renders at the selected ratio.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "",
+        "image_text_image_ratio": "portrait",
+        "image_text_heading": "Fixture heading",
+        "image_text_body": "Fixture body copy.",
+        "image_text_cta_url": ""
+      },
+      "exercises": [
+        "partials/section_image_text.html"
+      ]
+    },
+    {
+      "id": "FX-S10",
+      "group": "section-settings",
+      "name": "image-text-image-only",
+      "description": "Image with Text toggled on with an image and no heading or body; the setup placeholder renders, never a lone image.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "<square image>",
+        "image_text_heading": "",
+        "image_text_body": ""
+      },
+      "exercises": [
+        "partials/section_image_text.html"
+      ]
+    }
+  ]
+}

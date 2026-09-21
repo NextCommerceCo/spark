@@ -14,6 +14,7 @@ This directory contains Spark's theme-developer, design-team, and architecture d
 | [design-block-authoring.md](design-block-authoring.md) | Design team, theme developers | Guidance for adding or changing section-like design blocks. |
 | [performance-load-order.md](performance-load-order.md) | Theme developers, app developers | Critical-path load order for CSS, LCP preloads, scripts, app hooks, and tracking. |
 | [terminology.md](terminology.md) | Everyone | NEXT-native naming guardrails and Shopify migration mapping. |
+| [qa-fixtures.md](qa-fixtures.md) | QA, design team, theme developers | Named content states (`FX-` ids) for real-content QA, with dev-store seeding steps; mirrored in `tests/fixtures/qa-fixtures.json`. |
 
 ## Commerce Interfaces
 

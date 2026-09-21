@@ -124,14 +124,14 @@ The current content layer is not constrained by the global `.container` width. I
 | State | Why It Matters |
 | --- | --- |
 | Default | Desktop, tablet, and mobile references for normal merchant setup. |
-| Mobile image fallback | Shows desktop image behavior when no mobile image is configured. |
-| No CTA | CTA URL is empty, so no button renders. |
-| Heading only | Subheading is empty. |
-| Image only | Heading, subheading, and CTA are empty. |
+| Mobile image fallback | Shows desktop image behavior when no mobile image is configured. Fixture: FX-S06. |
+| No CTA | CTA URL is empty, so no button renders. Fixture: FX-S02. |
+| Heading only | Subheading is empty. Fixture: FX-S04. |
+| Image only | Heading, subheading, and CTA are empty. Fixture: FX-S03. |
 | Overlay off | Overlay color is empty. |
 | Overlay high contrast | Overlay color and opacity protect text readability. |
-| Long copy | Heading at 100 chars and subheading at 200 chars should not overflow or collide with CTA. |
-| Missing image | Current Implementation hides the section; decide whether a setup placeholder is needed later. |
+| Long copy | Heading at 100 chars and subheading at 200 chars should not overflow or collide with CTA. Fixture: FX-S01. |
+| Missing image | Current Implementation renders the dashed setup placeholder with the settings pointer. Fixture: FX-S05. |
 
 ## Accessibility
 
@@ -149,15 +149,18 @@ The current content layer is not constrained by the global `.container` width. I
 
 ## QA Checklist
 
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
 - Verify at desktop 1440px, tablet 768px, and the chosen mobile width.
 - Confirm mobile uses `homepage_hero_image_mobile` below 768px when present.
-- Confirm fallback to desktop image when mobile image is empty.
+- Confirm fallback to desktop image when mobile image is empty (FX-S06).
 - Confirm each `content_position` value lands in the expected corner or center.
-- Confirm `content_width` variants do not let long words overflow.
-- Confirm no CTA renders when `homepage_hero_link` is empty.
+- Confirm `content_width` variants do not let long words overflow (FX-S01).
+- Confirm no CTA renders when `homepage_hero_link` is empty (FX-S02).
 - Confirm primary, accent, and outline CTA states match shared Spark button styling.
 - Confirm overlay opacity values 0, 30, and 100 behave as expected.
-- Confirm image-only and heading-only states remain intentional.
+- Confirm image-only and heading-only states remain intentional (FX-S03, FX-S04).
+- Confirm the dashed setup placeholder renders when the image is empty, and no broken image or empty band (FX-S05).
 
 ## Future Theme Section Migration
 

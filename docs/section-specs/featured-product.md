@@ -91,11 +91,14 @@ Recommended component properties:
 
 ## QA Checklist
 
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
 - Verify desktop two-column layout and mobile stacked layout.
 - Confirm heading size and alignment variants.
-- Confirm missing image placeholder remains visually quiet.
+- Confirm missing image placeholder remains visually quiet (FX-P02).
 - Confirm custom description and product description fallback.
-- Confirm product with no price does not render an empty price row.
+- Confirm product with no price does not render an empty price row (FX-P13), and a zero price renders intentionally (FX-P09).
+- Confirm a long product title wraps inside the text column (FX-P01).
 - Confirm CTA style and outline states.
 - Confirm background color covers the full section band.
 

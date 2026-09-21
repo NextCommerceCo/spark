@@ -205,7 +205,11 @@
         margin-top: 0.25rem;
     }
 
-    /* Sold-out card state (settings.product_card_sold_out_style) */
+    /* Sold-out card state (settings.product_card_sold_out_style).
+       The badge is deliberately neutral slate, not var(--primary-color):
+       the Sale badge carries the brand colour because it is a buying
+       prompt; Sold out signals an unavailable state and must not read
+       as a promotion when a merchant remaps the brand colour. */
     .product-card-sold-out-badge {
         position: absolute;
         top: 0;

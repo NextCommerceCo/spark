@@ -182,10 +182,11 @@ Every variant tracks stock, has zero stock, and does not allow backorders.
 Exercises: `templates/catalogue/product.html` (`out_of_stock` branch, no
 `#sticky-atc`), `partials/product_card.html`.
 
-Check: the PDP shows the out-of-stock message and no add-to-cart form.
-Current behaviour: `product_card.html` renders nothing for a product that is
-not available to buy, so this product is absent from the category grid; note
-whether that is intended for the theme under test.
+Check: the PDP shows the out-of-stock message and no add-to-cart form. In
+the category grid the card renders with a Sold out badge by default; the
+`product_card_sold_out_style` Theme Setting switches that to `muted` (badge
+plus reduced opacity) or `hide` (card absent). Run the grid check once per
+value.
 
 ### FX-P08 partially-sold-out-variants
 

@@ -92,6 +92,7 @@ Supported styles:
 
 - `primary`
 - `accent`
+- `secondary` (quiet bordered button, used by Image with Text)
 
 Set `outline` to render an outline button using the selected brand color.
 

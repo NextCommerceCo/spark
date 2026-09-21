@@ -139,7 +139,7 @@ Tracked theme documentation starts at [docs/README.md](docs/README.md). Current 
 - **Documented extension modules** — `SparkEvents`, `SparkVariantState`, `SparkCartRewards`, and the cart drawer renderer keep extension points explicit for theme developers and apps.
 - **Cart milestones** — multi-step progress bar with default thresholds for free shipping and free gifts; auto-add/remove driven by progress events.
 - **Tailwind CSS v4** — standalone CLI binary, no Node dependency. CSS-based config with `@theme`, `@layer base`, and `@layer components`.
-- **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
+- **Homepage section partials (Wave 1 + 1.1.1)** — hero with text overlay, featured products, featured categories, recommended products, On Sale, Promo Banner, Featured Product, Image with Text. Each section partial has its own toggle in Theme Settings and is included from `templates/index.html` in a fixed order.
 - **Sale badges** — automatic on product cards when `compare_at_price > price`.
 - **Review app hooks** — template surfaces (`{% app_hook %}`) for product cards, PDP rating summary, full reviews module, home/collection review feeds, and global social proof. Apps render into Spark without theme edits.
 - **Membership price presentation** — optional client-side member price display driven by logged-in customer metadata, designed to pair with platform-side checkout discounts.

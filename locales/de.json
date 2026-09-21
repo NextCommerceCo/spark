@@ -299,7 +299,8 @@
             "featured_products": "Ausgewählte Produkte - Einstellungen > Homepage > Ausgewählte Produkte",
             "featured_categories": "Ausgewählte Kategorien - Einstellungen > Homepage > Ausgewählte Kategorien",
             "on_sale": "Im Angebot - Einstellungen > Homepage > Im Angebot > Produkte",
-            "featured_product": "Ausgewähltes Produkt - Einstellungen > Homepage > Ausgewähltes Produkt"
+            "featured_product": "Ausgewähltes Produkt - Einstellungen > Homepage > Ausgewähltes Produkt",
+            "image_text": "Bild mit Text - Einstellungen > Homepage > Bild mit Text"
         }
     }
 }

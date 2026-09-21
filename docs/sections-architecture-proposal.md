@@ -116,6 +116,7 @@ The important contract: inside a section partial, `section.settings.foo` should 
    - `section_featured_categories.html`
    - `section_on_sale.html`
    - `section_promo_banner.html`
+   - `section_image_text.html`
 3. Generate a default homepage composition from current `show_*` toggles and settings.
 4. Update section partials to read `section.settings.*` first and fall back to global `settings.*` during migration.
 5. Once stable, deprecate homepage-only global section settings in favor of section instances.

@@ -111,7 +111,7 @@ CSS custom properties set in `layouts/base.html` from `store.branding`:
 Stable `{% app_hook 'NAME' %}` extension surfaces for Apps (Reviews app uses them today). Future Apps should target the same pattern rather than fork the theme. The published contract is `docs/app-hooks.md`: the full inventory with DOM context, the `<surface>_<purpose>` naming rule, and the stability policy (existing names stable, new hooks additive, renames need one minor release of overlap). Update that doc in the same PR as any hook change.
 
 ### Settings (`configs/settings_schema.json`)
-Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colors), Footer (menu, colors, social links ×8, payment icons, disclaimer), homepage section partials (hero with text overlay, featured products/categories, recommended products, On Sale, Promo Banner, Featured Product — each with its own toggle), Announcement Bar, Advanced (noindex, account-only mode). v1.1 added 22 settings and restructured homepage settings around fixed-order section partials.
+Typography (fonts, text/heading/link colors), Navigation (main menu, navbar colors), Footer (menu, colors, social links ×8, payment icons, disclaimer), homepage section partials (hero with text overlay, featured products/categories, recommended products, On Sale, Promo Banner, Featured Product, Image with Text — each with its own toggle), Announcement Bar, Advanced (noindex, account-only mode). v1.1 added 22 settings and restructured homepage settings around fixed-order section partials.
 
 ### Architecture Docs
 - `CONTEXT.md` defines Spark's domain language for architecture reviews.

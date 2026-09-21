@@ -270,7 +270,8 @@
         "next": "Next"
     },
     "product": {
-        "no_image": "No image"
+        "no_image": "No image",
+        "sold_out": "ขายหมดแล้ว"
     },
     "catalogue": {
         "continue_shopping": "เลือกซื้อสินค้าต่อ"

@@ -205,6 +205,29 @@
         margin-top: 0.25rem;
     }
 
+    /* Sold-out card state (settings.product_card_sold_out_style).
+       The badge is deliberately neutral slate, not var(--primary-color):
+       the Sale badge carries the brand colour because it is a buying
+       prompt; Sold out signals an unavailable state and must not read
+       as a promotion when a merchant remaps the brand colour. */
+    .product-card-sold-out-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #475569;
+        color: #FFFFFF;
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        padding: 0.125rem 0.5rem;
+    }
+
+    .product-card-sold-out img,
+    .product-card-sold-out .product-title,
+    .product-card-sold-out .product-price {
+        opacity: 0.5;
+    }
+
     /* Membership price presentation */
     [data-spark-membership-price][data-membership-active="true"] [data-spark-public-price] {
         color: #94A3B8;

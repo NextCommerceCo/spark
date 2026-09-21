@@ -270,7 +270,8 @@
         "next": "Next"
     },
     "product": {
-        "no_image": "No image"
+        "no_image": "No image",
+        "sold_out": "Sold out"
     },
     "catalogue": {
         "continue_shopping": "Continue shopping"

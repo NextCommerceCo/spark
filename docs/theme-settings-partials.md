@@ -82,7 +82,7 @@ These are reusable implementation helpers. They are not directly controlled by T
 
 ## Migration Notes
 
-### Membership status metadata key default (1.4.1 -> next release)
+### Membership status metadata key default (1.4.1 -> 1.5.0)
 
 The default for `membership_status_metadata_key` changed from a store-specific value to the neutral `member_status`. The same default is applied in `layouts/base.html` (`|default:` filter) and `assets/js/spark-membership-pricing.js`, so all three moved together.
 

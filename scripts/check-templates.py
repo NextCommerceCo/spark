@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
-"""Check literal template includes and URL names against reviewed inventory."""
+"""Check literal template includes and URL names against reviewed inventory.
+
+The same pass enforces the template contract rules that otherwise live only
+in prose and get re-introduced by the next contributor:
+
+- ``settings.*`` is never a filter argument (``|default:settings.foo``). The
+  platform raises a 500 on every route as soon as the setting has a value.
+- ``{% firstof ... as X %}`` yields a string, so ``X`` can never select an
+  object for ``{% purchase_info_for_product %}``.
+- Storefront routes come from ``{% url %}`` or ``get_absolute_url``; a
+  hardcoded route in ``href``/``action`` breaks the moment the store's
+  route prefix differs. The gate flags the platform roots (``/catalogue/``,
+  ``/cart/``, ``/checkout/`` and the rest of ``PLATFORM_ROUTE_ROOTS``) and
+  the foreign reflexes ported templates carry (``/products/``,
+  ``/collections/``, ``/account/``), which 404 here.
+"""
 
 import argparse
 import re
@@ -30,6 +45,54 @@ FILTER_ARGUMENT_RE = re.compile(
     r"\|\s*(?P<filter>\w+)\s*:\s*"
     r"(?P<quote>['\"])(?P<value>(?:\\.|(?!(?P=quote))[^\\])*)(?P=quote)",
     re.DOTALL,
+)
+# settings.* as a filter ARGUMENT (the value after the colon). settings.foo
+# on the left of the pipe is fine; the platform resolves it. On the right it
+# raises a 500 on every route once the setting is populated.
+SETTINGS_FILTER_ARGUMENT_RE = re.compile(
+    r"\|\s*(?P<filter>\w+)\s*:\s*settings\.(?P<setting>[\w.]+)"
+)
+# A quoted string literal inside an expression is never evaluated, so
+# "settings." inside one is text, not a lookup. Blanked to same-length spaces
+# before matching so offsets (and therefore line numbers) stay intact.
+STRING_LITERAL_RE = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"")
+# The body must not cross %}: a firstof with no "as" clause would otherwise
+# swallow the next tag and claim its assignment.
+FIRSTOF_AS_RE = re.compile(
+    r"{%\s*firstof\b(?P<body>(?:(?!%}).)*?)\s+as\s+(?P<name>\w+)\s*%}",
+    re.DOTALL,
+)
+# Tags that rebind a name to an object again: {% with x=obj %} / {% with obj
+# as x %} and {% for x in ... %}. A rebinding shadows the firstof string
+# until the matching end tag.
+WITH_RE = re.compile(r"{%\s*with\b(?P<body>(?:(?!%}).)*?)%}", re.DOTALL)
+ENDWITH_RE = re.compile(r"{%\s*endwith\s*%}")
+FOR_RE = re.compile(r"{%\s*for\s+(?P<names>[\w,\s]+?)\s+in\b(?:(?!%}).)*?%}", re.DOTALL)
+ENDFOR_RE = re.compile(r"{%\s*endfor\s*%}")
+WITH_BINDING_RE = re.compile(r"(?P<kw>\w+)\s*=|\bas\s+(?P<as>\w+)")
+PURCHASE_INFO_RE = re.compile(
+    r"{%\s*purchase_info_for_product\s+(?P<request>[\w.]+)\s+"
+    r"(?P<product>[\w.]+)"
+)
+# A literal storefront route inside an href/action attribute. Routes must come
+# from {% url %} or get_absolute_url so the platform's prefix and slugs apply.
+# PLATFORM_ROUTE_ROOTS are the roots every storefront URL name resolves under
+# (developer docs, "URLs and template paths"): products and categories both
+# live under /catalogue/, accounts under /accounts/. FOREIGN_ROUTE_REFLEXES
+# are roots other platforms use that a ported template carries over; on this
+# platform they 404, so a literal one is wrong twice.
+PLATFORM_ROUTE_ROOTS = (
+    "catalogue", "cart", "checkout", "blog", "search", "support", "accounts",
+)
+FOREIGN_ROUTE_REFLEXES = ("products", "collections", "account")
+STOREFRONT_ROUTE_PREFIXES = PLATFORM_ROUTE_ROOTS + FOREIGN_ROUTE_REFLEXES
+# Only a local absolute path counts: the value starts with the route root.
+# An external URL that happens to contain /products/ is not a storefront route.
+HARDCODED_ROUTE_RE = re.compile(
+    r"""\b(?P<attribute>href|action)\s*=\s*(?P<quote>['"])"""
+    r"""(?P<value>/(?:""" + "|".join(STOREFRONT_ROUTE_PREFIXES)
+    + r""")/[^'"]*)(?P=quote)""",
+    re.IGNORECASE,
 )
 INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")
 BLOCK_COMMENT_RE = re.compile(
@@ -160,6 +223,120 @@ def inspect_filter_arguments(masked, relative_path):
     return violations
 
 
+def line_of(text, offset):
+    return text.count("\n", 0, offset) + 1
+
+
+def blank_string_literals(text):
+    return STRING_LITERAL_RE.sub(lambda m: " " * len(m.group(0)), text)
+
+
+def inspect_settings_filter_arguments(masked, relative_path):
+    violations = []
+    for expression in DTL_EXPRESSION_RE.finditer(masked):
+        body = blank_string_literals(expression.group(0))
+        for match in SETTINGS_FILTER_ARGUMENT_RE.finditer(body):
+            line_number = line_of(masked, expression.start() + match.start())
+            violations.append(
+                f"[settings-filter-argument] {relative_path}:{line_number}: "
+                f"{match.group('filter')}:settings.{match.group('setting')} - "
+                "settings.* must never be a filter argument; the platform "
+                "raises a 500 on every route once the setting has a value. "
+                "Bind it first ({% with x=settings.name %}) and use "
+                "{% firstof %} or {% if %} on the bound name."
+            )
+    return violations
+
+
+def inspect_firstof_object_selection(masked, relative_path):
+    """Flag a firstof-selected name later handed to purchase_info_for_product.
+
+    {% firstof a b as x %} always stores a STRING, so x can only ever be a
+    scalar such as a PK. Passing it where the tag expects a product object
+    renders nothing useful and raises no error. Dot-access on the target
+    (x.children.first) is the same defect: a string has no attributes.
+
+    The scan walks the file in order. Only calls after the firstof are
+    flagged, and a {% with x=obj %} / {% with obj as x %} / {% for x in %}
+    that rebinds the name shadows the string until its end tag, so the
+    recommended remedy (rebind the object, then call) passes.
+
+    Scope is one file at a time. A firstof-bound name that reaches another
+    template through {% include ... with %} is not traced; keep the firstof
+    and the purchase_info_for_product call in the same file, or select the
+    object with {% with %}/{% if %} at the call site.
+    """
+    events = []
+    for match in FIRSTOF_AS_RE.finditer(masked):
+        events.append((match.start(), "firstof", {match.group("name")}))
+    for match in WITH_RE.finditer(masked):
+        names = set()
+        # A quoted default such as 'use /search as a fallback' must not read
+        # as an "as fallback" binding; blank literals first.
+        for binding in WITH_BINDING_RE.finditer(
+            blank_string_literals(match.group("body"))
+        ):
+            names.add(binding.group("kw") or binding.group("as"))
+        events.append((match.start(), "open", names))
+    for match in ENDWITH_RE.finditer(masked):
+        events.append((match.start(), "close", set()))
+    for match in FOR_RE.finditer(masked):
+        names = {n.strip() for n in match.group("names").split(",") if n.strip()}
+        events.append((match.start(), "open", names))
+    for match in ENDFOR_RE.finditer(masked):
+        events.append((match.start(), "close", set()))
+    for match in PURCHASE_INFO_RE.finditer(masked):
+        events.append((match.start(), "call", match))
+    if not any(kind == "firstof" for _, kind, _ in events):
+        return []
+    events.sort(key=lambda event: event[0])
+
+    firstof_lines = {}
+    shadow_stack = []
+    violations = []
+    for offset, kind, payload in events:
+        if kind == "firstof":
+            for name in payload:
+                firstof_lines[name] = line_of(masked, offset)
+        elif kind == "open":
+            shadow_stack.append(payload)
+        elif kind == "close":
+            if shadow_stack:
+                shadow_stack.pop()
+        else:
+            match = payload
+            root_name = match.group("product").split(".", 1)[0]
+            if root_name not in firstof_lines:
+                continue
+            if any(root_name in names for names in shadow_stack):
+                continue
+            line_number = line_of(masked, offset)
+            violations.append(
+                f"[firstof-object] {relative_path}:{line_number}: "
+                f"purchase_info_for_product receives {match.group('product')!r}, "
+                f"but {root_name!r} comes from {{% firstof ... as {root_name} %}} "
+                f"on line {firstof_lines[root_name]} and firstof always yields "
+                "a string, never an object. Select the product with "
+                "{% with %}/{% if %} and reserve firstof for PKs. (This check "
+                "is per file; names passed through {% include %} are not traced.)"
+            )
+    return violations
+
+
+def inspect_hardcoded_routes(masked, relative_path):
+    violations = []
+    for match in HARDCODED_ROUTE_RE.finditer(masked):
+        line_number = line_of(masked, match.start())
+        violations.append(
+            f"[hardcoded-route] {relative_path}:{line_number}: "
+            f"{match.group('attribute')}={match.group('quote')}"
+            f"{match.group('value')}{match.group('quote')} - storefront "
+            "routes must come from {% url %} or get_absolute_url, never a "
+            "literal /" + "/, /".join(STOREFRONT_ROUTE_PREFIXES) + "/ path."
+        )
+    return violations
+
+
 def load_allowlist(path):
     names = set()
     with path.open(encoding="utf-8") as handle:
@@ -223,6 +400,13 @@ def inspect_templates(root, allowlist):
             violations.append(f"[block-structure] {relative_path}: {error}")
 
         violations.extend(inspect_filter_arguments(masked, relative_path))
+        violations.extend(
+            inspect_settings_filter_arguments(masked, relative_path)
+        )
+        violations.extend(
+            inspect_firstof_object_selection(masked, relative_path)
+        )
+        violations.extend(inspect_hardcoded_routes(masked, relative_path))
 
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)

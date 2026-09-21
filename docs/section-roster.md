@@ -387,9 +387,10 @@ right next section. It's the foundational layout primitive, shows up
 in every common D2C page composition, and is the most-used section
 in Shopify themes by a wide margin. Carousel (`slideshow`) is Tier 2.
 
-Other open decisions remain — mobile reference width (390 vs 375),
-export tool location, generated-DTL prototype-only policy, app-hook
-extension points — and are not blocked by this roster.
+Mobile reference width is decided: match the Figma-defined frame
+width (375 or 390) and capture QA at both. Other open decisions
+remain — export tool location, generated-DTL prototype-only policy,
+app-hook extension points — and are not blocked by this roster.
 
 ## Companion docs
 

@@ -960,6 +960,18 @@
                 "type": "checkbox",
                 "default": false,
                 "help_text": "Add a subtle border around product cards in grids."
+            },
+            {
+                "name": "product_card_sold_out_style",
+                "label": "Sold Out Products In Grids",
+                "type": "select",
+                "default": "badge",
+                "options": [
+                    { "name": "Show with a Sold out badge", "value": "badge" },
+                    { "name": "Show greyed out with a Sold out badge", "value": "muted" },
+                    { "name": "Hide the card", "value": "hide" }
+                ],
+                "help_text": "How product cards render when a product cannot be bought. Hiding cards makes curated grids show fewer products than configured."
             }
         ],
         "Membership Pricing": [
@@ -981,7 +993,7 @@
                 "name": "membership_status_metadata_key",
                 "label": "Status Metadata Key",
                 "type": "text",
-                "default": "uvbrite_member_status",
+                "default": "member_status",
                 "help_text": "Customer metadata key used to identify active members.",
                 "max_length": 100
             },

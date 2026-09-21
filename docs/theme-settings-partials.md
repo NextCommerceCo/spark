@@ -2,6 +2,8 @@
 
 This catalog lists the Spark partials, homepage section partials, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions. For the Figma library workflow, pair this catalog with `docs/figma-section-library-plan.md`.
 
+Never push `configs/settings_data.json` to a live store by default; it overwrites the merchant's Theme Editor state. See [Settings Data Safety On Live Stores](extending-spark.md#settings-data-safety-on-live-stores).
+
 ## Mechanical Scope
 
 - Spark has 19 partial files that reference `settings.*` directly.
@@ -37,7 +39,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 
 | Partial | Setting Group | Purpose | Key Settings |
 | --- | --- | --- | --- |
-| `partials/product_card.html` | Product Pages > Product Images / Product Cards / Membership Pricing | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. Member price rendering is enabled by the global membership pricing script. | `product_media_fit`, `product_card_border`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label` |
+| `partials/product_card.html` | Product Pages > Product Images / Product Cards / Membership Pricing | Shared product card for catalogue, category, search, homepage grids, sale grids, and recommendations. Member price rendering is enabled by the global membership pricing script. | `product_media_fit`, `product_card_border`, `product_card_sold_out_style`, `enable_membership_pricing`, `membership_discount_percent`, `membership_status_metadata_key`, `membership_active_status_value`, `membership_label` |
 | `partials/variant_picker.html` | Product Pages > Product Information | PDP variant option controls: select, radio, or chips with unavailable-combination marking and an optional size guide link. | `variant_picker`, `variant_size_guide_url`, `variant_size_guide_text`, `variant_size_guide_option` |
 | `partials/recommended_products.html` | Product Pages > Recommended Products | PDP recommended product section. | `show_recommended`, `recommended_products_header`, `recommended_products_header_size`, `recommended_products_header_align`, `recommended_products_columns`, `recommended_products_bg_color`, `recommended_products_card_bg` |
 | `partials/side_cart.html` | Side Cart > General | Cart drawer shell and web component slots. | `cart_header_title`, `sidecart_open_on_add`, `gift_product`, `enable_upsells` |
@@ -77,6 +79,14 @@ These are reusable implementation helpers. They are not directly controlled by T
 | `partials/product_grid.html` | Shared product grid helper for repeated commerce grids. |
 | `partials/cta_button.html` | Shared CTA button helper for primary/accent and outline variants, with optional custom outline color. |
 | `partials/icons/*.html` | Inline SVG icons used by header, search, pagination, and drawers. |
+
+## Migration Notes
+
+### Membership status metadata key default (1.4.1 -> next release)
+
+The default for `membership_status_metadata_key` changed from a store-specific value to the neutral `member_status`. The same default is applied in `layouts/base.html` (`|default:` filter) and `assets/js/spark-membership-pricing.js`, so all three moved together.
+
+A store that enabled membership pricing without setting the key explicitly was matching customer metadata under the old default, `uvbrite_member_status`. After updating Spark, such a store must set Theme Settings > Product Pages > Membership Pricing > Status Metadata Key to the key its customer metadata actually uses, or member pricing silently stops matching. Stores that already set the key explicitly are unaffected.
 
 ## Intro Bootstrap Parity
 

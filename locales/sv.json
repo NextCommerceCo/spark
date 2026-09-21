@@ -270,7 +270,8 @@
         "next": "Next"
     },
     "product": {
-        "no_image": "No image"
+        "no_image": "No image",
+        "sold_out": "Slutsåld"
     },
     "catalogue": {
         "continue_shopping": "Fortsätt handla"

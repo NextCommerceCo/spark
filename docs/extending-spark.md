@@ -8,7 +8,7 @@ Spark is meant to be extended without forking the whole theme. This guide points
 | --- | --- | --- |
 | Add or change a homepage design block | Homepage section partial plus Theme Settings | `docs/design-block-authoring.md` |
 | Add merchant-configurable theme behavior | `configs/settings_schema.json` and `configs/settings_data.json` | `docs/theme-settings-partials.md` |
-| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/terminology.md`, `docs/performance-load-order.md` |
+| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/app-hooks.md`, `docs/performance-load-order.md` |
 | Coordinate cart UI behavior | DOM events through `SparkEvents` | `docs/cart-events.md` |
 | Change PDP variant picker UI | Real controls named `attr_*` plus `SparkVariantState` | `docs/pdp-variant-state.md`, `docs/pdp-customization.md` |
 | Add custom client-side behavior | Focused vanilla JS module or Web Component | Existing files in `assets/js/` |
@@ -28,6 +28,20 @@ When adding a setting-backed surface:
 6. Run the standard local checks. If your branch adds a schema validation script, add it to [CONTRIBUTING.md](../CONTRIBUTING.md) and CI before referencing it here.
 
 Keep future theme sections in mind. Settings that belong to one repeated section should be easy to move from `settings.foo` to future `section.settings.foo`.
+
+## Settings Data Safety On Live Stores
+
+`configs/settings_data.json` is the defaults file for a fresh install. On a live store the same file is the merchant's saved Theme Editor state, and pushing the repo copy replaces every value the merchant has set. A bare `ntk push` with no path uploads the whole theme, including this file.
+
+Follow these steps whenever a change touches settings:
+
+1. Do not push `configs/settings_data.json` to a live store by default. Push the files you changed by name, for example `ntk push configs/settings_schema.json`.
+2. A new schema key that a template reads with `|default` or an explicit fallback branch needs no data push at all. Prefer that pattern.
+3. When a live store does need new keys in its data file, pull the live theme first (`ntk pull`), merge the new keys onto the live `settings_data.json` as the base, and push that merged file. Never merge the other way round.
+4. Say in the handoff or PR summary that a `settings_data.json` push happened and which keys it added.
+5. Keep the repo copy as the fresh-install default. The settings parity gate (`scripts/check-settings-parity.py`) requires every non-optional schema key to have a default there, so add the key to the repo file as well; that is a repo change, not a store push.
+
+`make push` only uploads `assets/main.css`. It never touches settings data. The risk is a bare `ntk push` or `ntk watch` started before the live data file was pulled.
 
 ## Homepage Section Partials
 
@@ -51,7 +65,7 @@ Use shared helpers where possible:
 
 Spark exposes app integration points with `{% app_hook %}`. Apps should target those slots instead of editing theme files or reaching into private Web Component internals.
 
-Current hook examples live in product cards, PDP reviews, collection feeds, product detail surfaces, and global tracking points. Search for `{% app_hook %}` before adding a new hook.
+The full hook inventory, with the DOM context around each hook, the naming convention, and the stability policy, is in [app-hooks.md](app-hooks.md). Read it before adding a hook; existing names are stable and renames need a deprecation period.
 
 When adding a hook:
 

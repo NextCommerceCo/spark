@@ -675,6 +675,45 @@ Exercises: the `<source>` fallback below 768px.
 
 Exercises: `partials/section_promo_banner.html`.
 
+### FX-S08 image-text-long-copy
+
+| Setting | Value |
+| --- | --- |
+| `show_image_text` | `true` |
+| `image_text_image` | square image, `image_text_image_position` `right`, ratio `square` |
+| `image_text_eyebrow` | `Fixture eyebrow` |
+| `image_text_heading` | the FX-S01 100-character heading |
+| `image_text_body` | repeat `Fixture body copy that fills the field. ` to 1000 characters |
+| `image_text_cta_url` | `/shop/` with `image_text_cta_style` `outline` |
+| `image_text_bg_color`, `image_text_text_color` | `#1E293B`, `#F8FAFC` (dark background, light text) |
+
+Exercises: `partials/section_image_text.html` long-heading wrap, heading
+colour on a dark background, outline CTA following the text colour,
+`partials/cta_button.html`.
+
+### FX-S09 image-text-missing-image
+
+| Setting | Value |
+| --- | --- |
+| `show_image_text` | `true` |
+| `image_text_image` | empty, ratio `portrait` |
+| `image_text_heading`, `image_text_body` | set |
+| `image_text_cta_url` | empty |
+
+Exercises: the neutral image block at the selected ratio and the no-CTA
+branch in `partials/section_image_text.html`.
+
+### FX-S10 image-text-image-only
+
+| Setting | Value |
+| --- | --- |
+| `show_image_text` | `true` |
+| `image_text_image` | set |
+| `image_text_heading`, `image_text_body` | empty |
+
+Exercises: the live guard in `partials/section_image_text.html`; the setup
+placeholder renders, never a lone image beside an empty column.
+
 ## How to seed a dev store
 
 ### Manual, in the dashboard

@@ -702,6 +702,64 @@
       "exercises": [
         "partials/section_promo_banner.html"
       ]
+    },
+    {
+      "id": "FX-S08",
+      "group": "section-settings",
+      "name": "image-text-long-copy",
+      "description": "Image with Text at the 100-character heading with body, eyebrow, outline CTA, and custom background and text colours.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "<square image>",
+        "image_text_image_position": "right",
+        "image_text_image_ratio": "square",
+        "image_text_eyebrow": "Fixture eyebrow",
+        "image_text_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
+        "image_text_body": {
+          "repeat": "Fixture body copy that fills the field. ",
+          "max_length": 1000
+        },
+        "image_text_cta_url": "/shop/",
+        "image_text_cta_style": "outline",
+        "image_text_bg_color": "#1E293B",
+        "image_text_text_color": "#F8FAFC"
+      },
+      "exercises": [
+        "partials/section_image_text.html",
+        "partials/cta_button.html"
+      ]
+    },
+    {
+      "id": "FX-S09",
+      "group": "section-settings",
+      "name": "image-text-missing-image",
+      "description": "Image with Text with copy but no image; the neutral block renders at the selected ratio.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "",
+        "image_text_image_ratio": "portrait",
+        "image_text_heading": "Fixture heading",
+        "image_text_body": "Fixture body copy.",
+        "image_text_cta_url": ""
+      },
+      "exercises": [
+        "partials/section_image_text.html"
+      ]
+    },
+    {
+      "id": "FX-S10",
+      "group": "section-settings",
+      "name": "image-text-image-only",
+      "description": "Image with Text toggled on with an image and no heading or body; the setup placeholder renders, never a lone image.",
+      "fields": {
+        "show_image_text": true,
+        "image_text_image": "<square image>",
+        "image_text_heading": "",
+        "image_text_body": ""
+      },
+      "exercises": [
+        "partials/section_image_text.html"
+      ]
     }
   ]
 }

@@ -139,15 +139,17 @@ Recommended component properties:
 
 ## QA Checklist
 
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
 - Verify at desktop 1440px, tablet 768px, and the chosen mobile width.
 - Confirm image left and image right swap at `md` and stack image-first on mobile.
 - Confirm each ratio value renders the expected box and that `native` does not crop.
-- Confirm the long-heading state (100 chars) wraps without overflow and keeps the image vertically centred.
-- Confirm the missing-image state renders the neutral block at the selected ratio and the copy still renders.
-- Confirm no CTA renders when `image_text_cta_url` is empty, and the localized `Shop now` label renders when only the URL is set.
-- Confirm primary, secondary, and outline CTA states match shared Spark button styling, and that outline follows a custom text colour.
-- Confirm background and text colours apply only when set and default stores render unchanged.
-- Confirm the setup placeholder appears with the toggle on and no content, and disappears once any of image, heading, or body is set.
+- Confirm the long-heading state (100 chars) wraps without overflow and keeps the image vertically centred (FX-S08).
+- Confirm the missing-image state renders the neutral block at the selected ratio and the copy still renders (FX-S09).
+- Confirm no CTA renders when `image_text_cta_url` is empty (FX-S09), and the localized `Shop now` label renders when only the URL is set.
+- Confirm primary, secondary, and outline CTA states match shared Spark button styling, and that outline follows a custom text colour (FX-S08).
+- Confirm background and text colours apply only when set, including the heading on a dark background (FX-S08), and default stores render unchanged.
+- Confirm the setup placeholder appears with the toggle on and no heading or body, including when only an image is set (FX-S10), and disappears once a heading or body is set.
 
 ## Future Theme Section Migration
 

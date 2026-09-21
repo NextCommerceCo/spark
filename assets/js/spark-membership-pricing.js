@@ -137,7 +137,7 @@
 
     function metadataMatches(metadata) {
         metadata = metadata || {};
-        var key = config.statusMetadataKey || 'uvbrite_member_status';
+        var key = config.statusMetadataKey || 'member_status';
         var activeValue = normalize(config.activeStatusValue || 'active');
         var value = metadata[key];
 

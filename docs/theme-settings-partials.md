@@ -77,6 +77,14 @@ These are reusable implementation helpers. They are not directly controlled by T
 | `partials/cta_button.html` | Shared CTA button helper for primary/accent and outline variants, with optional custom outline color. |
 | `partials/icons/*.html` | Inline SVG icons used by header, search, pagination, and drawers. |
 
+## Migration Notes
+
+### Membership status metadata key default (1.4.1 -> next release)
+
+The default for `membership_status_metadata_key` changed from a store-specific value to the neutral `member_status`. The same default is applied in `layouts/base.html` (`|default:` filter) and `assets/js/spark-membership-pricing.js`, so all three moved together.
+
+A store that enabled membership pricing without setting the key explicitly was matching customer metadata under the old default, `uvbrite_member_status`. After updating Spark, such a store must set Theme Settings > Product Pages > Membership Pricing > Status Metadata Key to the key its customer metadata actually uses, or member pricing silently stops matching. Stores that already set the key explicitly are unaffected.
+
 ## Intro Bootstrap Parity
 
 Spark now covers the highest-value Intro Bootstrap controls for quick design work:

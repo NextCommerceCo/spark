@@ -20,6 +20,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 | `partials/section_featured_categories.html` | Homepage > Featured Categories | Category image tile grid. | `show_featured_categories`, `featured_categories`, `featured_categories_header`, `featured_categories_header_size`, `featured_categories_header_align`, `featured_categories_columns`, `featured_categories_bg_color`, `featured_categories_overlay_color`, `featured_categories_overlay_opacity`, `featured_categories_text_color` |
 | `partials/section_on_sale.html` | Homepage > On Sale | Merchant-curated sale product grid. | `show_on_sale`, `on_sale_products`, `on_sale_header`, `on_sale_header_size`, `on_sale_header_align`, `on_sale_columns`, `on_sale_bg_color`, `on_sale_card_bg` |
 | `partials/section_promo_banner.html` | Homepage > Promo Banner | Full-width text and CTA promotion band. | `show_promo_banner`, `promo_banner_heading`, `promo_banner_subheading`, `promo_banner_cta_text`, `promo_banner_cta_url`, `promo_banner_bg_color`, `promo_banner_text_color`, `promo_banner_cta_style`, `promo_banner_cta_outline` |
+| `partials/section_image_text.html` | Homepage > Image with Text | 50/50 image and text split with eyebrow, heading, rich-text body, and CTA. | `show_image_text`, `image_text_image`, `image_text_image_alt`, `image_text_image_position`, `image_text_image_ratio`, `image_text_eyebrow`, `image_text_heading`, `image_text_body`, `image_text_cta_text`, `image_text_cta_url`, `image_text_cta_style`, `image_text_bg_color`, `image_text_text_color` |
 
 ## Global Partials
 

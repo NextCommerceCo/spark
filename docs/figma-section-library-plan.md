@@ -103,8 +103,9 @@ Use snake_case for exported properties. If Figma display labels need to be short
 | Featured categories | `partials/section_featured_categories.html` | `product_categories`, overlay settings | First-pass spec in `docs/section-specs/featured-categories.md`. Needs 2-5 desktop column states, missing category image state, overlay opacity states, and long category label behavior. |
 | On Sale | `partials/section_on_sale.html` | `products`, product card sale state | First-pass spec in `docs/section-specs/on-sale.md`. Needs sale badge and compare-at price states from `partials/product_card.html`; otherwise this should share grid anatomy with Featured products. |
 | Promo banner | `partials/section_promo_banner.html` | text, CTA settings, colors | First-pass spec in `docs/section-specs/promo-banner.md`. Needs contrast states, short and long copy states, no-CTA state, and primary/accent/outline button states. |
+| Image with text | `partials/section_image_text.html` | `image_picker`, text, rich text, CTA settings, colors | First-pass spec in `docs/section-specs/image-text.md`. Needs image left/right states, four image ratio states, missing-image state, long heading state, and primary/secondary/outline button states. |
 
-These are enough for the first Figma library pass. The full roster of section partials Spark needs to ship to fully cover D2C storefronts — including image-with-text, FAQ, comparison table, process steps, press logos, testimonials, value props, and the rest of the Tier 1/2/3 catalog — lives in [`section-roster.md`](./section-roster.md). New section ideas should follow the section authoring unit pattern below.
+These are enough for the first Figma library pass. The full roster of section partials Spark needs to ship to fully cover D2C storefronts — including FAQ, comparison table, process steps, press logos, testimonials, value props, and the rest of the Tier 1/2/3 catalog — lives in [`section-roster.md`](./section-roster.md). New section ideas should follow the section authoring unit pattern below.
 
 ## Section Spec Template
 

@@ -2,6 +2,24 @@
 
 ## Open
 
+### Theme contract: mask HTML comments in the needle search
+**Priority:** P1
+**Effort:** S
+**What:** `scripts/check-theme-contract.py` masks only DTL comments (`{# #}`, `{% comment %}`, `{% verbatim %}`) before searching for a requirement's `must_contain`. A live theme carrying `<!-- {% pixels %} -->` passes the `pixels` rule while the browser discards the rendered tracker iframes, so the storefront emits no events. Wrap the checker's mask with an HTML-comment mask (checker-side only; `check-templates.py`'s masking has other consumers) and add the negative test. `{% if False %}{% pixels %}{% endif %}` also passes and is not text-fixable; document it under "Verifying on a storefront".
+**Why:** `pixels` is now the only fleet-scoped rule, so this is the whole fleet sweep's blind spot. Surfaced by the adversarial pass on the contract-scope PR, 2026-09-21.
+
+### Theme contract: harden the live check's transport
+**Priority:** P2
+**Effort:** S
+**What:** `read_remote_sources` uses the default `urllib` opener, so a 30x from the store forwards the `Authorization: Bearer` header to the redirect target, and `--store` accepts any URL scheme. Assert `https://` and install a non-following redirect handler. Also confirm the templates endpoint is unpaginated at the largest theme size (the checker reads `results` and never follows `next`), and quote remote template names in violation lines so a name containing a newline cannot fabricate a second `- [` line.
+**Why:** Pre-existing, but the unattended fleet sweep runs this against every store twice a week with a real admin key.
+
+### Fleet sweep: pass `--scope fleet` explicitly and record the applied count (next-mind)
+**Priority:** P2
+**Effort:** S
+**What:** `next-mind/scripts/spark_fleet_check.py` invokes the checker with no `--scope`, discards stdout (where the "N of M requirement(s)" line goes), and turns any non-violation exit-1 (scope refusal, traceback on a malformed API entry) into a `failing_active` row. Pass `--scope fleet`, capture the applied count into the fleet JSON and ledger, and distinguish infrastructure errors from violations (a separate exit code from the checker would help).
+**Why:** The sweep now depends on an implicit default that this repo changed under it; the ledger should say which rules ran.
+
 ### Preview mode placeholder suppression
 **Priority:** P2
 **Effort:** S (once platform variable identified)

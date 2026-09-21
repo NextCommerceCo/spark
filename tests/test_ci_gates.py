@@ -1218,6 +1218,20 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertNotIn("featured.html:1", result.stderr)
         self.assertNotIn("featured.html:4", result.stderr)
 
+    def test_as_inside_a_with_string_literal_is_not_a_binding(self):
+        result = run_template_fixture({
+            "partials/featured.html": (
+                "{% firstof settings.pick.pk product.pk as fallback %}\n"
+                "{% with url=item.url|default:'use /search as a fallback' %}\n"
+                "{% purchase_info_for_product request fallback as session %}\n"
+                "{% endwith %}\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[firstof-object]", result.stderr)
+        self.assertIn("featured.html:3", result.stderr)
+
     def test_firstof_for_a_pk_and_object_selected_with_if_pass(self):
         result = run_template_fixture({
             "templates/catalogue/product.html": (

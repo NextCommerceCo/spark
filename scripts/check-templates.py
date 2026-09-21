@@ -271,7 +271,11 @@ def inspect_firstof_object_selection(masked, relative_path):
         events.append((match.start(), "firstof", {match.group("name")}))
     for match in WITH_RE.finditer(masked):
         names = set()
-        for binding in WITH_BINDING_RE.finditer(match.group("body")):
+        # A quoted default such as 'use /search as a fallback' must not read
+        # as an "as fallback" binding; blank literals first.
+        for binding in WITH_BINDING_RE.finditer(
+            blank_string_literals(match.group("body"))
+        ):
             names.add(binding.group("kw") or binding.group("as"))
         events.append((match.start(), "open", names))
     for match in ENDWITH_RE.finditer(masked):

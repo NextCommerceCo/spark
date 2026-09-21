@@ -41,7 +41,18 @@ def write_theme(root, base_html, extra=None):
     (root / "templates" / "index.html").write_text(
         (extra or "<p>index</p>"), encoding="utf-8"
     )
-    (root / "partials" / "side_cart.html").write_text("<div></div>", encoding="utf-8")
+    # The runtime hooks the shipped JS resolves by id/attribute, so a stub
+    # theme satisfies every requirement except the one a test removes.
+    (root / "partials" / "side_cart.html").write_text(
+        "<spark-cart-drawer></spark-cart-drawer>", encoding="utf-8"
+    )
+    (root / "partials" / "header.html").write_text(
+        '<button data-toggle="mobile-nav"></button><span id="cart-badge"></span>',
+        encoding="utf-8",
+    )
+    (root / "partials" / "mobile_menu.html").write_text(
+        '<div id="mobile-nav"></div>', encoding="utf-8"
+    )
 
 
 class ContractFileTests(unittest.TestCase):
@@ -50,6 +61,20 @@ class ContractFileTests(unittest.TestCase):
         ids = {requirement["id"] for requirement in contract["requirements"]}
 
         self.assertIn("pixels", ids)
+
+    def test_contract_declares_the_runtime_hooks_the_js_resolves(self):
+        # A negative control showed deleting id="cart-badge" passes every
+        # other gate and fails only in the browser.
+        contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
+        needles = {requirement["must_contain"] for requirement in contract["requirements"]}
+
+        for hook in (
+            'id="cart-badge"',
+            'data-toggle="mobile-nav"',
+            'id="mobile-nav"',
+            "<spark-cart-drawer",
+        ):
+            self.assertIn(hook, needles)
 
     def test_every_requirement_carries_an_explanation(self):
         # The failure message is the whole point: whoever trips this gate is
@@ -78,6 +103,21 @@ class ThemeContractGateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("does not contain {% pixels %}", result.stderr)
         self.assertIn("Why it matters", result.stderr)
+
+    def test_missing_runtime_hook_fails_naming_the_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_theme(root, BASE_WITH_PIXELS)
+            (root / "partials" / "header.html").write_text(
+                '<button data-toggle="mobile-nav"></button>', encoding="utf-8"
+            )
+
+            result = run_checker("--root", root, "--contract", CONTRACT)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("[cart-badge]", result.stderr)
+        self.assertIn('partials/header.html does not contain id="cart-badge"', result.stderr)
+        self.assertNotIn("[mobile-nav-toggle]", result.stderr)
 
     def test_commented_out_tag_does_not_satisfy_the_contract(self):
         with tempfile.TemporaryDirectory() as tmp:

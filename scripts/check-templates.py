@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
-"""Check literal template includes and URL names against reviewed inventory."""
+"""Check literal template includes and URL names against reviewed inventory.
+
+The same pass enforces the template contract rules that otherwise live only
+in prose and get re-introduced by the next contributor:
+
+- ``settings.*`` is never a filter argument (``|default:settings.foo``). The
+  platform raises a 500 on every route as soon as the setting has a value.
+- ``{% firstof ... as X %}`` yields a string, so ``X`` can never select an
+  object for ``{% purchase_info_for_product %}``.
+- Storefront routes come from ``{% url %}`` or ``get_absolute_url``; a
+  hardcoded ``/products/`` literal in ``href``/``action`` breaks the moment
+  the store's route prefix differs.
+"""
 
 import argparse
 import re
@@ -30,6 +42,27 @@ FILTER_ARGUMENT_RE = re.compile(
     r"\|\s*(?P<filter>\w+)\s*:\s*"
     r"(?P<quote>['\"])(?P<value>(?:\\.|(?!(?P=quote))[^\\])*)(?P=quote)",
     re.DOTALL,
+)
+# settings.* as a filter ARGUMENT (the value after the colon). settings.foo
+# on the left of the pipe is fine; the platform resolves it. On the right it
+# raises a 500 on every route once the setting is populated.
+SETTINGS_FILTER_ARGUMENT_RE = re.compile(
+    r"\|\s*(?P<filter>\w+)\s*:\s*settings\.(?P<setting>[\w.]+)"
+)
+FIRSTOF_AS_RE = re.compile(
+    r"{%\s*firstof\b(?P<body>.*?)\s+as\s+(?P<name>\w+)\s*%}",
+    re.DOTALL,
+)
+PURCHASE_INFO_RE = re.compile(
+    r"{%\s*purchase_info_for_product\s+(?P<request>[\w.]+)\s+"
+    r"(?P<product>[\w.]+)"
+)
+# A literal storefront route inside an href/action attribute. Routes must come
+# from {% url %} or get_absolute_url so the platform's prefix and slugs apply.
+HARDCODED_ROUTE_RE = re.compile(
+    r"""\b(?P<attribute>href|action)\s*=\s*(?P<quote>['"])"""
+    r"""(?P<value>[^'"]*/products/[^'"]*)(?P=quote)""",
+    re.IGNORECASE,
 )
 INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")
 BLOCK_COMMENT_RE = re.compile(
@@ -160,6 +193,72 @@ def inspect_filter_arguments(masked, relative_path):
     return violations
 
 
+def line_of(text, offset):
+    return text.count("\n", 0, offset) + 1
+
+
+def inspect_settings_filter_arguments(masked, relative_path):
+    violations = []
+    for expression in DTL_EXPRESSION_RE.finditer(masked):
+        for match in SETTINGS_FILTER_ARGUMENT_RE.finditer(expression.group(0)):
+            line_number = line_of(masked, expression.start() + match.start())
+            violations.append(
+                f"[settings-filter-argument] {relative_path}:{line_number}: "
+                f"{match.group('filter')}:settings.{match.group('setting')} - "
+                "settings.* must never be a filter argument; the platform "
+                "raises a 500 on every route once the setting has a value. "
+                "Bind it first ({% with x=settings.name %}) and use "
+                "{% firstof %} or {% if %} on the bound name."
+            )
+    return violations
+
+
+def inspect_firstof_object_selection(masked, relative_path):
+    """Flag a firstof-selected name later handed to purchase_info_for_product.
+
+    {% firstof a b as x %} always stores a STRING, so x can only ever be a
+    scalar such as a PK. Passing it where the tag expects a product object
+    renders nothing useful and raises no error.
+    """
+    firstof_targets = {}
+    for match in FIRSTOF_AS_RE.finditer(masked):
+        firstof_targets.setdefault(
+            match.group("name"), line_of(masked, match.start())
+        )
+    if not firstof_targets:
+        return []
+
+    violations = []
+    for match in PURCHASE_INFO_RE.finditer(masked):
+        root_name = match.group("product").split(".", 1)[0]
+        if root_name not in firstof_targets:
+            continue
+        line_number = line_of(masked, match.start())
+        violations.append(
+            f"[firstof-object] {relative_path}:{line_number}: "
+            f"purchase_info_for_product receives {match.group('product')!r}, "
+            f"but {root_name!r} comes from {{% firstof ... as {root_name} %}} "
+            f"on line {firstof_targets[root_name]} and firstof always yields "
+            "a string, never an object. Select the product with "
+            "{% with %}/{% if %} and reserve firstof for PKs."
+        )
+    return violations
+
+
+def inspect_hardcoded_routes(masked, relative_path):
+    violations = []
+    for match in HARDCODED_ROUTE_RE.finditer(masked):
+        line_number = line_of(masked, match.start())
+        violations.append(
+            f"[hardcoded-route] {relative_path}:{line_number}: "
+            f"{match.group('attribute')}={match.group('quote')}"
+            f"{match.group('value')}{match.group('quote')} - storefront "
+            "routes must come from {% url %} or get_absolute_url, never a "
+            "/products/ literal."
+        )
+    return violations
+
+
 def load_allowlist(path):
     names = set()
     with path.open(encoding="utf-8") as handle:
@@ -223,6 +322,13 @@ def inspect_templates(root, allowlist):
             violations.append(f"[block-structure] {relative_path}: {error}")
 
         violations.extend(inspect_filter_arguments(masked, relative_path))
+        violations.extend(
+            inspect_settings_filter_arguments(masked, relative_path)
+        )
+        violations.extend(
+            inspect_firstof_object_selection(masked, relative_path)
+        )
+        violations.extend(inspect_hardcoded_routes(masked, relative_path))
 
         for match in TAG_RE.finditer(masked):
             tag_name = match.group(1)

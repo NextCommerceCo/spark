@@ -1063,6 +1063,156 @@ class TemplateIntegrityGateTests(unittest.TestCase):
         self.assertIn("partials/", result.stderr)
 
 
+def run_template_fixture(files, allowlist=""):
+    """Run check-templates.py over an ad-hoc template root."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        fixture_dir = Path(temp_dir)
+        for relative_path, content in files.items():
+            path = fixture_dir / relative_path
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+        allowlist_path = fixture_dir / "allowlist.txt"
+        allowlist_path.write_text(allowlist, encoding="utf-8")
+        return run_checker(
+            "check-templates.py",
+            "--root",
+            fixture_dir,
+            "--allowlist",
+            allowlist_path,
+        )
+
+
+class TemplateContractGateTests(unittest.TestCase):
+    """The prose contract rules from issue #51, item 3, as gates."""
+
+    # (a) settings.* as a filter argument
+
+    def test_real_repo_has_no_settings_filter_argument(self):
+        result = run_checker("check-templates.py")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("[settings-filter-argument]", result.stderr)
+
+    def test_settings_as_default_filter_argument_fails_naming_the_line(self):
+        # The exact shape of the side_cart defect this gate was written for.
+        result = run_template_fixture({
+            "partials/side_cart.html": (
+                "<spark-cart-drawer\n"
+                "    data-currency=\"{{ request.CURRENCY_CODE|default:'USD' }}\"\n"
+                "    {% if settings.gift_product %}data-gift-product-id=\""
+                "{{ settings.gift_product.children.first.pk"
+                "|default:settings.gift_product.pk }}\"{% endif %}\n"
+                ">\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[settings-filter-argument]", result.stderr)
+        self.assertIn("side_cart.html:3", result.stderr)
+        self.assertIn("default:settings.gift_product.pk", result.stderr)
+
+    def test_settings_as_filter_argument_is_caught_in_block_tags_too(self):
+        result = run_template_fixture({
+            "templates/index.html": (
+                "{% for item in items|slice:settings.item_limit %}{{ item }}{% endfor %}\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[settings-filter-argument]", result.stderr)
+        self.assertIn("index.html:1", result.stderr)
+        self.assertIn("slice:settings.item_limit", result.stderr)
+
+    def test_settings_on_the_left_of_a_filter_and_bound_names_pass(self):
+        result = run_template_fixture({
+            "partials/side_cart.html": (
+                "{% with gift=settings.gift_product %}\n"
+                "data-gift-product-id=\"{% firstof gift.children.first.pk gift.pk %}\"\n"
+                "{% endwith %}\n"
+                "{{ settings.on_sale_header|default:default_on_sale }}\n"
+                "{# {{ x|default:settings.commented_out }} #}\n"
+            ),
+        })
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+
+    # (b) firstof ... as X selecting an object
+
+    def test_real_repo_has_no_firstof_object_selection(self):
+        result = run_checker("check-templates.py")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("[firstof-object]", result.stderr)
+
+    def test_firstof_target_passed_to_purchase_info_fails_naming_both_lines(self):
+        result = run_template_fixture({
+            "partials/section_featured_product.html": (
+                "{% firstof settings.featured_product product as featured %}\n"
+                "<div>\n"
+                "{% purchase_info_for_product request featured as session %}\n"
+                "</div>\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[firstof-object]", result.stderr)
+        self.assertIn("section_featured_product.html:3", result.stderr)
+        self.assertIn("on line 1", result.stderr)
+        self.assertIn("always yields a string", result.stderr)
+
+    def test_firstof_for_a_pk_and_object_selected_with_if_pass(self):
+        result = run_template_fixture({
+            "templates/catalogue/product.html": (
+                "{% purchase_info_for_product request product as session %}\n"
+                "{% firstof product.children.first.pk product.pk as atc_pk %}\n"
+                "{% if settings.featured_product %}"
+                "{% with featured=settings.featured_product %}\n"
+                "{% purchase_info_for_product request featured as session %}\n"
+                "{% endwith %}{% endif %}\n"
+            ),
+        })
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+
+    # (c) hardcoded /products/ routes
+
+    def test_real_repo_has_no_hardcoded_product_routes(self):
+        result = run_checker("check-templates.py")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("[hardcoded-route]", result.stderr)
+
+    def test_hardcoded_product_route_fails_naming_the_line(self):
+        result = run_template_fixture({
+            "partials/product_card.html": (
+                "<div>\n"
+                "<a href=\"/products/{{ product.slug }}/\">{{ product.title }}</a>\n"
+                "<form action='/products/{{ product.pk }}/add/'></form>\n"
+                "</div>\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[hardcoded-route]", result.stderr)
+        self.assertIn("product_card.html:2", result.stderr)
+        self.assertIn("product_card.html:3", result.stderr)
+        self.assertIn("get_absolute_url", result.stderr)
+
+    def test_url_tag_and_get_absolute_url_routes_pass(self):
+        result = run_template_fixture({
+            "partials/product_card.html": (
+                "<a href=\"{{ product.get_absolute_url }}\">{{ product.title }}</a>\n"
+                "<form action=\"{% url 'cart:add' pk=child.pk %}\"></form>\n"
+                "{# <a href=\"/products/legacy/\">commented out</a> #}\n"
+            ),
+        }, allowlist="cart:add\n")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Template integrity gate passed", result.stdout)
+
+
 class BuildConfigurationTests(unittest.TestCase):
     def test_css_input_variable_drives_build_watch_and_drift_gate(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

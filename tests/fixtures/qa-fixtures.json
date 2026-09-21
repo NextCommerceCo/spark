@@ -282,6 +282,25 @@
       ]
     },
     {
+      "id": "FX-P13",
+      "group": "product",
+      "name": "no-price",
+      "description": "Public product whose variant has no price record at all, so session.price.exists is false.",
+      "fields": {
+        "title": "Fixture Unpriced Product",
+        "is_public": true,
+        "categories": ["qa-fixtures/products"],
+        "images": 1,
+        "variants": [
+          {"sku": "FX-P13", "price": null, "num_in_stock": 100}
+        ]
+      },
+      "exercises": [
+        "partials/product_card.html",
+        "templates/catalogue/product.html",
+        "partials/section_featured_product.html"
+      ]},
+    {
       "id": "FX-C01",
       "group": "collection",
       "name": "empty-collection",
@@ -580,6 +599,8 @@
       "name": "hero-long-copy",
       "description": "Hero heading at 100 characters and subheading at 200, across every content width.",
       "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
         "homepage_hero_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
         "homepage_hero_subheading": {"repeat": "Fixture subheading copy that fills the field. ", "max_length": 200},
         "homepage_hero_content_width": ["narrow", "medium", "wide", "full"],
@@ -596,6 +617,8 @@
       "name": "hero-no-cta",
       "description": "Hero with a CTA label but no CTA URL.",
       "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
         "homepage_hero_link": "",
         "homepage_hero_cta": "Shop now"
       },
@@ -610,6 +633,8 @@
       "name": "hero-image-only",
       "description": "Hero with an image and no heading, subheading, or CTA.",
       "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
         "homepage_hero_heading": "",
         "homepage_hero_subheading": "",
         "homepage_hero_link": ""
@@ -624,6 +649,8 @@
       "name": "hero-heading-only",
       "description": "Hero with a heading and nothing else.",
       "fields": {
+        "show_hero": true,
+        "homepage_hero_image": "<landscape image>",
         "homepage_hero_heading": "Fixture heading only",
         "homepage_hero_subheading": "",
         "homepage_hero_link": ""
@@ -636,7 +663,7 @@
       "id": "FX-S05",
       "group": "section-settings",
       "name": "hero-missing-image",
-      "description": "Hero enabled with no image; the section should not render.",
+      "description": "Hero enabled with no image; the section renders the dashed setup placeholder instead of the hero.",
       "fields": {
         "show_hero": true,
         "homepage_hero_image": ""
@@ -651,6 +678,7 @@
       "name": "hero-mobile-fallback",
       "description": "Desktop image set, mobile image empty.",
       "fields": {
+        "show_hero": true,
         "homepage_hero_image": "<landscape image>",
         "homepage_hero_image_mobile": ""
       },
@@ -664,6 +692,7 @@
       "name": "promo-long-copy",
       "description": "Promo banner with the FX-S01 heading and subheading.",
       "fields": {
+        "show_promo_banner": true,
         "promo_banner_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
         "promo_banner_subheading": {"repeat": "Fixture subheading copy that fills the field. ", "max_length": 200},
         "promo_banner_cta_text": "Shop now",

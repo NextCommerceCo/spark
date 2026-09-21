@@ -224,8 +224,9 @@ FX-K04.
 | images | 1 image |
 
 Exercises: `partials/product_card.html` and `templates/catalogue/product.html`
-price branches (`session.price.exists`), `partials/section_featured_product.html`
-(no empty price row), `assets/js/spark-cart-rewards.js` gift line.
+zero-price rendering (`session.price.exists` is true, the value is 0),
+`assets/js/spark-cart-rewards.js` gift line. For the missing-price branch use
+FX-P13.
 
 Check: record whether the price renders as `$0.00` or is hidden, and that
 whichever it is looks intentional in card, PDP, sticky bar, and cart.
@@ -295,6 +296,25 @@ Exercises: `templates/catalogue/product.html` breadcrumb,
 
 Check: PDP and review pages render without a server error; the breadcrumb
 degrades cleanly.
+
+### FX-P13 no-price
+
+A public product whose variant has no price record, so `session.price.exists`
+is false. Distinct from FX-P09, which has a price of zero.
+
+| Field | Value |
+| --- | --- |
+| `title` | `Fixture Unpriced Product` |
+| `is_public` | `true` |
+| `categories` | `qa-fixtures/products` |
+| `variants[0].sku` | `FX-P13` |
+| `variants[0].prices` | none (create the variant without a price record) |
+| `variants[0].stockrecords` | `num_in_stock 100` |
+| images | 1 image |
+
+Exercises: the `session.price.exists` guards in `partials/product_card.html`,
+`templates/catalogue/product.html`, and `partials/section_featured_product.html`
+(no empty price row, no add-to-cart on an unpriced product).
 
 ## Collection states
 
@@ -585,6 +605,8 @@ QA theme only; do not push `configs/settings_data.json` changes.
 
 | Setting | Value |
 | --- | --- |
+| `show_hero` | `true` |
+| `homepage_hero_image` | landscape image |
 | `homepage_hero_heading` | 100 characters: `Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked` |
 | `homepage_hero_subheading` | 200 characters: repeat `Fixture subheading copy that fills the field. ` until the field limit is reached |
 | `homepage_hero_content_width` | each of `narrow`, `medium`, `wide`, `full` |
@@ -596,6 +618,8 @@ Exercises: `partials/section_hero.html` content layer.
 
 | Setting | Value |
 | --- | --- |
+| `show_hero` | `true` |
+| `homepage_hero_image` | landscape image |
 | `homepage_hero_link` | empty |
 | `homepage_hero_cta` | `Shop now` |
 
@@ -605,6 +629,7 @@ Exercises: `partials/section_hero.html` CTA guard, `partials/cta_button.html`.
 
 | Setting | Value |
 | --- | --- |
+| `show_hero` | `true` |
 | `homepage_hero_heading`, `homepage_hero_subheading`, `homepage_hero_link` | all empty |
 | `homepage_hero_image` | set |
 
@@ -612,6 +637,8 @@ Exercises: `partials/section_hero.html` CTA guard, `partials/cta_button.html`.
 
 | Setting | Value |
 | --- | --- |
+| `show_hero` | `true` |
+| `homepage_hero_image` | landscape image |
 | `homepage_hero_heading` | `Fixture heading only` |
 | `homepage_hero_subheading`, `homepage_hero_link` | empty |
 
@@ -622,13 +649,15 @@ Exercises: `partials/section_hero.html` CTA guard, `partials/cta_button.html`.
 | `show_hero` | `true` |
 | `homepage_hero_image` | empty |
 
-Exercises: the render guard in `partials/section_hero.html`; the section
-should not render.
+Exercises: the image guard in `partials/section_hero.html`; the section
+renders the dashed setup placeholder (with the settings pointer) instead of
+the hero, and never a broken image or an empty band.
 
 ### FX-S06 hero-mobile-fallback
 
 | Setting | Value |
 | --- | --- |
+| `show_hero` | `true` |
 | `homepage_hero_image` | landscape image |
 | `homepage_hero_image_mobile` | empty |
 
@@ -638,6 +667,7 @@ Exercises: the `<source>` fallback below 768px.
 
 | Setting | Value |
 | --- | --- |
+| `show_promo_banner` | `true` |
 | `promo_banner_heading` | the FX-S01 100-character heading |
 | `promo_banner_subheading` | the FX-S01 200-character subheading |
 | `promo_banner_cta_text` and `promo_banner_cta_url` | set |

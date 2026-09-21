@@ -131,7 +131,7 @@ The current content layer is not constrained by the global `.container` width. I
 | Overlay off | Overlay color is empty. |
 | Overlay high contrast | Overlay color and opacity protect text readability. |
 | Long copy | Heading at 100 chars and subheading at 200 chars should not overflow or collide with CTA. Fixture: FX-S01. |
-| Missing image | Current Implementation hides the section; decide whether a setup placeholder is needed later. Fixture: FX-S05. |
+| Missing image | Current Implementation renders the dashed setup placeholder with the settings pointer. Fixture: FX-S05. |
 
 ## Accessibility
 
@@ -160,7 +160,7 @@ Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
 - Confirm primary, accent, and outline CTA states match shared Spark button styling.
 - Confirm overlay opacity values 0, 30, and 100 behave as expected.
 - Confirm image-only and heading-only states remain intentional (FX-S03, FX-S04).
-- Confirm the section does not render when the image is empty (FX-S05).
+- Confirm the dashed setup placeholder renders when the image is empty, and no broken image or empty band (FX-S05).
 
 ## Future Theme Section Migration
 

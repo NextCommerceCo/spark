@@ -2,6 +2,8 @@
 
 This catalog lists the Spark partials, homepage section partials, and setting-backed template surfaces that are controlled by Theme Settings. Use it as the source map for creating templated design blocks and quick storefront compositions. For the Figma library workflow, pair this catalog with `docs/figma-section-library-plan.md`.
 
+Never push `configs/settings_data.json` to a live store by default; it overwrites the merchant's Theme Editor state. See [Settings Data Safety On Live Stores](extending-spark.md#settings-data-safety-on-live-stores).
+
 ## Mechanical Scope
 
 - Spark has 19 partial files that reference `settings.*` directly.

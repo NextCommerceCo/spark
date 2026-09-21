@@ -152,6 +152,7 @@ Cross-component event bus on `document`: `spark:cart:added`, `spark:cart:updated
 ## Push Convention
 After the initial store install, only push changed files: `ntk push templates/index.html`
 Do not push the entire theme during normal iteration.
+Never push `configs/settings_data.json` to a live store by default: it overwrites the merchant's Theme Editor state. When a live store needs new keys, `ntk pull` first and merge onto the live file as the base. See `docs/extending-spark.md`, "Settings Data Safety On Live Stores".
 
 ## Reference Theme
 Intro Bootstrap remains the comparison point for DTL patterns, available template tags/filters, URL names, and context variables. Prefer the tracked Spark docs first, especially `docs/intro-bootstrap-comparison.md` and `docs/terminology.md`, before relying on a local checkout of the reference theme.

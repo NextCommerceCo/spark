@@ -73,7 +73,7 @@ Recommended breakpoints:
 
 - Desktop reference: 1440px wide.
 - Tablet reference: 768px wide.
-- Mobile reference: choose either 390px for Spark storefront QA or 375px if the design team wants to stay aligned with the Campaigns compare tooling. Pick one and use it consistently.
+- Mobile reference: match the Figma-defined frame width, 375px or 390px. Capture QA at both widths.
 
 ## Property Naming
 
@@ -178,7 +178,8 @@ When the platform supports true theme sections, each Spark section authoring uni
 
 ## Open Decisions
 
-- Mobile reference width: 390px for Spark storefront QA or 375px for Campaigns-tool compatibility.
+Decided: the mobile reference width matches the Figma-defined frame width (375px or 390px), and QA is captured at both.
+
 - Whether the first Spark Figma export tool should live in `figma-sections-export`, a new storefront-specific repo, or Spark itself.
 - Whether generated DTL should remain prototype-only at first, with production partials curated manually.
 - Which Spark app-hook locations should become public extension points for section-level app integrations.

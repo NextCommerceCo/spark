@@ -299,7 +299,8 @@
         "partials/product_card.html",
         "templates/catalogue/product.html",
         "partials/section_featured_product.html"
-      ]},
+      ]
+    },
     {
       "id": "FX-C01",
       "group": "collection",

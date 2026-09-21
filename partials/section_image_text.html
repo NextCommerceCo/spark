@@ -29,7 +29,7 @@
                         <p class="text-xs font-semibold uppercase tracking-wide mb-3 {% if settings.image_text_text_color %}opacity-80{% else %}text-slate-500{% endif %}">{{ settings.image_text_eyebrow }}</p>
                     {% endif %}
                     {% if settings.image_text_heading %}
-                        <h2 class="text-h1 md:text-h1-md font-semibold mb-4 {% if not settings.image_text_text_color %}text-slate-800{% endif %}">{{ settings.image_text_heading }}</h2>
+                        <h2 class="text-h1 md:text-h1-md font-semibold mb-4 {% if not settings.image_text_text_color %}text-slate-800{% endif %}"{% if settings.image_text_text_color %} style="color: {{ settings.image_text_text_color }};"{% endif %}>{{ settings.image_text_heading }}</h2>
                     {% endif %}
                     {% if settings.image_text_body %}
                         <div class="mb-6 {% if settings.image_text_text_color %}opacity-90{% else %}text-slate-600{% endif %}">{{ settings.image_text_body|safe }}</div>

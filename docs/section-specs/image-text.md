@@ -32,7 +32,7 @@ The Image with text section renders a 50/50 split of one image and one copy colu
 - CTA renders only when `image_text_cta_url` is present, through `partials/cta_button.html`. Label falls back to the localized `homepage.cta.shop_now`.
 - `image_text_cta_style` maps to the shared button classes: `primary` renders `btn-primary`, `secondary` renders `btn-secondary`, `outline` renders `btn-outline` with the outline colour following `image_text_text_color` when set and the primary brand colour otherwise (the helper's default, so no `style` argument is passed in that branch).
 - Background colour is applied only when set; the default is the page background.
-- Text colour is applied to the section only when set. When empty the copy uses the theme slate defaults (`text-slate-800` heading, `text-slate-600` body, `text-slate-500` eyebrow). When set, the eyebrow and body inherit the colour at reduced opacity.
+- Text colour is applied to the section only when set. When empty the copy uses the theme slate defaults (`text-slate-800` heading, `text-slate-600` body, `text-slate-500` eyebrow). When set, the eyebrow and body inherit the colour at reduced opacity, and the heading carries it as an inline style because the base stylesheet (and the global heading colour setting) give every heading an explicit colour that inheritance cannot override.
 - The image is lazy-loaded. This section is not expected to hold the LCP image.
 - There is no client-side behavior and no GraphQL dependency.
 

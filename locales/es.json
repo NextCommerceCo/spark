@@ -270,7 +270,8 @@
         "next": "Siguiente"
     },
     "product": {
-        "no_image": "Sin imagen"
+        "no_image": "Sin imagen",
+        "sold_out": "Agotado"
     },
     "catalogue": {
         "continue_shopping": "Continuar comprando"
@@ -298,7 +299,8 @@
             "featured_products": "Productos destacados - Configuración > Inicio > Productos destacados",
             "featured_categories": "Categorías destacadas - Configuración > Inicio > Categorías destacadas",
             "on_sale": "En oferta - Configuración > Inicio > En oferta > Productos",
-            "featured_product": "Producto destacado - Configuración > Inicio > Producto destacado"
+            "featured_product": "Producto destacado - Configuración > Inicio > Producto destacado",
+            "image_text": "Imagen con texto - Configuración > Inicio > Imagen con texto"
         }
     }
 }

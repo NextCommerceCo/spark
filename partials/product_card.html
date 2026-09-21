@@ -1,9 +1,11 @@
 {# Spark Theme — Product Card (reusable in grids) #}
 {# Usage: {% include 'partials/product_card.html' with product=product %} #}
+{# Sold-out cards follow settings.product_card_sold_out_style: badge (default), muted, or hide. #}
+{# A store whose data file predates the setting gets the badge behaviour without a settings_data push. #}
 {% purchase_info_for_product request product as session %}
-{% if session.availability.is_available_to_buy %}
+{% if session.availability.is_available_to_buy or settings.product_card_sold_out_style|default:'badge' != 'hide' %}
 <a href="{{ product.get_absolute_url }}"
-   class="product-card group relative {% if settings.product_card_border %}product-card-bordered{% endif %}"
+   class="product-card group relative {% if settings.product_card_border %}product-card-bordered{% endif %} {% if not session.availability.is_available_to_buy and settings.product_card_sold_out_style == 'muted' %}product-card-sold-out{% endif %}"
    {% if card_bg %}style="background-color: {{ card_bg }};"{% endif %}>
     {% with image=product.primary_image %}
         {% if image.original %}
@@ -24,7 +26,9 @@
             </div>
         {% endif %}
     {% endwith %}
-    {% if session.price.exists and session.price.price_retail > session.price.price %}
+    {% if not session.availability.is_available_to_buy %}
+        <div class="product-card-sold-out-badge">{% t 'product.sold_out' %}</div>
+    {% elif session.price.exists and session.price.price_retail > session.price.price %}
         <div class="absolute top-0 left-0 bg-[var(--primary-color)] text-white text-xs font-medium px-2 py-0.5 leading-5">
             {% widthratio session.price.price session.price.price_retail 100 as pct %}{% t "store.catalogue.sale" %}
         </div>

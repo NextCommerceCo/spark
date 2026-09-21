@@ -73,7 +73,7 @@ Recommended breakpoints:
 
 - Desktop reference: 1440px wide.
 - Tablet reference: 768px wide.
-- Mobile reference: choose either 390px for Spark storefront QA or 375px if the design team wants to stay aligned with the Campaigns compare tooling. Pick one and use it consistently.
+- Mobile reference: match the Figma-defined frame width, 375px or 390px. Capture QA at both widths.
 
 ## Property Naming
 
@@ -103,8 +103,9 @@ Use snake_case for exported properties. If Figma display labels need to be short
 | Featured categories | `partials/section_featured_categories.html` | `product_categories`, overlay settings | First-pass spec in `docs/section-specs/featured-categories.md`. Needs 2-5 desktop column states, missing category image state, overlay opacity states, and long category label behavior. |
 | On Sale | `partials/section_on_sale.html` | `products`, product card sale state | First-pass spec in `docs/section-specs/on-sale.md`. Needs sale badge and compare-at price states from `partials/product_card.html`; otherwise this should share grid anatomy with Featured products. |
 | Promo banner | `partials/section_promo_banner.html` | text, CTA settings, colors | First-pass spec in `docs/section-specs/promo-banner.md`. Needs contrast states, short and long copy states, no-CTA state, and primary/accent/outline button states. |
+| Image with text | `partials/section_image_text.html` | `image_picker`, text, rich text, CTA settings, colors | First-pass spec in `docs/section-specs/image-text.md`. Needs image left/right states, four image ratio states, missing-image state, long heading state, and primary/secondary/outline button states. |
 
-These are enough for the first Figma library pass. The full roster of section partials Spark needs to ship to fully cover D2C storefronts — including image-with-text, FAQ, comparison table, process steps, press logos, testimonials, value props, and the rest of the Tier 1/2/3 catalog — lives in [`section-roster.md`](./section-roster.md). New section ideas should follow the section authoring unit pattern below.
+These are enough for the first Figma library pass. The full roster of section partials Spark needs to ship to fully cover D2C storefronts — including FAQ, comparison table, process steps, press logos, testimonials, value props, and the rest of the Tier 1/2/3 catalog — lives in [`section-roster.md`](./section-roster.md). New section ideas should follow the section authoring unit pattern below.
 
 ## Section Spec Template
 
@@ -178,7 +179,8 @@ When the platform supports true theme sections, each Spark section authoring uni
 
 ## Open Decisions
 
-- Mobile reference width: 390px for Spark storefront QA or 375px for Campaigns-tool compatibility.
+Decided: the mobile reference width matches the Figma-defined frame width (375px or 390px), and QA is captured at both.
+
 - Whether the first Spark Figma export tool should live in `figma-sections-export`, a new storefront-specific repo, or Spark itself.
 - Whether generated DTL should remain prototype-only at first, with production partials curated manually.
 - Which Spark app-hook locations should become public extension points for section-level app integrations.

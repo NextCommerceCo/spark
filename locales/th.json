@@ -270,7 +270,8 @@
         "next": "Next"
     },
     "product": {
-        "no_image": "No image"
+        "no_image": "No image",
+        "sold_out": "ขายหมดแล้ว"
     },
     "catalogue": {
         "continue_shopping": "เลือกซื้อสินค้าต่อ"
@@ -298,7 +299,8 @@
             "featured_products": "Featured Products - Settings > Homepage > Featured Products",
             "featured_categories": "Featured Categories - Settings > Homepage > Featured Categories",
             "on_sale": "On Sale - Settings > Homepage > On Sale > Products",
-            "featured_product": "Featured Product - Settings > Homepage > Featured Product"
+            "featured_product": "Featured Product - Settings > Homepage > Featured Product",
+            "image_text": "Image with Text - Settings > Homepage > Image with Text"
         }
     }
 }

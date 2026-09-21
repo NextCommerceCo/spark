@@ -1,6 +1,6 @@
 # Spark Theme — Public Roadmap
 
-**Status:** v1.1.1 shipped. Functional, installable, Web Components in place, and ready for deeper storefront validation by theme developers.
+**Status:** v1.4.1 shipped. Functional, installable, Web Components in place, and ready for deeper storefront validation by theme developers.
 
 **Release posture:** public starter theme. Spark is ready for theme developers to clone, inspect, adapt, and install on stores they control. It still needs more merchant-store mileage, testing, and packaging polish before it should be treated as a marketplace-grade release.
 
@@ -12,7 +12,7 @@
 
 - Tailwind CSS v4 standalone CLI, zero jQuery, zero Bootstrap.
 - 18 templates, including 15 merchant-facing templates and 3 error pages.
-- 5 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-upsell-item>`.
+- 6 Web Components: `<spark-add-to-cart>`, `<spark-cart-drawer>`, `<spark-progress-bar>`, `<spark-quantity>`, `<spark-subscription>`, `<spark-upsell-item>`.
 - Custom GraphQL-first side cart through `SparkCartClient` and `SparkSideCart`.
 - Cart milestones for free shipping and free gifts, with simple default thresholds and reward rules localized in `SparkCartRewards`.
 - App hook surface for Reviews and future Apps.

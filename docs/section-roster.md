@@ -22,9 +22,9 @@ Three inputs shaped this roster:
    / Crave (free D2C-friendly), Impulse / Motion / Prestige (paid).
    Section catalogs across these are the de facto standard for what
    merchants expect to find in a theme editor.
-3. **Spark's existing partials** — 6 homepage sections shipped today
+3. **Spark's existing partials** — 7 homepage sections shipped today
    (hero, featured_product, featured_products, featured_categories,
-   on_sale, promo_banner). See `figma-section-library-plan.md` for the
+   on_sale, promo_banner, image_text). See `figma-section-library-plan.md` for the
    current "Current Homepage Section Units" table.
 
 ## Naming and conventions
@@ -39,7 +39,7 @@ Three inputs shaped this roster:
 - Each section gets a spec in `docs/section-specs/<name>.md` following
   the [Section Spec Template](./figma-section-library-plan.md#section-spec-template).
 
-## Tier 0 — already shipped (6)
+## Tier 0 — already shipped (7)
 
 | Section | Partial | Status |
 |---|---|---|
@@ -49,8 +49,9 @@ Three inputs shaped this roster:
 | Featured categories | `section_featured_categories` | First-pass spec |
 | On sale | `section_on_sale` | First-pass spec |
 | Promo banner | `section_promo_banner` | First-pass spec |
+| Image with text | `section_image_text` | First-pass spec |
 
-## Tier 1 — must-have for D2C parity (12)
+## Tier 1 — must-have for D2C parity (11 remaining)
 
 These cover the layout patterns that today require either bespoke
 partial work or static HTML in Page content. Each one shows up across
@@ -180,6 +181,8 @@ pages, mission copy between product showcases.
 - `text_bg_color`, `text_color`
 
 ### 10. `section_image_text`
+**Status:** Shipped. Spec in [`section-specs/image-text.md`](./section-specs/image-text.md);
+the settings below are the implemented names, plus `image_text_image_alt`.
 **Purpose:** 50/50 image + text split. Foundational layout for any
 story or explainer page.
 **Pattern:** Founder story chapters, ingredient deep-dives, "how it
@@ -361,9 +364,9 @@ closes the most merchant friction fastest is:
 | 7 | Tier 3 on demand | Lookbook, countdown, instagram_feed if merchants ask. |
 | 8 | Commerce primitives — sticky_atc, quick_view, stock_indicator | PDP polish. |
 
-12 Tier-1 + 8 Tier-2 = 20 sections. With variants on existing
-partials, the total Figma component library lands at roughly 28
-section components plus the 6 already-shipped — call it 34.
+11 remaining Tier-1 + 8 Tier-2 = 19 sections. With variants on
+existing partials, the total Figma component library lands at roughly
+27 section components plus the 7 already-shipped — call it 34.
 
 ## Coverage validation
 
@@ -384,9 +387,10 @@ right next section. It's the foundational layout primitive, shows up
 in every common D2C page composition, and is the most-used section
 in Shopify themes by a wide margin. Carousel (`slideshow`) is Tier 2.
 
-Other open decisions remain — mobile reference width (390 vs 375),
-export tool location, generated-DTL prototype-only policy, app-hook
-extension points — and are not blocked by this roster.
+Mobile reference width is decided: match the Figma-defined frame
+width (375 or 390) and capture QA at both. Other open decisions
+remain — export tool location, generated-DTL prototype-only policy,
+app-hook extension points — and are not blocked by this roster.
 
 ## Companion docs
 

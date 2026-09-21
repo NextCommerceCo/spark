@@ -270,7 +270,8 @@
         "next": "Suivant"
     },
     "product": {
-        "no_image": "Aucune image"
+        "no_image": "Aucune image",
+        "sold_out": "Épuisé"
     },
     "catalogue": {
         "continue_shopping": "Continuer vos achats"
@@ -298,7 +299,8 @@
             "featured_products": "Produits en vedette - Paramètres > Accueil > Produits en vedette",
             "featured_categories": "Catégories en vedette - Paramètres > Accueil > Catégories en vedette",
             "on_sale": "En promotion - Paramètres > Accueil > En promotion > Produits",
-            "featured_product": "Produit en vedette - Paramètres > Accueil > Produit en vedette"
+            "featured_product": "Produit en vedette - Paramètres > Accueil > Produit en vedette",
+            "image_text": "Image avec texte - Paramètres > Accueil > Image avec texte"
         }
     }
 }

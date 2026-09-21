@@ -67,6 +67,8 @@ Image-led section partials should also consider:
 6. Run JSON and schema parity checks.
 7. Update `docs/theme-settings-partials.md`.
 
+Localized settings keep empty schema defaults. A setting whose template fallback is a translated string (`{% t "..." as default_x %}` then `settings.x|default:default_x`) must define no `default` in `configs/settings_schema.json` and stay empty in `configs/settings_data.json`, or the locale fallback never applies; `tests/test_localization_contracts.py` enforces both. If a design block needs starter design copy, put it on a separate non-localized key rather than on the localized one.
+
 ## Empty States
 
 Spark currently uses setup placeholders for missing homepage data so merchants can see where a configured-but-empty section would appear. Keep placeholders visually quiet:
@@ -90,6 +92,7 @@ Supported styles:
 
 - `primary`
 - `accent`
+- `secondary` (quiet bordered button, used by Image with Text)
 
 Set `outline` to render an outline button using the selected brand color.
 

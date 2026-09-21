@@ -8,6 +8,7 @@ featured_products_cta_text # template applies a default filter
 featured_products_header # template applies a default filter
 final_step_message # template applies a default filter
 homepage_hero_cta # template applies a default filter
+image_text_cta_text # template applies a default filter
 membership_active_status_value # template applies a default filter
 membership_detail_text # template applies a default filter
 membership_discount_percent # template applies a default filter

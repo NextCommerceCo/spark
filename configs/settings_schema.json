@@ -42,6 +42,13 @@
                 "type": "checkbox",
                 "default": false,
                 "help_text": "Display a full-width promotional banner with a heading and call-to-action button."
+            },
+            {
+                "name": "show_image_text",
+                "label": "Show Image with Text",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a two-column image and text section for a brand story, ingredient callout, or explainer."
             }
         ],
         "Hero": [
@@ -712,6 +719,131 @@
                 "label": "Text Color",
                 "type": "color",
                 "help_text": "Text color for category tile labels. Leave blank for white."
+            }
+        ],
+        "Image with Text": [
+            {
+                "name": "image_text_image",
+                "label": "Image",
+                "type": "image_picker",
+                "help_text": "Image for one half of the section. Use a product or lifestyle photo that survives cropping."
+            },
+            {
+                "name": "image_text_image_alt",
+                "label": "Image Alt Text",
+                "type": "text",
+                "help_text": "Accessible description of the image. Leave blank to use the heading.",
+                "max_length": 250
+            },
+            {
+                "name": "image_text_image_position",
+                "label": "Image Position",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    },
+                    {
+                        "name": "Right",
+                        "value": "right"
+                    }
+                ],
+                "default": "left",
+                "help_text": "Which side the image sits on at tablet and desktop widths. On mobile the image always stacks above the text."
+            },
+            {
+                "name": "image_text_image_ratio",
+                "label": "Image Ratio",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Square",
+                        "value": "square"
+                    },
+                    {
+                        "name": "Portrait",
+                        "value": "portrait"
+                    },
+                    {
+                        "name": "Landscape",
+                        "value": "landscape"
+                    },
+                    {
+                        "name": "Native",
+                        "value": "native"
+                    }
+                ],
+                "default": "square",
+                "help_text": "Crop the image to a fixed ratio, or use Native to show the image at its own proportions."
+            },
+            {
+                "name": "image_text_eyebrow",
+                "label": "Eyebrow",
+                "type": "text",
+                "help_text": "Short uppercase label above the heading.",
+                "max_length": 50
+            },
+            {
+                "name": "image_text_heading",
+                "label": "Heading",
+                "type": "text",
+                "help_text": "Section heading beside the image.",
+                "max_length": 100
+            },
+            {
+                "name": "image_text_body",
+                "label": "Body",
+                "type": "richtext",
+                "help_text": "Supporting copy below the heading.",
+                "max_length": 1000
+            },
+            {
+                "name": "image_text_cta_text",
+                "label": "Button Text",
+                "type": "text",
+                "help_text": "Optional button text. Leave blank to use the localized default.",
+                "max_length": 50
+            },
+            {
+                "name": "image_text_cta_url",
+                "label": "Button URL",
+                "type": "url",
+                "help_text": "Where the button links to (e.g. /catalogue/). Leave blank to hide the button.",
+                "max_length": 500
+            },
+            {
+                "name": "image_text_cta_style",
+                "label": "Button Style",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Primary",
+                        "value": "primary"
+                    },
+                    {
+                        "name": "Secondary",
+                        "value": "secondary"
+                    },
+                    {
+                        "name": "Outline",
+                        "value": "outline"
+                    }
+                ],
+                "default": "primary",
+                "help_text": "Primary fills with your primary color, Secondary is a quiet bordered button, Outline follows the section text color."
+            },
+            {
+                "name": "image_text_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for the page background."
+            },
+            {
+                "name": "image_text_text_color",
+                "label": "Text Color",
+                "type": "color",
+                "help_text": "Heading, body, and outline button color. Leave blank for the theme defaults."
             }
         ],
         "Custom CSS": [

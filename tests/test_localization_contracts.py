@@ -16,6 +16,7 @@ LOCALIZED_DEFAULT_OVERRIDE_SETTINGS = {
     "featured_products_header",
     "final_step_message",
     "homepage_hero_cta",
+    "image_text_cta_text",
     "membership_detail_text",
     "membership_label",
     "on_sale_header",

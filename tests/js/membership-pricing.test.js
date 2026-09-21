@@ -182,7 +182,7 @@ function createEnvironment(options = {}) {
                 enabled: true,
                 graphqlUrl: '/api/graphql/',
                 discountPercent: '25',
-                statusMetadataKey: 'uvbrite_member_status',
+                statusMetadataKey: 'member_status',
                 activeStatusValue: 'active',
                 label: 'Member price',
                 detailText: 'Applied at checkout'
@@ -224,7 +224,7 @@ async function settle() {
 async function testActiveMemberPricing() {
     const surface = createSurface('$1,299.00', { layout: 'pdp' });
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: 'active' },
+        metadata: { member_status: 'active' },
         surfaces: [surface]
     });
     const api = runModule(env);
@@ -239,7 +239,7 @@ async function testActiveMemberPricing() {
 async function testLocalizedAmountParsingAndArrayMetadata() {
     const surface = createSurface('EUR 1.299,00', { layout: 'card', currency: 'EUR' });
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: ['inactive', 'active'] },
+        metadata: { member_status: ['inactive', 'active'] },
         surfaces: [surface]
     });
     const api = runModule(env);
@@ -253,7 +253,7 @@ async function testLocalizedAmountParsingAndArrayMetadata() {
 async function testInactiveMemberDoesNotRenderPricing() {
     const surface = createSurface('1299.00', { layout: 'pdp' });
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: 'inactive' },
+        metadata: { member_status: 'inactive' },
         surfaces: [surface]
     });
     const api = runModule(env);
@@ -266,7 +266,7 @@ async function testInactiveMemberDoesNotRenderPricing() {
 
 async function testDynamicSurfaceTriggersRefresh() {
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: 'active' },
+        metadata: { member_status: 'active' },
         readyState: 'complete',
         withObserver: true
     });
@@ -287,7 +287,7 @@ async function testDynamicSurfaceTriggersRefresh() {
 async function testAmbiguousAmountDoesNotRenderPricing() {
     const surface = createSurface('1,2345', { layout: 'pdp' });
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: 'active' },
+        metadata: { member_status: 'active' },
         surfaces: [surface]
     });
     const api = runModule(env);
@@ -300,7 +300,7 @@ async function testAmbiguousAmountDoesNotRenderPricing() {
 
 async function testDynamicSurfaceMutationsAreCoalesced() {
     const env = createEnvironment({
-        metadata: { uvbrite_member_status: 'active' },
+        metadata: { member_status: 'active' },
         readyState: 'complete',
         withObserver: true
     });

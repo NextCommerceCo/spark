@@ -861,7 +861,7 @@
                 "name": "membership_status_metadata_key",
                 "label": "Status Metadata Key",
                 "type": "text",
-                "default": "uvbrite_member_status",
+                "default": "member_status",
                 "help_text": "Customer metadata key used to identify active members.",
                 "max_length": 100
             },

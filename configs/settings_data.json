@@ -51,6 +51,7 @@
     "variant_size_guide_option": "",
     "product_description_placement": "column",
     "product_card_border": false,
+    "product_card_sold_out_style": "badge",
     "product_reviews": true,
     "show_recommended": true,
     "recommended_products_header_size": "medium",

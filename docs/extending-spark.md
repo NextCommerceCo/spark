@@ -29,6 +29,20 @@ When adding a setting-backed surface:
 
 Keep future theme sections in mind. Settings that belong to one repeated section should be easy to move from `settings.foo` to future `section.settings.foo`.
 
+## Settings Data Safety On Live Stores
+
+`configs/settings_data.json` is the defaults file for a fresh install. On a live store the same file is the merchant's saved Theme Editor state, and pushing the repo copy replaces every value the merchant has set. A bare `ntk push` with no path uploads the whole theme, including this file.
+
+Follow these steps whenever a change touches settings:
+
+1. Do not push `configs/settings_data.json` to a live store by default. Push the files you changed by name, for example `ntk push configs/settings_schema.json`.
+2. A new schema key that a template reads with `|default` or an explicit fallback branch needs no data push at all. Prefer that pattern.
+3. When a live store does need new keys in its data file, pull the live theme first (`ntk pull`), merge the new keys onto the live `settings_data.json` as the base, and push that merged file. Never merge the other way round.
+4. Say in the handoff or PR summary that a `settings_data.json` push happened and which keys it added.
+5. Keep the repo copy as the fresh-install default. The settings parity gate (`scripts/check-settings-parity.py`) requires every non-optional schema key to have a default there, so add the key to the repo file as well; that is a repo change, not a store push.
+
+`make push` only uploads `assets/main.css`. It never touches settings data. The risk is a bare `ntk push` or `ntk watch` started before the live data file was pulled.
+
 ## Homepage Section Partials
 
 Homepage section partials are the current Spark design-block unit. They live in `partials/section_*.html` and are included from `templates/index.html` in a fixed order.

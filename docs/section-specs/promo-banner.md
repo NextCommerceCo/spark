@@ -88,11 +88,13 @@ Recommended component properties:
 
 ## QA Checklist
 
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
 - Verify vertical spacing at desktop, tablet, and mobile widths.
 - Confirm CTA only renders when `promo_banner_cta_url` is present.
 - Confirm outline CTA uses banner text color.
 - Confirm primary and accent filled CTA states.
-- Confirm long heading and subheading do not overflow.
+- Confirm long heading and subheading do not overflow (FX-S07).
 - Confirm background and text colors meet contrast expectations.
 
 ## Future Theme Section Migration

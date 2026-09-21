@@ -90,12 +90,15 @@ Recommended component properties:
 
 ## QA Checklist
 
+Fixture ids refer to [`docs/qa-fixtures.md`](../qa-fixtures.md).
+
 - Verify mobile one-column layout and desktop/tablet configured columns.
 - Confirm image hover scale does not reveal empty areas.
-- Confirm missing image placeholder height matches image tiles.
+- Confirm missing image placeholder height matches image tiles (FX-C06 beside FX-C05).
 - Confirm overlay opacity 0, 20, and 100.
 - Confirm text remains readable over varied category imagery.
-- Confirm long labels do not collide with tile edges.
+- Confirm long labels do not collide with tile edges (FX-C05).
+- Confirm an empty category still renders as a tile and links to its empty state (FX-C01).
 
 ## Future Theme Section Migration
 

@@ -8,7 +8,7 @@ Spark is meant to be extended without forking the whole theme. This guide points
 | --- | --- | --- |
 | Add or change a homepage design block | Homepage section partial plus Theme Settings | `docs/design-block-authoring.md` |
 | Add merchant-configurable theme behavior | `configs/settings_schema.json` and `configs/settings_data.json` | `docs/theme-settings-partials.md` |
-| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/terminology.md`, `docs/performance-load-order.md` |
+| Integrate an app into storefront markup | `{% app_hook %}` slots | `docs/app-hooks.md`, `docs/performance-load-order.md` |
 | Coordinate cart UI behavior | DOM events through `SparkEvents` | `docs/cart-events.md` |
 | Change PDP variant picker UI | Real controls named `attr_*` plus `SparkVariantState` | `docs/pdp-variant-state.md`, `docs/pdp-customization.md` |
 | Add custom client-side behavior | Focused vanilla JS module or Web Component | Existing files in `assets/js/` |
@@ -51,7 +51,7 @@ Use shared helpers where possible:
 
 Spark exposes app integration points with `{% app_hook %}`. Apps should target those slots instead of editing theme files or reaching into private Web Component internals.
 
-Current hook examples live in product cards, PDP reviews, collection feeds, product detail surfaces, and global tracking points. Search for `{% app_hook %}` before adding a new hook.
+The full hook inventory, with the DOM context around each hook, the naming convention, and the stability policy, is in [app-hooks.md](app-hooks.md). Read it before adding a hook; existing names are stable and renames need a deprecation period.
 
 When adding a hook:
 

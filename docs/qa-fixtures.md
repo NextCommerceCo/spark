@@ -308,7 +308,7 @@ is false. Distinct from FX-P09, which has a price of zero.
 | `is_public` | `true` |
 | `categories` | `qa-fixtures/products` |
 | `variants[0].sku` | `FX-P13` |
-| `variants[0].prices` | none (create the variant without a price record) |
+| `variants[0].prices` | none: create the variant without a price record (the JSON mirror omits the `price` key rather than sending `null`) |
 | `variants[0].stockrecords` | `num_in_stock 100` |
 | images | 1 image |
 

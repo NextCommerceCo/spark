@@ -292,7 +292,7 @@
         "categories": ["qa-fixtures/products"],
         "images": 1,
         "variants": [
-          {"sku": "FX-P13", "price": null, "num_in_stock": 100}
+          {"sku": "FX-P13", "num_in_stock": 100}
         ]
       },
       "exercises": [
@@ -362,8 +362,8 @@
         "is_public": true,
         "generated_products": {
           "count": 60,
-          "title": "Fixture Paginated Product {nn}",
-          "sku": "FX-C04-{nn}",
+          "title": "Fixture Paginated Product {nn:02d}",
+          "sku": "FX-C04-{nn:02d}",
           "price": "10.00",
           "num_in_stock": 100,
           "images": 1

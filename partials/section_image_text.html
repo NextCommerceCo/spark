@@ -1,6 +1,6 @@
 {# Spark homepage image with text section: 50/50 image and copy split. Controlled by Homepage > Sections + Image with Text settings. #}
 {% if settings.show_image_text %}
-    {% if settings.image_text_image or settings.image_text_heading or settings.image_text_body %}
+    {% if settings.image_text_heading or settings.image_text_body %}
     <section class="py-section-y md:py-section-y-md"
              {% if settings.image_text_bg_color or settings.image_text_text_color %}style="{% if settings.image_text_bg_color %}background-color: {{ settings.image_text_bg_color }};{% endif %}{% if settings.image_text_text_color %} color: {{ settings.image_text_text_color }};{% endif %}"{% endif %}>
         <div class="container">
@@ -37,7 +37,7 @@
                     {% if settings.image_text_cta_url %}
                         {% t "homepage.cta.shop_now" as default_shop_now %}
                         {% if settings.image_text_cta_style == 'outline' %}
-                            {% include "partials/cta_button.html" with href=settings.image_text_cta_url label=settings.image_text_cta_text|default:default_shop_now style="primary" outline=True outline_color=settings.image_text_text_color %}
+                            {% include "partials/cta_button.html" with href=settings.image_text_cta_url label=settings.image_text_cta_text|default:default_shop_now outline=True outline_color=settings.image_text_text_color %}
                         {% else %}
                             {% include "partials/cta_button.html" with href=settings.image_text_cta_url label=settings.image_text_cta_text|default:default_shop_now style=settings.image_text_cta_style %}
                         {% endif %}

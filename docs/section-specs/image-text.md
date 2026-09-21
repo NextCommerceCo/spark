@@ -22,15 +22,15 @@ The Image with text section renders a 50/50 split of one image and one copy colu
 ## Current Render Contract
 
 - The section renders only when `settings.show_image_text` is true.
-- With the toggle on and no image, heading, or body configured, the section renders the setup placeholder (dashed border, neutral blocks, pointer to the settings location) instead of an empty band.
-- With any of image, heading, or body configured, the section renders live: two columns at `md` and above, one column below `md` with the image always first in DOM order and therefore on top.
+- With the toggle on and neither heading nor body configured, the section renders the setup placeholder (dashed border, neutral blocks, pointer to the settings location) instead of an empty band. An image alone is not enough: a lone image beside an empty copy column is never rendered live.
+- With a heading or body configured, the section renders live: two columns at `md` and above, one column below `md` with the image always first in DOM order and therefore on top.
 - `image_text_image_position` moves the image column with `md:order-*`; it has no effect below `md`.
 - `image_text_image_ratio` wraps the image in a fixed-ratio box with `object-cover` for `square` (1:1), `portrait` (4:5), and `landscape` (4:3). `native` renders the image at its own proportions with no crop.
 - A missing image with copy present renders a neutral `bg-slate-100` block at the selected ratio (square when `native`), so the layout keeps its shape while the merchant finishes setup.
 - Image `alt` is `image_text_image_alt`, falling back to `image_text_heading`.
-- Eyebrow, heading, and body each render only when present. Body is rich text and renders with `|safe`.
+- Eyebrow, heading, and body each render only when present. Body is rich text and renders with `|safe`, trusting the platform's `richtext` setting type to deliver sanitised HTML, the same assumption the other rich-text sections make. Any change that lets unsanitised markup reach a `richtext` setting must revisit this filter.
 - CTA renders only when `image_text_cta_url` is present, through `partials/cta_button.html`. Label falls back to the localized `homepage.cta.shop_now`.
-- `image_text_cta_style` maps to the shared button classes: `primary` renders `btn-primary`, `secondary` renders `btn-secondary`, `outline` renders `btn-outline` with the outline colour following `image_text_text_color` when set and the primary brand colour otherwise.
+- `image_text_cta_style` maps to the shared button classes: `primary` renders `btn-primary`, `secondary` renders `btn-secondary`, `outline` renders `btn-outline` with the outline colour following `image_text_text_color` when set and the primary brand colour otherwise (the helper's default, so no `style` argument is passed in that branch).
 - Background colour is applied only when set; the default is the page background.
 - Text colour is applied to the section only when set. When empty the copy uses the theme slate defaults (`text-slate-800` heading, `text-slate-600` body, `text-slate-500` eyebrow). When set, the eyebrow and body inherit the colour at reduced opacity.
 - The image is lazy-loaded. This section is not expected to hold the LCP image.
@@ -75,7 +75,7 @@ Recommended component properties:
 | Key | Type | Default | Figma Property | Values / Limits | Notes |
 | --- | --- | --- | --- | --- | --- |
 | `show_image_text` | `checkbox` | `false` | `show` | `true`, `false` | Lives in `Homepage > Sections`; hides the whole section when false. Off by default so existing stores are unchanged. |
-| `image_text_image` | `image_picker` | empty | `image` | Image asset | Empty with copy present renders a neutral block; empty with no copy renders the setup placeholder. |
+| `image_text_image` | `image_picker` | empty | `image` | Image asset | Empty with copy present renders a neutral block. Set without copy still renders the setup placeholder; the image alone never goes live. |
 | `image_text_image_alt` | `text` | empty | `alt_text` | Max 250 chars | Falls back to the heading. |
 | `image_text_image_position` | `select` | `left` | `image_position` | `left`, `right` | Desktop and tablet only; mobile always stacks image first. |
 | `image_text_image_ratio` | `select` | `square` | `image_ratio` | `square`, `portrait`, `landscape`, `native` | Fixed ratios crop with `object-cover`; `native` never crops. |
@@ -122,7 +122,8 @@ Recommended component properties:
 | Custom background and text colour | Dark background with light text. |
 | Long heading | Heading at 100 chars wrapping across three lines beside a square image. |
 | Missing image | Copy present, neutral block in the image column. |
-| Setup placeholder | Toggle on, no image, heading, or body. |
+| Setup placeholder | Toggle on, no heading or body. |
+| Image only | Image set, no heading or body: renders the setup placeholder, never a lone image. |
 
 ## Accessibility
 

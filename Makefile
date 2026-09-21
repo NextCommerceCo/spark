@@ -45,9 +45,13 @@ push: css-check
 test:
 	python3 -m unittest discover -s tests
 
-# Assert the platform integration points in theme-contract.json.
+# Assert theme-contract.json: the platform integration points every derived theme
+# keeps (fleet scope) plus, on Spark's own copy, the runtime hooks theme.js
+# resolves (spark scope). A live check defaults to the fleet scope; add
+# --scope spark when the live theme is Spark itself.
 # Point it at a live theme before or after a push:
-#   make contract THEME_ARGS="--store https://x.29next.store --theme-id 68"
+#   make contract THEME_ARGS="--store https://x.29next.store --theme-id 68"               # a derived theme
+#   make contract THEME_ARGS="--store https://dev.29next.store --theme-id 68 --scope spark"  # Spark itself
 contract:
 	python3 scripts/check-theme-contract.py $(THEME_ARGS)
 

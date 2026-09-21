@@ -1230,15 +1230,23 @@ class TemplateContractGateTests(unittest.TestCase):
             "partials/header.html": (
                 "<a href=\"/cart/\">Cart</a>\n"
                 "<form action='/checkout/'></form>\n"
-                "<a href=\"/account/orders/\">Orders</a>\n"
+                "<a href=\"/accounts/\">Account</a>\n"
+                "<a href=\"/catalogue/category/sale/\">Sale</a>\n"
+                "<a href=\"/collections/all/\">A foreign reflex that 404s here</a>\n"
                 "<a href=\"/about/\">A store page is not a platform route</a>\n"
+                "<a href=\"/support/categories/\">Help</a>\n"
             ),
         })
 
         self.assertNotEqual(result.returncode, 0)
-        for line in ("header.html:1", "header.html:2", "header.html:3"):
+        for line in ("header.html:1", "header.html:2", "header.html:3",
+                     "header.html:4", "header.html:5", "header.html:7"):
             self.assertIn(line, result.stderr)
-        self.assertNotIn("header.html:4", result.stderr)
+        self.assertNotIn("header.html:6", result.stderr)
+        # The message lists the roots once each with no doubled slash.
+        self.assertIn("/catalogue/, /cart/, /checkout/", result.stderr)
+        self.assertIn("/account/ path.", result.stderr)
+        self.assertNotIn("// path.", result.stderr)
 
     def test_url_tag_and_get_absolute_url_routes_pass(self):
         result = run_template_fixture({

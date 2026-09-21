@@ -9,9 +9,11 @@ in prose and get re-introduced by the next contributor:
 - ``{% firstof ... as X %}`` yields a string, so ``X`` can never select an
   object for ``{% purchase_info_for_product %}``.
 - Storefront routes come from ``{% url %}`` or ``get_absolute_url``; a
-  hardcoded platform route (``/products/``, ``/cart/``, ``/checkout/`` and
-  the other roots in ``STOREFRONT_ROUTE_PREFIXES``) in ``href``/``action``
-  breaks the moment the store's route prefix differs.
+  hardcoded route in ``href``/``action`` breaks the moment the store's
+  route prefix differs. The gate flags the platform roots (``/catalogue/``,
+  ``/cart/``, ``/checkout/`` and the rest of ``PLATFORM_ROUTE_ROOTS``) and
+  the foreign reflexes ported templates carry (``/products/``,
+  ``/collections/``, ``/account/``), which 404 here.
 """
 
 import argparse
@@ -64,11 +66,16 @@ PURCHASE_INFO_RE = re.compile(
 )
 # A literal storefront route inside an href/action attribute. Routes must come
 # from {% url %} or get_absolute_url so the platform's prefix and slugs apply.
-# The prefixes are the platform route roots the allowlisted URL names resolve
-# under (scripts/url-name-allowlist.txt); extend both together.
-STOREFRONT_ROUTE_PREFIXES = (
-    "products", "categories", "cart", "checkout", "blog", "account", "search",
+# PLATFORM_ROUTE_ROOTS are the roots every storefront URL name resolves under
+# (developer docs, "URLs and template paths"): products and categories both
+# live under /catalogue/, accounts under /accounts/. FOREIGN_ROUTE_REFLEXES
+# are roots other platforms use that a ported template carries over; on this
+# platform they 404, so a literal one is wrong twice.
+PLATFORM_ROUTE_ROOTS = (
+    "catalogue", "cart", "checkout", "blog", "search", "support", "accounts",
 )
+FOREIGN_ROUTE_REFLEXES = ("products", "collections", "account")
+STOREFRONT_ROUTE_PREFIXES = PLATFORM_ROUTE_ROOTS + FOREIGN_ROUTE_REFLEXES
 HARDCODED_ROUTE_RE = re.compile(
     r"""\b(?P<attribute>href|action)\s*=\s*(?P<quote>['"])"""
     r"""(?P<value>[^'"]*/(?:""" + "|".join(STOREFRONT_ROUTE_PREFIXES)

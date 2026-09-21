@@ -50,7 +50,7 @@ The first five are inside `{% block content %}`; the last two are at the end of 
 
 | Hook | Renders | Surrounding DOM | Frequency |
 | --- | --- | --- | --- |
-| `product_card_rating_summary` | Inside the card's outer `<a class="product-card">`, between `div.product-title` and `div.product-price`. | The whole card is a link, so a snippet here must not render its own `<a>` or interactive controls. The card renders only when the product is available to buy. | Per card |
+| `product_card_rating_summary` | Inside the card's outer `<a class="product-card">`, between `div.product-title` and `div.product-price`. | The whole card is a link, so a snippet here must not render its own `<a>` or interactive controls. Do not assume the product is buyable: on main today the card is skipped for a product that cannot be bought, and #65 changes that to render it with a sold-out state by default, governed by the `product_card_sold_out_style` Theme Setting. A snippet here should read the product, not the purchase state. | Per card |
 
 The product card is included by `partials/product_grid.html`, `partials/recommended_products.html`, `partials/section_featured_products.html`, `partials/section_on_sale.html`, `templates/catalogue/index.html`, `templates/catalogue/category.html`, and `templates/search.html`, so this hook can render many times on the homepage, category, search, and PDP (via recommended products).
 

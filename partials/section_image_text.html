@@ -9,13 +9,13 @@
                     {% if settings.image_text_image %}
                         {% if settings.image_text_image_ratio == 'native' %}
                             <img src="{{ settings.image_text_image }}"
-                                 alt="{{ settings.image_text_image_alt|default:settings.image_text_heading }}"
+                                 alt="{% firstof settings.image_text_image_alt settings.image_text_heading %}"
                                  class="w-full h-auto rounded-card"
                                  loading="lazy" />
                         {% else %}
                             <div class="{% if settings.image_text_image_ratio == 'portrait' %}aspect-[4/5]{% elif settings.image_text_image_ratio == 'landscape' %}aspect-[4/3]{% else %}aspect-square{% endif %} overflow-hidden rounded-card">
                                 <img src="{{ settings.image_text_image }}"
-                                     alt="{{ settings.image_text_image_alt|default:settings.image_text_heading }}"
+                                     alt="{% firstof settings.image_text_image_alt settings.image_text_heading %}"
                                      class="w-full h-full object-cover"
                                      loading="lazy" />
                             </div>

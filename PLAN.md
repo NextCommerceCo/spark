@@ -1,6 +1,6 @@
 # Spark Theme — Public Roadmap
 
-**Status:** v1.4.1 shipped. Functional, installable, Web Components in place, and ready for deeper storefront validation by theme developers.
+**Status:** v1.5.0 shipped. Functional, installable, Web Components in place, and ready for deeper storefront validation by theme developers.
 
 **Release posture:** public starter theme. Spark is ready for theme developers to clone, inspect, adapt, and install on stores they control. It still needs more merchant-store mileage, testing, and packaging polish before it should be treated as a marketplace-grade release.
 

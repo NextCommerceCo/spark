@@ -56,10 +56,20 @@ SETTINGS_FILTER_ARGUMENT_RE = re.compile(
 # "settings." inside one is text, not a lookup. Blanked to same-length spaces
 # before matching so offsets (and therefore line numbers) stay intact.
 STRING_LITERAL_RE = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"")
+# The body must not cross %}: a firstof with no "as" clause would otherwise
+# swallow the next tag and claim its assignment.
 FIRSTOF_AS_RE = re.compile(
-    r"{%\s*firstof\b(?P<body>.*?)\s+as\s+(?P<name>\w+)\s*%}",
+    r"{%\s*firstof\b(?P<body>(?:(?!%}).)*?)\s+as\s+(?P<name>\w+)\s*%}",
     re.DOTALL,
 )
+# Tags that rebind a name to an object again: {% with x=obj %} / {% with obj
+# as x %} and {% for x in ... %}. A rebinding shadows the firstof string
+# until the matching end tag.
+WITH_RE = re.compile(r"{%\s*with\b(?P<body>(?:(?!%}).)*?)%}", re.DOTALL)
+ENDWITH_RE = re.compile(r"{%\s*endwith\s*%}")
+FOR_RE = re.compile(r"{%\s*for\s+(?P<names>[\w,\s]+?)\s+in\b(?:(?!%}).)*?%}", re.DOTALL)
+ENDFOR_RE = re.compile(r"{%\s*endfor\s*%}")
+WITH_BINDING_RE = re.compile(r"(?P<kw>\w+)\s*=|\bas\s+(?P<as>\w+)")
 PURCHASE_INFO_RE = re.compile(
     r"{%\s*purchase_info_for_product\s+(?P<request>[\w.]+)\s+"
     r"(?P<product>[\w.]+)"
@@ -76,9 +86,11 @@ PLATFORM_ROUTE_ROOTS = (
 )
 FOREIGN_ROUTE_REFLEXES = ("products", "collections", "account")
 STOREFRONT_ROUTE_PREFIXES = PLATFORM_ROUTE_ROOTS + FOREIGN_ROUTE_REFLEXES
+# Only a local absolute path counts: the value starts with the route root.
+# An external URL that happens to contain /products/ is not a storefront route.
 HARDCODED_ROUTE_RE = re.compile(
     r"""\b(?P<attribute>href|action)\s*=\s*(?P<quote>['"])"""
-    r"""(?P<value>[^'"]*/(?:""" + "|".join(STOREFRONT_ROUTE_PREFIXES)
+    r"""(?P<value>/(?:""" + "|".join(STOREFRONT_ROUTE_PREFIXES)
     + r""")/[^'"]*)(?P=quote)""",
     re.IGNORECASE,
 )
@@ -244,34 +256,66 @@ def inspect_firstof_object_selection(masked, relative_path):
     renders nothing useful and raises no error. Dot-access on the target
     (x.children.first) is the same defect: a string has no attributes.
 
+    The scan walks the file in order. Only calls after the firstof are
+    flagged, and a {% with x=obj %} / {% with obj as x %} / {% for x in %}
+    that rebinds the name shadows the string until its end tag, so the
+    recommended remedy (rebind the object, then call) passes.
+
     Scope is one file at a time. A firstof-bound name that reaches another
     template through {% include ... with %} is not traced; keep the firstof
     and the purchase_info_for_product call in the same file, or select the
     object with {% with %}/{% if %} at the call site.
     """
-    firstof_targets = {}
+    events = []
     for match in FIRSTOF_AS_RE.finditer(masked):
-        firstof_targets.setdefault(
-            match.group("name"), line_of(masked, match.start())
-        )
-    if not firstof_targets:
-        return []
-
-    violations = []
+        events.append((match.start(), "firstof", {match.group("name")}))
+    for match in WITH_RE.finditer(masked):
+        names = set()
+        for binding in WITH_BINDING_RE.finditer(match.group("body")):
+            names.add(binding.group("kw") or binding.group("as"))
+        events.append((match.start(), "open", names))
+    for match in ENDWITH_RE.finditer(masked):
+        events.append((match.start(), "close", set()))
+    for match in FOR_RE.finditer(masked):
+        names = {n.strip() for n in match.group("names").split(",") if n.strip()}
+        events.append((match.start(), "open", names))
+    for match in ENDFOR_RE.finditer(masked):
+        events.append((match.start(), "close", set()))
     for match in PURCHASE_INFO_RE.finditer(masked):
-        root_name = match.group("product").split(".", 1)[0]
-        if root_name not in firstof_targets:
-            continue
-        line_number = line_of(masked, match.start())
-        violations.append(
-            f"[firstof-object] {relative_path}:{line_number}: "
-            f"purchase_info_for_product receives {match.group('product')!r}, "
-            f"but {root_name!r} comes from {{% firstof ... as {root_name} %}} "
-            f"on line {firstof_targets[root_name]} and firstof always yields "
-            "a string, never an object. Select the product with "
-            "{% with %}/{% if %} and reserve firstof for PKs. (This check "
-            "is per file; names passed through {% include %} are not traced.)"
-        )
+        events.append((match.start(), "call", match))
+    if not any(kind == "firstof" for _, kind, _ in events):
+        return []
+    events.sort(key=lambda event: event[0])
+
+    firstof_lines = {}
+    shadow_stack = []
+    violations = []
+    for offset, kind, payload in events:
+        if kind == "firstof":
+            for name in payload:
+                firstof_lines[name] = line_of(masked, offset)
+        elif kind == "open":
+            shadow_stack.append(payload)
+        elif kind == "close":
+            if shadow_stack:
+                shadow_stack.pop()
+        else:
+            match = payload
+            root_name = match.group("product").split(".", 1)[0]
+            if root_name not in firstof_lines:
+                continue
+            if any(root_name in names for names in shadow_stack):
+                continue
+            line_number = line_of(masked, offset)
+            violations.append(
+                f"[firstof-object] {relative_path}:{line_number}: "
+                f"purchase_info_for_product receives {match.group('product')!r}, "
+                f"but {root_name!r} comes from {{% firstof ... as {root_name} %}} "
+                f"on line {firstof_lines[root_name]} and firstof always yields "
+                "a string, never an object. Select the product with "
+                "{% with %}/{% if %} and reserve firstof for PKs. (This check "
+                "is per file; names passed through {% include %} are not traced.)"
+            )
     return violations
 
 

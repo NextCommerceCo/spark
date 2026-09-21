@@ -1186,6 +1186,38 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertIn("[firstof-object]", result.stderr)
         self.assertIn("featured.html:2", result.stderr)
 
+    def test_firstof_without_as_does_not_claim_the_next_tags_binding(self):
+        result = run_template_fixture({
+            "partials/featured.html": (
+                "{% firstof product.title product.slug %}\n"
+                "{% with settings.featured_product as featured %}\n"
+                "{% purchase_info_for_product request featured as session %}\n"
+                "{% endwith %}\n"
+            ),
+        })
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("[firstof-object]", result.stderr)
+
+    def test_rebinding_the_name_to_an_object_shadows_the_firstof_string(self):
+        # The recommended remedy: rebind the object, then call. After the
+        # block closes the name is the firstof string again.
+        result = run_template_fixture({
+            "partials/featured.html": (
+                "{% purchase_info_for_product request featured as before %}\n"
+                "{% firstof settings.pick.pk product.pk as featured %}\n"
+                "{% with featured=settings.featured_product %}\n"
+                "{% purchase_info_for_product request featured as session %}\n"
+                "{% endwith %}\n"
+                "{% purchase_info_for_product request featured as after %}\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("featured.html:6", result.stderr)
+        self.assertNotIn("featured.html:1", result.stderr)
+        self.assertNotIn("featured.html:4", result.stderr)
+
     def test_firstof_for_a_pk_and_object_selected_with_if_pass(self):
         result = run_template_fixture({
             "templates/catalogue/product.html": (
@@ -1247,6 +1279,20 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertIn("/catalogue/, /cart/, /checkout/", result.stderr)
         self.assertIn("/account/ path.", result.stderr)
         self.assertNotIn("// path.", result.stderr)
+
+    def test_external_urls_containing_a_route_word_pass(self):
+        result = run_template_fixture({
+            "partials/footer.html": (
+                "<a href=\"https://docs.example.com/products/widget/\">Docs</a>\n"
+                "<a href=\"//cdn.example.com/cart/icon.svg\">Icon</a>\n"
+                "<a href=\"/products/widget/\">local, still wrong</a>\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("footer.html:1", result.stderr)
+        self.assertNotIn("footer.html:2", result.stderr)
+        self.assertIn("footer.html:3", result.stderr)
 
     def test_url_tag_and_get_absolute_url_routes_pass(self):
         result = run_template_fixture({

@@ -1137,6 +1137,17 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Template integrity gate passed", result.stdout)
 
+    def test_settings_inside_a_quoted_filter_argument_is_text_not_a_lookup(self):
+        result = run_template_fixture({
+            "templates/index.html": (
+                "{{ note|default:'see settings.foo in the docs' }}\n"
+                "{% if label|default:\"settings.bar\" %}x{% endif %}\n"
+            ),
+        })
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("[settings-filter-argument]", result.stderr)
+
     # (b) firstof ... as X selecting an object
 
     def test_real_repo_has_no_firstof_object_selection(self):
@@ -1160,6 +1171,20 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertIn("section_featured_product.html:3", result.stderr)
         self.assertIn("on line 1", result.stderr)
         self.assertIn("always yields a string", result.stderr)
+
+    def test_dot_access_on_a_firstof_target_is_still_flagged(self):
+        # firstof yields a string, so featured.children.first on it resolves
+        # to nothing; the dot-access does not prove an object.
+        result = run_template_fixture({
+            "partials/featured.html": (
+                "{% firstof settings.pick product as featured %}\n"
+                "{% purchase_info_for_product request featured.children.first as session %}\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("[firstof-object]", result.stderr)
+        self.assertIn("featured.html:2", result.stderr)
 
     def test_firstof_for_a_pk_and_object_selected_with_if_pass(self):
         result = run_template_fixture({
@@ -1199,6 +1224,21 @@ class TemplateContractGateTests(unittest.TestCase):
         self.assertIn("product_card.html:2", result.stderr)
         self.assertIn("product_card.html:3", result.stderr)
         self.assertIn("get_absolute_url", result.stderr)
+
+    def test_other_platform_route_literals_fail_too(self):
+        result = run_template_fixture({
+            "partials/header.html": (
+                "<a href=\"/cart/\">Cart</a>\n"
+                "<form action='/checkout/'></form>\n"
+                "<a href=\"/account/orders/\">Orders</a>\n"
+                "<a href=\"/about/\">A store page is not a platform route</a>\n"
+            ),
+        })
+
+        self.assertNotEqual(result.returncode, 0)
+        for line in ("header.html:1", "header.html:2", "header.html:3"):
+            self.assertIn(line, result.stderr)
+        self.assertNotIn("header.html:4", result.stderr)
 
     def test_url_tag_and_get_absolute_url_routes_pass(self):
         result = run_template_fixture({

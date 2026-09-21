@@ -72,7 +72,7 @@ class ContractFileTests(unittest.TestCase):
             'id="cart-badge"',
             'data-toggle="mobile-nav"',
             'id="mobile-nav"',
-            "<spark-cart-drawer",
+            "</spark-cart-drawer>",
         ):
             self.assertIn(hook, needles)
 

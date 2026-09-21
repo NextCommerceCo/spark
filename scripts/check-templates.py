@@ -9,8 +9,9 @@ in prose and get re-introduced by the next contributor:
 - ``{% firstof ... as X %}`` yields a string, so ``X`` can never select an
   object for ``{% purchase_info_for_product %}``.
 - Storefront routes come from ``{% url %}`` or ``get_absolute_url``; a
-  hardcoded ``/products/`` literal in ``href``/``action`` breaks the moment
-  the store's route prefix differs.
+  hardcoded platform route (``/products/``, ``/cart/``, ``/checkout/`` and
+  the other roots in ``STOREFRONT_ROUTE_PREFIXES``) in ``href``/``action``
+  breaks the moment the store's route prefix differs.
 """
 
 import argparse
@@ -49,6 +50,10 @@ FILTER_ARGUMENT_RE = re.compile(
 SETTINGS_FILTER_ARGUMENT_RE = re.compile(
     r"\|\s*(?P<filter>\w+)\s*:\s*settings\.(?P<setting>[\w.]+)"
 )
+# A quoted string literal inside an expression is never evaluated, so
+# "settings." inside one is text, not a lookup. Blanked to same-length spaces
+# before matching so offsets (and therefore line numbers) stay intact.
+STRING_LITERAL_RE = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"")
 FIRSTOF_AS_RE = re.compile(
     r"{%\s*firstof\b(?P<body>.*?)\s+as\s+(?P<name>\w+)\s*%}",
     re.DOTALL,
@@ -59,9 +64,15 @@ PURCHASE_INFO_RE = re.compile(
 )
 # A literal storefront route inside an href/action attribute. Routes must come
 # from {% url %} or get_absolute_url so the platform's prefix and slugs apply.
+# The prefixes are the platform route roots the allowlisted URL names resolve
+# under (scripts/url-name-allowlist.txt); extend both together.
+STOREFRONT_ROUTE_PREFIXES = (
+    "products", "categories", "cart", "checkout", "blog", "account", "search",
+)
 HARDCODED_ROUTE_RE = re.compile(
     r"""\b(?P<attribute>href|action)\s*=\s*(?P<quote>['"])"""
-    r"""(?P<value>[^'"]*/products/[^'"]*)(?P=quote)""",
+    r"""(?P<value>[^'"]*/(?:""" + "|".join(STOREFRONT_ROUTE_PREFIXES)
+    + r""")/[^'"]*)(?P=quote)""",
     re.IGNORECASE,
 )
 INLINE_COMMENT_RE = re.compile(r"{#[^\r\n]*?#}")
@@ -197,10 +208,15 @@ def line_of(text, offset):
     return text.count("\n", 0, offset) + 1
 
 
+def blank_string_literals(text):
+    return STRING_LITERAL_RE.sub(lambda m: " " * len(m.group(0)), text)
+
+
 def inspect_settings_filter_arguments(masked, relative_path):
     violations = []
     for expression in DTL_EXPRESSION_RE.finditer(masked):
-        for match in SETTINGS_FILTER_ARGUMENT_RE.finditer(expression.group(0)):
+        body = blank_string_literals(expression.group(0))
+        for match in SETTINGS_FILTER_ARGUMENT_RE.finditer(body):
             line_number = line_of(masked, expression.start() + match.start())
             violations.append(
                 f"[settings-filter-argument] {relative_path}:{line_number}: "
@@ -218,7 +234,13 @@ def inspect_firstof_object_selection(masked, relative_path):
 
     {% firstof a b as x %} always stores a STRING, so x can only ever be a
     scalar such as a PK. Passing it where the tag expects a product object
-    renders nothing useful and raises no error.
+    renders nothing useful and raises no error. Dot-access on the target
+    (x.children.first) is the same defect: a string has no attributes.
+
+    Scope is one file at a time. A firstof-bound name that reaches another
+    template through {% include ... with %} is not traced; keep the firstof
+    and the purchase_info_for_product call in the same file, or select the
+    object with {% with %}/{% if %} at the call site.
     """
     firstof_targets = {}
     for match in FIRSTOF_AS_RE.finditer(masked):
@@ -240,7 +262,8 @@ def inspect_firstof_object_selection(masked, relative_path):
             f"but {root_name!r} comes from {{% firstof ... as {root_name} %}} "
             f"on line {firstof_targets[root_name]} and firstof always yields "
             "a string, never an object. Select the product with "
-            "{% with %}/{% if %} and reserve firstof for PKs."
+            "{% with %}/{% if %} and reserve firstof for PKs. (This check "
+            "is per file; names passed through {% include %} are not traced.)"
         )
     return violations
 
@@ -254,7 +277,7 @@ def inspect_hardcoded_routes(masked, relative_path):
             f"{match.group('attribute')}={match.group('quote')}"
             f"{match.group('value')}{match.group('quote')} - storefront "
             "routes must come from {% url %} or get_absolute_url, never a "
-            "/products/ literal."
+            "literal /" + "/, /".join(STOREFRONT_ROUTE_PREFIXES) + "/ path."
         )
     return violations
 

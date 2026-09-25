@@ -141,7 +141,7 @@ STUB_APIKEY = "k"
 
 
 @contextlib.contextmanager
-def serve_theme(templates):
+def serve_theme(templates, payload=None, redirect_to=None, requests=None):
     """Stand up a stub store admin API serving one theme's templates.
 
     Yields the store's base URL and shuts the server down on exit. Like the
@@ -149,14 +149,27 @@ def serve_theme(templates):
     string; unlike a permissive stub it answers 404 to any other path and 401
     without the Bearer key, so a regression in the checker's URL or header
     surfaces as "could not read theme" rather than a pass.
+
+    `payload` replaces the list body verbatim; `redirect_to` answers the
+    templates path with a 302 to that location instead. When `requests` is a
+    list, every request the stub receives is appended to it as (path, auth).
     """
-    payload = json.dumps(
-        [{"name": name, "content": content} for name, content in templates.items()]
-    ).encode("utf-8")
+    if payload is None:
+        payload = [{"name": name, "content": content} for name, content in templates.items()]
+    body = json.dumps(payload).encode("utf-8")
     templates_path = f"/api/admin/themes/{STUB_THEME_ID}/templates/"
+    if requests is None:
+        requests = []
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
+            requests.append((self.path, self.headers.get("Authorization")))
+            if redirect_to and self.path.split("?", 1)[0] == templates_path:
+                self.send_response(302)
+                self.send_header("Location", redirect_to)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
             if self.path.split("?", 1)[0] != templates_path:
                 self.send_error(404)
                 return
@@ -165,9 +178,9 @@ def serve_theme(templates):
                 return
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(payload)))
+            self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(payload)
+            self.wfile.write(body)
 
         def log_message(self, *args):
             pass
@@ -439,6 +452,142 @@ class ContractScopeTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("no requirement carries scope 'fleet'", result.stderr)
         self.assertNotIn("could not read theme", result.stderr)
+
+
+class LiveTransportTests(unittest.TestCase):
+    def check_live(self, store, *extra):
+        return run_checker(
+            "--store", store, "--theme-id", STUB_THEME_ID, "--apikey", STUB_APIKEY,
+            "--contract", CONTRACT, *extra,
+        )
+
+    def test_store_url_over_plain_http_is_refused_before_any_request(self):
+        # Port 9 has no listener; a refusal that came from a connection attempt
+        # would say "could not read theme" instead.
+        result = self.check_live("http://store.example:9")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("--store must use https://", result.stderr)
+        self.assertNotIn("could not read theme", result.stderr)
+
+    def test_store_url_with_another_scheme_is_refused(self):
+        for store in ("ftp://store.example", "file:///etc"):
+            with self.subTest(store=store):
+                result = self.check_live(store)
+
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("--store must", result.stderr)
+                self.assertNotIn("could not read theme", result.stderr)
+
+    def test_store_url_without_a_scheme_is_refused(self):
+        result = self.check_live("store.example")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("--store must be a full URL", result.stderr)
+
+    def test_malformed_store_url_is_refused_without_a_traceback(self):
+        for store in ("https://[bad", "https://store.example:notaport"):
+            with self.subTest(store=store):
+                result = self.check_live(store)
+
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("--store is not a valid URL", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
+    def test_plain_http_is_accepted_for_a_local_store(self):
+        with serve_theme({"layouts/base.html": BASE_WITH_PIXELS}) as base_url:
+            result = self.check_live(base_url.replace("127.0.0.1", "localhost"))
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_redirect_is_reported_not_followed(self):
+        # The second stub would pass the theme. Reaching it would mean the
+        # checker followed the redirect.
+        target_requests = []
+        with serve_theme(
+            {"layouts/base.html": BASE_WITH_PIXELS}, requests=target_requests
+        ) as target_url:
+            location = f"{target_url}/api/admin/themes/{STUB_THEME_ID}/templates/"
+            with serve_theme({}, redirect_to=location) as base_url:
+                result = self.check_live(base_url)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("could not read theme", result.stderr)
+        self.assertIn("302", result.stderr)
+        self.assertIn("not following", result.stderr)
+        self.assertEqual(target_requests, [])
+
+    def test_unpaginated_results_envelope_is_read(self):
+        payload = {
+            "next": None,
+            "results": [{"name": "layouts/base.html", "content": BASE_WITH_PIXELS}],
+        }
+        with serve_theme({}, payload=payload) as base_url:
+            result = self.check_live(base_url)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_paginated_response_is_refused_rather_than_partly_checked(self):
+        # Page one alone would pass. Checking it as if it were the whole theme
+        # would miss an override on a later page.
+        payload = {
+            "next": "https://store.example/api/admin/themes/34/templates/?cursor=2",
+            "results": [{"name": "layouts/base.html", "content": BASE_WITH_PIXELS}],
+        }
+        with serve_theme({}, payload=payload) as base_url:
+            result = self.check_live(base_url)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("paginated response", result.stderr)
+        self.assertNotIn("gate passed", result.stdout)
+
+    def test_malformed_entries_are_skipped_not_a_traceback(self):
+        payload = [
+            "not an object",
+            {"name": None, "content": "x"},
+            {"name": "partials/a.html", "content": None},
+            {"name": "layouts/base.html", "content": BASE_WITH_PIXELS},
+        ]
+        with serve_theme({}, payload=payload) as base_url:
+            result = self.check_live(base_url)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_non_list_body_fails_cleanly(self):
+        with serve_theme({}, payload={"detail": "nope"}) as base_url:
+            result = self.check_live(base_url)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("did not return a list", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_template_name_with_a_newline_cannot_add_a_violation_line(self):
+        # One real violation: the override drops the tag. The name tries to
+        # print a second, fabricated one.
+        name = "templates/x.html\n- [cart-badge] forged.html"
+        with serve_theme({
+            "layouts/base.html": BASE_WITH_PIXELS,
+            name: "{% block pixels %}{% endblock pixels %}",
+        }) as base_url:
+            result = self.check_live(base_url)
+
+        violations = [
+            line for line in result.stderr.splitlines() if line.strip().startswith("- [")
+        ]
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(violations), 1, result.stderr)
+        self.assertIn("[pixels] 'templates/x.html\\n- [cart-badge] forged.html'", violations[0])
+        self.assertIn("with 1 violation(s)", result.stderr)
+
+    def test_ordinary_template_names_are_shown_unquoted(self):
+        with serve_theme({
+            "layouts/base.html": BASE_WITH_PIXELS,
+            "templates/index.html": "{% block pixels %}{% endblock pixels %}",
+        }) as base_url:
+            result = self.check_live(base_url)
+
+        self.assertIn("- [pixels] templates/index.html overrides block", result.stderr)
 
 
 class ThemeContractGateTests(unittest.TestCase):

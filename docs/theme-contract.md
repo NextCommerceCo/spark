@@ -62,7 +62,7 @@ NTK_APIKEY=<store key> python3 scripts/check-theme-contract.py \
 ```
 
 `--store` must be an `https://` URL; plain `http://` is accepted only for a
-store on `localhost` or `127.0.0.1`. The checker reports a redirect as an error
+store on `localhost`, `127.0.0.1` or `[::1]`. The checker reports a redirect as an error
 rather than following it, so a store URL that has moved fails with the new
 location in the message. It also refuses a paginated or non-list response from
 the templates endpoint instead of checking part of a theme as if it were all of

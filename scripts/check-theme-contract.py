@@ -172,7 +172,10 @@ def store_url_problem(store):
     """Return why `store` is not an acceptable store URL, or None if it is."""
     try:
         parsed = urllib.parse.urlsplit(store)
-        parsed.port  # raises on a non-numeric port
+        # Reading .port is the validation: urllib raises ValueError for a
+        # non-numeric or out-of-range port and splits them silently otherwise.
+        # test_malformed_store_url_is_refused_without_a_traceback pins this.
+        parsed.port
     except ValueError as error:
         return f"--store is not a valid URL ({error}): {store!r}"
     if not parsed.hostname:
@@ -205,11 +208,9 @@ def read_remote_sources(store, theme_id, apikey):
     filtering happens here. The endpoint returns every template in one
     unpaginated list; a paginated response would mean only part of the theme
     was read, so it is refused rather than checked as if it were complete.
-    """
-    problem = store_url_problem(store)
-    if problem:
-        raise ValueError(problem)
 
+    The caller validates `store` with store_url_problem() first.
+    """
     url = f"{store.rstrip('/')}/api/admin/themes/{theme_id}/templates/"
     request = urllib.request.Request(
         url, headers={"Authorization": f"Bearer {apikey}"}

@@ -500,6 +500,15 @@ class LiveTransportTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_plain_http_is_accepted_for_ipv6_loopback(self):
+        # Nothing listens on port 9; getting as far as the request proves the
+        # URL passed validation.
+        result = self.check_live("http://[::1]:9")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn("--store must", result.stderr)
+        self.assertIn("could not read theme", result.stderr)
+
     def test_redirect_is_reported_not_followed(self):
         # The second stub would pass the theme. Reaching it would mean the
         # checker followed the redirect.

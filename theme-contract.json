@@ -1,9 +1,10 @@
 {
   "contract_version": 1,
-  "description": "Platform integration points every Spark-derived theme must keep. A derived theme renders correctly without these and fails silently, so they are asserted rather than left to review.",
+  "description": "Platform integration points and runtime hooks Spark declares. Each requirement carries a scope: 'fleet' binds every Spark-derived store theme and is what the live check and the fleet sweep enforce; 'spark' binds Spark's own working copy only, because derived themes are forks that may carry the same hook in a different file or render the surface differently. A derived theme renders correctly without a fleet requirement and fails silently, so those are asserted rather than left to review.",
   "requirements": [
     {
       "id": "pixels",
+      "scope": "fleet",
       "file": "layouts/base.html",
       "must_contain": "{% pixels %}",
       "since": "1.3.0",
@@ -13,6 +14,7 @@
     },
     {
       "id": "cart-badge",
+      "scope": "spark",
       "file": "partials/header.html",
       "must_contain": "id=\"cart-badge\"",
       "since": "1.1.0",
@@ -21,6 +23,7 @@
     },
     {
       "id": "mobile-nav-toggle",
+      "scope": "spark",
       "file": "partials/header.html",
       "must_contain": "data-toggle=\"mobile-nav\"",
       "since": "1.0.0",
@@ -29,6 +32,7 @@
     },
     {
       "id": "mobile-nav",
+      "scope": "spark",
       "file": "partials/mobile_menu.html",
       "must_contain": "id=\"mobile-nav\"",
       "since": "1.0.0",
@@ -37,6 +41,7 @@
     },
     {
       "id": "cart-drawer",
+      "scope": "spark",
       "file": "partials/side_cart.html",
       "must_contain": "</spark-cart-drawer>",
       "since": "1.1.1",

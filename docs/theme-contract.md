@@ -61,6 +61,13 @@ NTK_APIKEY=<store key> python3 scripts/check-theme-contract.py \
     --store https://<dev-store>.29next.store --theme-id <id> --scope spark   # Spark's own copy on a dev store
 ```
 
+`--store` must be an `https://` URL; plain `http://` is accepted only for a
+store on `localhost`, `127.0.0.1` or `[::1]`. The checker reports a redirect as an error
+rather than following it, so a store URL that has moved fails with the new
+location in the message. It also refuses a paginated or non-list response from
+the templates endpoint instead of checking part of a theme as if it were all of
+it.
+
 Spark's own copy runs in CI and through `make verify-theme`. Point it at a fork
 with `make contract THEME_ARGS="--root ../my-theme --scope fleet"`.
 

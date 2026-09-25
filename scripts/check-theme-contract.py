@@ -30,6 +30,7 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -46,6 +47,9 @@ REQUEST_TIMEOUT = 30
 SCOPE_FLEET = "fleet"
 SCOPE_SPARK = "spark"
 SCOPES = (SCOPE_FLEET, SCOPE_SPARK)
+# Plain http is accepted only for a store on this machine, which is what a local
+# stub or dev server looks like; anything reached over a network needs https.
+LOOPBACK_HOSTS = ("localhost", "127.0.0.1", "::1")
 
 
 def load_masking():
@@ -145,7 +149,7 @@ def check_sources(sources, requirements, mask):
                     failures.append(
                         (
                             requirement,
-                            f"{path} overrides block {block_name!r} without "
+                            f"{display_path(path)} overrides block {block_name!r} without "
                             f"{needle}, which removes it from every page that "
                             "template renders",
                         )
@@ -164,27 +168,89 @@ def read_local_sources(root):
     return sources
 
 
+def store_url_problem(store):
+    """Return why `store` is not an acceptable store URL, or None if it is."""
+    try:
+        parsed = urllib.parse.urlsplit(store)
+        # Reading .port is the validation: urllib raises ValueError for a
+        # non-numeric or out-of-range port and splits them silently otherwise.
+        # test_malformed_store_url_is_refused_without_a_traceback pins this.
+        parsed.port
+    except ValueError as error:
+        return f"--store is not a valid URL ({error}): {store!r}"
+    if not parsed.hostname:
+        return f"--store must be a full URL such as https://x.29next.store, got {store!r}"
+    if parsed.scheme == "https":
+        return None
+    if parsed.scheme == "http" and parsed.hostname in LOOPBACK_HOSTS:
+        return None
+    return f"--store must use https://, got {store!r}"
+
+
+class RefuseRedirects(urllib.request.HTTPRedirectHandler):
+    """Treat any redirect as an error instead of following it.
+
+    The templates endpoint answers directly, so a redirect means the store URL
+    is wrong (an old domain, a missing path segment). It is reported for the
+    caller to correct rather than followed to a location the caller never named.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(
+            req.full_url, code, f"redirected to {newurl}; not following", headers, fp
+        )
+
+
 def read_remote_sources(store, theme_id, apikey):
     """Fetch a live theme's templates from the store admin API.
 
     The API's ?name= filter is ignored and returns the whole list, so the
-    filtering happens here.
+    filtering happens here. The endpoint returns every template in one
+    unpaginated list; a paginated response would mean only part of the theme
+    was read, so it is refused rather than checked as if it were complete.
+
+    The caller validates `store` with store_url_problem() first.
     """
     url = f"{store.rstrip('/')}/api/admin/themes/{theme_id}/templates/"
     request = urllib.request.Request(
         url, headers={"Authorization": f"Bearer {apikey}"}
     )
+    opener = urllib.request.build_opener(RefuseRedirects)
 
-    with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as response:
+    with opener.open(request, timeout=REQUEST_TIMEOUT) as response:
         payload = json.loads(response.read().decode("utf-8"))
 
-    entries = payload if isinstance(payload, list) else payload.get("results", [])
+    if isinstance(payload, dict):
+        if payload.get("next"):
+            raise ValueError(
+                "the templates endpoint returned a paginated response, so only "
+                "part of the theme would be checked"
+            )
+        entries = payload.get("results")
+    else:
+        entries = payload
+    if not isinstance(entries, list):
+        raise ValueError("the templates endpoint did not return a list")
+
     sources = {}
     for entry in entries:
-        name = entry.get("name", "")
-        if name.endswith(".html") and entry.get("content") is not None:
-            sources[name] = entry["content"]
+        if not isinstance(entry, dict):
+            continue
+        name = entry.get("name")
+        content = entry.get("content")
+        if isinstance(name, str) and name.endswith(".html") and isinstance(content, str):
+            sources[name] = content
     return sources
+
+
+def display_path(path):
+    """Show a template path on one line.
+
+    Remote template names come from the store, not from this repository. A name
+    containing a newline or other control character is shown quoted and escaped,
+    so it cannot start a line of its own in the report.
+    """
+    return path if path.isprintable() else repr(path)
 
 
 def report(failures, subject, scope, checked, total):
@@ -277,9 +343,13 @@ def main(argv=None):
                 file=sys.stderr,
             )
             return 1
+        problem = store_url_problem(args.store)
+        if problem:
+            print(f"Theme contract gate failed: {problem}", file=sys.stderr)
+            return 1
         try:
             sources = read_remote_sources(args.store, args.theme_id, args.apikey)
-        except (urllib.error.URLError, json.JSONDecodeError, OSError) as error:
+        except (urllib.error.URLError, ValueError, OSError) as error:
             print(
                 f"Theme contract gate failed: could not read theme "
                 f"{args.theme_id} from {args.store} ({error})",

@@ -375,7 +375,7 @@ class ContractScopeTests(unittest.TestCase):
         self.assertIn("fleet scope, 1 of 5 requirement(s)", result.stdout)
 
     def test_fleet_sweep_invocation_uses_env_key_and_sparks_own_contract(self):
-        # The next-mind fleet sweep runs exactly this: --store and --theme-id,
+        # A fleet sweep runs exactly this: --store and --theme-id,
         # the key in $NTK_APIKEY, no --contract and no --scope. It must land on
         # Spark's shipped contract at the fleet scope and pass a fork.
         with serve_theme(FORK_WITHOUT_SPARK_HOOKS) as base_url:

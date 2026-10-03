@@ -68,7 +68,7 @@ function removeLink(box) {
 
 // The cart template must render the hooks the handler resolves.
 assert.match(CART, /id="cart_formset"/);
-assert.match(CART, /class="remove-from-cart[ "]/);
+assert.match(CART, /class="(?:[^"]*\s)?remove-from-cart[\s"]/);
 assert.match(CART, /form\.DELETE/);
 
 // A quantity change submits the formset.

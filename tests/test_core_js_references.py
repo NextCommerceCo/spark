@@ -10,10 +10,14 @@ TEMPLATE_DIRS = ("templates", "partials", "layouts")
 NODE_TEST = ROOT / "tests" / "js" / "spark-cart-formset.test.js"
 
 # Spark does not load the platform's core_js, so window.core and window.funnel
-# are undefined on the storefront. A template that calls into either throws at
-# runtime and whatever it was meant to wire up silently does nothing.
+# are undefined on the storefront. A template that reaches into either throws at
+# runtime and whatever it was meant to wire up silently does nothing. A bare
+# property read (core.cart) throws just like a call does, and whitespace is
+# allowed before the dot so a chain broken across lines is still caught.
+# Raw text is scanned on purpose: a commented-out call fails the gate too, so
+# dead references are removed instead of parked in a comment.
 CORE_JS_TAG = re.compile(r"{%\s*core_js\b")
-CORE_JS_CALL = re.compile(r"(?<![\w.$])(?:window\.)?(?:core|funnel)\.[A-Za-z_$][\w$.]*\s*\(")
+CORE_JS_REFERENCE = re.compile(r"(?<![\w.$])(?:window\s*\.\s*)?(?:core|funnel)\s*\.[A-Za-z_$]")
 
 
 def template_paths():
@@ -24,34 +28,38 @@ def template_paths():
 def violations(pattern):
     found = []
     for path in template_paths():
-        lines = path.read_text(encoding="utf-8").splitlines()
-        for number, line in enumerate(lines, start=1):
-            if pattern.search(line):
-                found.append(f"{path.relative_to(ROOT)}:{number}: {line.strip()}")
+        text = path.read_text(encoding="utf-8")
+        lines = text.splitlines()
+        for match in pattern.finditer(text):
+            number = text.count("\n", 0, match.start()) + 1
+            found.append(f"{path.relative_to(ROOT)}:{number}: {lines[number - 1].strip()}")
     return found
 
 
 class CoreJsReferenceTests(unittest.TestCase):
-    def test_pattern_catches_the_calls_core_js_exposed(self):
+    def test_pattern_catches_references_to_core_js_globals(self):
         for line in (
             "core.cart.init();",
             "    window.core.cart.init()",
             "if (x) { funnel.basket.init(); }",
+            "if (core.cart) {",
+            "var basket = funnel.basket;",
+            "core\n    .cart.init();",
         ):
-            self.assertRegex(line, CORE_JS_CALL)
+            self.assertRegex(line, CORE_JS_REFERENCE)
 
         for line in (
             "hardcore.thing()",
             "store.core.thing()",
             "A core. Sentence (in prose)",
         ):
-            self.assertNotRegex(line, CORE_JS_CALL)
+            self.assertNotRegex(line, CORE_JS_REFERENCE)
 
     def test_templates_do_not_load_core_js(self):
         self.assertEqual(violations(CORE_JS_TAG), [])
 
-    def test_templates_do_not_call_core_js_globals(self):
-        self.assertEqual(violations(CORE_JS_CALL), [])
+    def test_templates_do_not_reference_core_js_globals(self):
+        self.assertEqual(violations(CORE_JS_REFERENCE), [])
 
     def test_cart_formset_handler(self):
         node = shutil.which("node")

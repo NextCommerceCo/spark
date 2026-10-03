@@ -10,6 +10,7 @@
  * - core.currency_switcher.init() - Currency select auto-submit
  * - core.subscription.init() - Subscription option handling
  * - core.delete_confirmation.init() - Delete confirmation dialogs
+ * - core.cart.init() - Cart page quantity/frequency auto-submit and line removal
  * - funnel.init() / funnel.basket.init() - Cart open on add, basket callbacks
  *
  * What was already vanilla in platform and is NOT replaced:
@@ -192,6 +193,30 @@
         });
     }
 
+    // --- Cart Page Formset ---
+    // The cart page renders one formset row per line. A quantity or
+    // subscription frequency change submits the form; the remove link ticks
+    // the row's hidden DELETE checkbox and submits.
+    function initCartFormset() {
+        var form = document.getElementById('cart_formset');
+        if (!form) return;
+        form.addEventListener('change', function(e) {
+            var field = e.target;
+            if (field && field.name && /-(quantity|subscription_range)$/.test(field.name)) {
+                form.submit();
+            }
+        });
+        form.addEventListener('click', function(e) {
+            var link = e.target && e.target.closest ? e.target.closest('.remove-from-cart') : null;
+            if (!link) return;
+            e.preventDefault();
+            var box = link.querySelector('input[type="checkbox"]');
+            if (!box) return;
+            box.checked = true;
+            form.submit();
+        });
+    }
+
     // --- Storefront Switcher ---
     // Multi-storefront selector (if present)
     function initStorefrontSwitcher() {
@@ -211,6 +236,7 @@
     initDeleteConfirmation();
     initSubscription();
     initCartIntegration();
+    initCartFormset();
     initStorefrontSwitcher();
 
 })();

@@ -78,7 +78,12 @@ Spark currently uses setup placeholders for missing homepage data so merchants c
 - Short text pointing to the Theme Settings location.
 - No decorative imagery.
 
-Open question: once the platform exposes preview/editor mode, placeholders should be hidden on live storefront traffic and shown only inside the editor.
+Placeholders render only for the merchant, never for shoppers. Gate the placeholder branch with `{% elif request.is_setting_preview or request.COOKIES.preview_theme %}` instead of a bare `{% else %}`:
+
+- `request.is_setting_preview` is true when the page renders inside the Theme Editor's preview frame.
+- `request.COOKIES.preview_theme` is set while someone previews a theme that is not the active one (the same cookie that shows Spark's preview banner).
+
+The platform skips the page cache in both cases, so a placeholder can never be cached and served to a live visitor. On a live storefront, a section that is switched on but empty renders nothing. `tests/test_placeholder_gate.py` fails if a section partial's placeholder branch loses the gate.
 
 ## CTA Helper
 

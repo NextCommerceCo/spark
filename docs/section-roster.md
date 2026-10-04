@@ -22,9 +22,9 @@ Three inputs shaped this roster:
    / Crave (free D2C-friendly), Impulse / Motion / Prestige (paid).
    Section catalogs across these are the de facto standard for what
    merchants expect to find in a theme editor.
-3. **Spark's existing partials** — 7 homepage sections shipped today
+3. **Spark's existing partials** — 8 homepage sections shipped today
    (hero, featured_product, featured_products, featured_categories,
-   on_sale, promo_banner, image_text). See `figma-section-library-plan.md` for the
+   on_sale, promo_banner, image_text, text_block). See `figma-section-library-plan.md` for the
    current "Current Homepage Section Units" table.
 
 ## Naming and conventions
@@ -39,7 +39,7 @@ Three inputs shaped this roster:
 - Each section gets a spec in `docs/section-specs/<name>.md` following
   the [Section Spec Template](./figma-section-library-plan.md#section-spec-template).
 
-## Tier 0 — already shipped (7)
+## Tier 0 — already shipped (8)
 
 | Section | Partial | Status |
 |---|---|---|
@@ -50,8 +50,9 @@ Three inputs shaped this roster:
 | On sale | `section_on_sale` | First-pass spec |
 | Promo banner | `section_promo_banner` | First-pass spec |
 | Image with text | `section_image_text` | First-pass spec |
+| Text block | `section_text_block` | First-pass spec |
 
-## Tier 1 — must-have for D2C parity (11 remaining)
+## Tier 1 — must-have for D2C parity (10 remaining)
 
 These cover the layout patterns that today require either bespoke
 partial work or static HTML in Page content. Each one shows up across
@@ -169,6 +170,10 @@ promo callout.
 **Variants:** image-left/image-right; light/dark surface; with/without secondary CTA.
 
 ### 9. `section_text_block`
+**Status:** Shipped. Spec in [`section-specs/text-block.md`](./section-specs/text-block.md);
+the settings below are the sketch, implemented as `text_block_eyebrow`,
+`text_block_heading`, `text_block_body`, `text_block_align`,
+`text_block_width`, `text_block_bg_color`, and `text_block_text_color`.
 **Purpose:** Standalone rich text block. The "intro paragraph" or
 "closing thought" between sections.
 **Pattern:** Brand statement on the homepage, transition text on About
@@ -364,9 +369,9 @@ closes the most merchant friction fastest is:
 | 7 | Tier 3 on demand | Lookbook, countdown, instagram_feed if merchants ask. |
 | 8 | Commerce primitives — sticky_atc, quick_view, stock_indicator | PDP polish. |
 
-11 remaining Tier-1 + 8 Tier-2 = 19 sections. With variants on
+10 remaining Tier-1 + 8 Tier-2 = 18 sections. With variants on
 existing partials, the total Figma component library lands at roughly
-27 section components plus the 7 already-shipped — call it 34.
+26 section components plus the 8 already-shipped — call it 34.
 
 ## Coverage validation
 

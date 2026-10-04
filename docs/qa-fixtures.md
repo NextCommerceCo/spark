@@ -714,6 +714,31 @@ branch in `partials/section_image_text.html`.
 Exercises: the live guard in `partials/section_image_text.html`; the setup
 placeholder renders, never a lone image beside an empty column.
 
+### FX-S11 text-block-long-copy
+
+| Setting | Value |
+| --- | --- |
+| `show_text_block` | `true` |
+| `text_block_eyebrow` | `Fixture eyebrow` |
+| `text_block_heading` | the FX-S01 100-character heading |
+| `text_block_body` | three paragraphs, repeating `Fixture body copy that fills the field. ` to 2000 characters |
+| `text_block_align`, `text_block_width` | `left`, `wide` |
+| `text_block_bg_color`, `text_block_text_color` | `#1E293B`, `#F8FAFC` (dark background, light text) |
+
+Exercises: `partials/section_text_block.html` long-heading wrap, rich-text
+paragraph spacing, and heading colour on a dark background.
+
+### FX-S12 text-block-eyebrow-only
+
+| Setting | Value |
+| --- | --- |
+| `show_text_block` | `true` |
+| `text_block_eyebrow` | `Fixture eyebrow` |
+| `text_block_heading`, `text_block_body` | empty |
+
+Exercises: the live guard in `partials/section_text_block.html`; the setup
+placeholder renders in the Theme Editor and nothing renders live.
+
 ## How to seed a dev store
 
 ### Manual, in the dashboard

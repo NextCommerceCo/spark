@@ -23,6 +23,7 @@ These are the primary design blocks for quick storefront builds. They are includ
 | `partials/section_on_sale.html` | Homepage > On Sale | Merchant-curated sale product grid. | `show_on_sale`, `on_sale_products`, `on_sale_header`, `on_sale_header_size`, `on_sale_header_align`, `on_sale_columns`, `on_sale_bg_color`, `on_sale_card_bg` |
 | `partials/section_promo_banner.html` | Homepage > Promo Banner | Full-width text and CTA promotion band. | `show_promo_banner`, `promo_banner_heading`, `promo_banner_subheading`, `promo_banner_cta_text`, `promo_banner_cta_url`, `promo_banner_bg_color`, `promo_banner_text_color`, `promo_banner_cta_style`, `promo_banner_cta_outline` |
 | `partials/section_image_text.html` | Homepage > Image with Text | 50/50 image and text split with eyebrow, heading, rich-text body, and CTA. | `show_image_text`, `image_text_image`, `image_text_image_alt`, `image_text_image_position`, `image_text_image_ratio`, `image_text_eyebrow`, `image_text_heading`, `image_text_body`, `image_text_cta_text`, `image_text_cta_url`, `image_text_cta_style`, `image_text_bg_color`, `image_text_text_color` |
+| `partials/section_text_block.html` | Homepage > Text Block | Standalone eyebrow, heading, and rich-text body below the hero, with alignment and width options. | `show_text_block`, `text_block_eyebrow`, `text_block_heading`, `text_block_body`, `text_block_align`, `text_block_width`, `text_block_bg_color`, `text_block_text_color` |
 
 ## Global Partials
 

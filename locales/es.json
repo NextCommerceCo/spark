@@ -300,7 +300,8 @@
             "featured_categories": "Categorías destacadas - Configuración > Inicio > Categorías destacadas",
             "on_sale": "En oferta - Configuración > Inicio > En oferta > Productos",
             "featured_product": "Producto destacado - Configuración > Inicio > Producto destacado",
-            "image_text": "Imagen con texto - Configuración > Inicio > Imagen con texto"
+            "image_text": "Imagen con texto - Configuración > Inicio > Imagen con texto",
+            "text_block": "Bloque de texto - Configuración > Inicio > Bloque de texto"
         }
     }
 }

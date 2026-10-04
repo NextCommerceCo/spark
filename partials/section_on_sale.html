@@ -8,7 +8,8 @@
             {% include "partials/product_grid.html" with products=settings.on_sale_products columns=settings.on_sale_columns card_bg=settings.on_sale_card_bg %}
         </div>
     </section>
-    {% else %}
+    {% elif request.is_setting_preview or request.COOKIES.preview_theme %}
+    {# Setup placeholder: Theme Editor and theme preview only. Both bypass the page cache, so a live shopper never receives it. #}
     <section class="container py-12 md:py-16">
         <div class="border-2 border-dashed border-slate-200 p-8">
             <div class="h-5 w-32 bg-slate-100 rounded mb-6"></div>

@@ -14,7 +14,8 @@
             {% endif %}
         </div>
     </section>
-    {% else %}
+    {% elif request.is_setting_preview or request.COOKIES.preview_theme %}
+    {# Setup placeholder: Theme Editor and theme preview only. Both bypass the page cache, so a live shopper never receives it. #}
     <section class="container py-12 md:py-16">
         <div class="flex items-center justify-between mb-8">
             <div class="h-6 w-48 bg-slate-100 rounded"></div>

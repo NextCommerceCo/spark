@@ -8,6 +8,7 @@ The GitHub release body is a summary, not a copy of the changelog section. Write
 
 ## Unreleased
 
+- Homepage setup placeholders (the dashed boxes a section shows when it is switched on but has no content) no longer render on live storefronts. The six sections that have one (Hero, Featured Product, Featured Products, Featured Categories, Image with Text, On Sale) now show it only when `request.is_setting_preview` is true (the Theme Editor preview frame) or the `preview_theme` cookie is set (previewing a theme that is not the active one). The platform skips its page cache in both cases, so a placeholder cannot be cached and served to shoppers. A switched-on but empty section now renders nothing for live visitors. `tests/test_placeholder_gate.py` pins the gate, and `docs/design-block-authoring.md` documents it for new sections (#36).
 - Agent instructions moved from `CLAUDE.md` to `AGENTS.md`, the file Codex, Cursor, and most other agents read; `CLAUDE.md` is now a one-line `@AGENTS.md` import so Claude Code reads the same content. `AGENTS.md` gained a "Building A Store From Spark" section that guides a newcomer through installing the three NEXT theme skills, connecting a store, the first upload, and the development loop, with the approval and settings-data rules. The README's new "Using An AI Agent" section covers the human side. Issue tracking is now marked as applying only to changes to Spark itself. The release version marker moves from `CLAUDE.md` to `AGENTS.md`.
 
 ## 1.5.1 - 2026-10-04

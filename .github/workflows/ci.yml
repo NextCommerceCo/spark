@@ -35,7 +35,7 @@ jobs:
       - name: Install CI dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyyaml
+          python -m pip install pyyaml "django==4.2.*"
 
       - name: Validate GitHub YAML
         run: |
@@ -118,6 +118,9 @@ jobs:
 
       - name: Template integrity gate
         run: python scripts/check-templates.py
+
+      - name: DTL parse gate
+        run: python scripts/check-dtl.py --require
 
       - name: Theme contract gate
         run: python scripts/check-theme-contract.py

@@ -84,7 +84,8 @@ make watch             # Tailwind watcher only, for a separate terminal
 make release           # Rebuild minified main.css and stage it for commit
 make css               # Compile Tailwind once (minified) + sass-compat
 make css-check         # Compile CSS, run sass-compat, then scan generated CSS
-make verify-theme      # CSS compatibility check + lightweight tooling tests
+make verify-theme      # CSS check, tooling tests, DTL parse gate, theme contract
+make dtl               # Parse every template as the platform would (uses Django 4.2, else uv, else skips)
 make build             # Compile + minify for production (css-check alias)
 ```
 

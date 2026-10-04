@@ -84,7 +84,7 @@ The agent walks through connecting your store with `ntk init`, the first upload,
 | `make css` | Compile Tailwind once (minified) and run `scripts/sass-compat.py` |
 | `make css-check` | Run `make css`, then fail if `assets/main.css` still contains unsupported CSS |
 | `make verify-theme` | Run CSS compatibility checks, tooling tests, the DTL parse gate, and the theme contract |
-| `make dtl` | Compile every template with Django 4.2 and the platform's tag inventory, reporting each syntax error with file and line. Needs `pip install "django==4.2.*"`; skips with a notice without it |
+| `make dtl` | Compile every template with Django 4.2 and the platform's tag inventory, reporting each syntax error with file and line. Uses an installed Django 4.2; otherwise runs through [uv](https://docs.astral.sh/uv/) without installing anything; otherwise skips with a notice |
 | `make release` | Rebuild minified `assets/main.css` and stage it for commit |
 
 ## CSS Compatibility Verification

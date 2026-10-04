@@ -199,7 +199,7 @@ def main(argv=None):
     try:
         import django
     except ImportError:
-        message = 'Django is not installed; skipping the DTL parse gate (pip install "django==4.2.*").'
+        message = 'Django is not installed; skipping the DTL parse gate (install uv, or pip install "django==4.2.*").'
         if args.require:
             print(f"check-dtl: {message}", file=sys.stderr)
             return 1

@@ -56,10 +56,17 @@ contract:
 	python3 scripts/check-theme-contract.py $(THEME_ARGS)
 
 # Compile every template with Django 4.2 and stubs of the platform's tags, the
-# way the platform does at upload. Skips with a notice when Django is not
-# installed: pip install "django==4.2.*"
+# way the platform does at upload. Uses an installed Django 4.2; otherwise, when
+# uv is available, runs in a throwaway uv environment (nothing installed);
+# otherwise skips with a notice.
 dtl:
-	python3 scripts/check-dtl.py
+	@if python3 -c 'import django, sys; sys.exit(django.VERSION[:2] != (4, 2))' 2>/dev/null; then \
+		python3 scripts/check-dtl.py; \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run --no-project --quiet --with "django==4.2.*" python scripts/check-dtl.py; \
+	else \
+		python3 scripts/check-dtl.py; \
+	fi
 
 # Full pre-upload verification for generated theme artifacts.
 verify-theme: css-check test dtl contract

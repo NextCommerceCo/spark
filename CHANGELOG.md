@@ -2,14 +2,14 @@
 
 All notable public Spark changes should be recorded here.
 
-Spark follows human-readable release notes rather than a package-manager version contract. The release version is stored in `manifest.json` and mirrored in [README.md](README.md) and `CLAUDE.md`. When releasing, update all three version markers, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
+Spark follows human-readable release notes rather than a package-manager version contract. The release version is stored in `manifest.json` and mirrored in [README.md](README.md) and `AGENTS.md`. When releasing, update all three version markers, add a dated changelog section, and publish a Git tag or GitHub release when the repo is ready for external consumers to pin versions.
 
 The GitHub release body is a summary, not a copy of the changelog section. Write one sentence framing the release, then a `### Highlights` list of at most five bullets, then a link to `CHANGELOG.md` at the release tag for the full record. A changelog entry stays as long as the change needs it to be, but the release page is scanned rather than read, so pasting a long entry into it produces notes nobody can follow. That is what happened to 1.3.0 and 1.4.0, both since rewritten. Use the 1.2.0 release as the reference format.
 
 ## Unreleased
 
 - Homepage setup placeholders (the dashed boxes a section shows when it is switched on but has no content) no longer render on live storefronts. The six sections that have one (Hero, Featured Product, Featured Products, Featured Categories, Image with Text, On Sale) now show it only when `request.is_setting_preview` is true (the Theme Editor preview frame) or the `preview_theme` cookie is set (previewing a theme that is not the active one). The platform skips its page cache in both cases, so a placeholder cannot be cached and served to shoppers. A switched-on but empty section now renders nothing for live visitors. `tests/test_placeholder_gate.py` pins the gate, and `docs/design-block-authoring.md` documents it for new sections (#36).
-- Added `docs/ai-onboarding-prompt.md`, a copy-paste prompt for developers new to NEXT themes. It has an AI coding agent install the three NEXT theme skills (`next-theme-dev`, `next-theme-figma`, `next-theme-design`) and walk through connecting a store with `ntk init`, a first upload that leaves `configs/settings_data.json` alone, the `make dev` loop, and the approval steps before each push. Linked from `README.md` and `docs/README.md`.
+- Agent instructions moved from `CLAUDE.md` to `AGENTS.md`, the file Codex, Cursor, and most other agents read; `CLAUDE.md` is now a one-line `@AGENTS.md` import so Claude Code reads the same content. `AGENTS.md` gained a "Building A Store From Spark" section that guides a newcomer through installing the three NEXT theme skills, connecting a store, the first upload, and the development loop, with the approval and settings-data rules. The README's new "Using An AI Agent" section covers the human side. Issue tracking is now marked as applying only to changes to Spark itself. The release version marker moves from `CLAUDE.md` to `AGENTS.md`.
 
 ## 1.5.1 - 2026-10-04
 

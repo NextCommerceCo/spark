@@ -292,7 +292,7 @@ A public product assigned to no category, reachable only by direct URL.
 | images | 1 image |
 
 Exercises: `templates/catalogue/product.html` breadcrumb,
-`templates/reviews/*.html` (`{% if category %}` guard, CLAUDE.md gotcha 2),
+`templates/reviews/*.html` (`{% if category %}` guard, AGENTS.md gotcha 2),
 `partials/recommended_products.html`.
 
 Check: PDP and review pages render without a server error; the breadcrumb

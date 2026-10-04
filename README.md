@@ -10,7 +10,7 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 
 - [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`) for installing or pushing the theme to a store.
 - [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) only when editing `css/input.css`; fetch it with `make install-tailwind`.
-- For AI-assisted theme work, load the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) from the `skills/` repo. It captures Next Commerce theme conventions, DTL gotchas, Theme Settings rules, `ntk` workflows, and Spark-specific development guidance.
+- For AI-assisted theme work, load the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) from the `skills/` repo. It captures Next Commerce theme conventions, DTL gotchas, Theme Settings rules, `ntk` workflows, and Spark-specific development guidance. New to NEXT themes? Start with the copy-paste prompt in [docs/ai-onboarding-prompt.md](docs/ai-onboarding-prompt.md).
 
 ## Quick Start
 

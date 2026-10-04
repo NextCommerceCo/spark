@@ -6,6 +6,7 @@ This directory contains Spark's theme-developer, design-team, and architecture d
 
 | Doc | Audience | Purpose |
 | --- | --- | --- |
+| [ai-onboarding-prompt.md](ai-onboarding-prompt.md) | New theme developers | Copy-paste prompt that has an AI coding agent walk you through installing and customizing Spark with the NEXT theme skills. |
 | [extending-spark.md](extending-spark.md) | Theme developers, app developers | Supported extension surfaces for settings, partials, app hooks, events, and Web Components. |
 | [app-hooks.md](app-hooks.md) | App developers, theme developers | The `{% app_hook %}` contract: full hook inventory with DOM context, naming convention, and stability policy. |
 | [theme-settings-partials.md](theme-settings-partials.md) | Designers, theme developers | Catalog of Theme Settings-backed partials and template surfaces. |

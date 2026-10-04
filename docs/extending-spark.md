@@ -90,7 +90,7 @@ When adding client-side code:
 
 - Keep modules focused and expose only the smallest useful public API on `window`.
 - Prefer progressive enhancement. The page should still have useful server-rendered markup.
-- Keep JS asset files ASCII-only; see [CLAUDE.md](../CLAUDE.md#critical-js-asset-files). The platform processes JS through DTL, so `{%`, `{{`, Unicode punctuation, and non-ASCII symbols can be parsed as template syntax or trigger CDN 500s.
+- Keep JS asset files ASCII-only; see [AGENTS.md](../AGENTS.md#critical-js-asset-files). The platform processes JS through DTL, so `{%`, `{{`, Unicode punctuation, and non-ASCII symbols can be parsed as template syntax or trigger CDN 500s.
 - Add tests when logic can be isolated without a full storefront runtime.
 
 ## CSS And Generated Artifacts

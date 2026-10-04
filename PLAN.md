@@ -107,7 +107,7 @@ Spark should be ready if NEXT adds platform-level theme sections, but current Sp
 
 The public repository should stay easy for theme developers to understand, audit, and extend.
 
-- Keep `README.md`, `CLAUDE.md`, `PLAN.md`, and `docs/` accurate as Spark evolves.
+- Keep `README.md`, `AGENTS.md`, `PLAN.md`, and `docs/` accurate as Spark evolves.
 - Keep the "Extending Spark" guide current as settings, partials, app hooks, and Web Components evolve.
 - Keep Web Component events, attributes, slots, and public APIs documented in `docs/cart-events.md`, `docs/cart-rewards.md`, `docs/cart-drawer-architecture.md`, and future extension docs.
 - Add a DTL pattern catalog for Spark-specific gotchas.

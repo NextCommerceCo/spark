@@ -10,7 +10,7 @@ A modern starter theme for Next Commerce. Tailwind CSS v4, vanilla JS + Web Comp
 
 - [next-theme-kit](https://pypi.org/project/next-theme-kit/) (`pip install next-theme-kit`) for installing or pushing the theme to a store.
 - [Tailwind CSS standalone CLI](https://tailwindcss.com/blog/standalone-cli) only when editing `css/input.css`; fetch it with `make install-tailwind`.
-- For AI-assisted theme work, load the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) from the `skills/` repo. It captures Next Commerce theme conventions, DTL gotchas, Theme Settings rules, `ntk` workflows, and Spark-specific development guidance. New to NEXT themes? Start with the copy-paste prompt in [docs/ai-onboarding-prompt.md](docs/ai-onboarding-prompt.md).
+- For AI-assisted theme work, load the [next-theme-dev skill](https://github.com/NextCommerceCo/skills/tree/main/next-theme-dev) from the `skills/` repo. It captures Next Commerce theme conventions, DTL gotchas, Theme Settings rules, `ntk` workflows, and Spark-specific development guidance. See [Using An AI Agent](#using-an-ai-agent) below.
 
 ## Quick Start
 
@@ -55,6 +55,21 @@ make dev                # runs the Tailwind watcher and ntk watch in parallel
 ```
 
 When you change `css/input.css` (or any source that affects the build), run `make release` to rebuild `assets/main.css` and stage it for commit. The committed `main.css` is the canonical artifact that ships to merchants — keep it in sync.
+
+## Using An AI Agent
+
+Spark's agent instructions live in [AGENTS.md](AGENTS.md); `CLAUDE.md` imports it, so Claude Code, Codex, Cursor, and other agents read the same rules. To get guided help building a storefront:
+
+1. Install the NEXT theme skills (`next-theme-dev`, `next-theme-figma`, `next-theme-design`) for your agent, then restart it:
+   ```bash
+   git clone https://github.com/NextCommerceCo/skills.git
+   cd skills
+   ./skills.sh
+   ```
+   Without a checkout, `npx skills add NextCommerceCo/skills -g` does the same.
+2. Open your agent in your Spark clone and tell it what you want, for example: "I'm new to NEXT themes. Help me get Spark running on my store."
+
+The agent walks through connecting your store with `ntk init`, the first upload, and the development loop, and asks before every push.
 
 ## Development
 

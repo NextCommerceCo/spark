@@ -6,7 +6,7 @@ COMPAT = python3 scripts/sass-compat.py
 TAILWIND_VERSION = v4.2.2
 CSS_INPUT = css/input.css
 
-.PHONY: dev build css css-drift css-check contract verify-theme test watch push release install-tailwind
+.PHONY: dev build css css-drift css-check contract dtl verify-theme test watch push release install-tailwind
 
 # Run both Tailwind watcher and ntk watcher in parallel
 dev:
@@ -55,8 +55,14 @@ test:
 contract:
 	python3 scripts/check-theme-contract.py $(THEME_ARGS)
 
+# Compile every template with Django 4.2 and stubs of the platform's tags, the
+# way the platform does at upload. Skips with a notice when Django is not
+# installed: pip install "django==4.2.*"
+dtl:
+	python3 scripts/check-dtl.py
+
 # Full pre-upload verification for generated theme artifacts.
-verify-theme: css-check test contract
+verify-theme: css-check test dtl contract
 	@echo "Theme verification complete."
 
 # Watch Tailwind only (useful when running ntk watch separately)

@@ -17,7 +17,7 @@ NODE_TEST = ROOT / "tests" / "js" / "spark-cart-formset.test.js"
 # Raw text is scanned on purpose: a commented-out call fails the gate too, so
 # dead references are removed instead of parked in a comment.
 CORE_JS_TAG = re.compile(r"{%\s*core_js\b")
-CORE_JS_REFERENCE = re.compile(r"(?<![\w.$])(?:window\s*\.\s*)?(?:core|funnel)\s*\.[A-Za-z_$]")
+CORE_JS_REFERENCE = re.compile(r"(?<![\w.$/:@])(?:window\s*\.\s*)?(?:core|funnel)\s*\.[A-Za-z_$]")
 
 
 def template_paths():
@@ -45,6 +45,7 @@ class CoreJsReferenceTests(unittest.TestCase):
             "if (core.cart) {",
             "var basket = funnel.basket;",
             "core\n    .cart.init();",
+            "total-core.cart.count",
         ):
             self.assertRegex(line, CORE_JS_REFERENCE)
 
@@ -52,6 +53,10 @@ class CoreJsReferenceTests(unittest.TestCase):
             "hardcore.thing()",
             "store.core.thing()",
             "A core. Sentence (in prose)",
+            'href="https://core.example.com/"',
+            'src="//funnel.example.com/cart.js"',
+            'href="mailto:core.team@example.com"',
+            'href="mailto:shop@funnel.example.com"',
         ):
             self.assertNotRegex(line, CORE_JS_REFERENCE)
 

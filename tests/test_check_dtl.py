@@ -39,6 +39,7 @@ class InventoryShape(unittest.TestCase):
                     self.assertTrue(entry["parse_until"])
                     for tag in entry["parse_until"]:
                         self.assertIsInstance(tag, str)
+                        self.assertTrue(tag.isidentifier(), tag)
         for name, entry in inventory["filters"].items():
             with self.subTest(filter=name):
                 self.assertIn(entry["arg"], {"none", "required", "optional"})

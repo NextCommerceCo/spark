@@ -36,6 +36,7 @@ is passed, which CI does. Another Django version fails the gate unless
 import argparse
 import json
 import sys
+import traceback
 import types
 from pathlib import Path
 
@@ -172,6 +173,10 @@ def check(root, engine):
             line = getattr(error, "template_debug", {}).get("line", "?")
             failures.append(f"{relative}:{line}: {error}")
         except Exception as error:  # report it and keep checking the other files
+            if not any(":?: " in failure for failure in failures):
+                # Usually a broken inventory stub, which repeats in every file:
+                # show the first traceback so the entry can be found.
+                traceback.print_exc()
             failures.append(f"{relative}:?: {type(error).__name__}: {error}")
     return files, failures
 

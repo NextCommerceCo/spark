@@ -29,7 +29,8 @@ a tag or filter, add it to that file.
 
 Django is an optional dev dependency (``pip install "django==4.2.*"``).
 Without it the gate prints a skip notice and exits 0, unless ``--require``
-is passed, which CI does.
+is passed, which CI does. Another Django version fails the gate unless
+``--any-django`` is passed, because parse rules differ between versions.
 """
 
 import argparse
@@ -170,12 +171,19 @@ def check(root, engine):
         except TemplateSyntaxError as error:
             line = getattr(error, "template_debug", {}).get("line", "?")
             failures.append(f"{relative}:{line}: {error}")
+        except Exception as error:  # report it and keep checking the other files
+            failures.append(f"{relative}:?: {type(error).__name__}: {error}")
     return files, failures
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", default=Path(__file__).resolve().parents[1], type=Path)
+    parser.add_argument(
+        "--any-django",
+        action="store_true",
+        help="run with a Django version other than 4.2 (results may differ from the platform)",
+    )
     parser.add_argument(
         "--require",
         action="store_true",
@@ -192,13 +200,20 @@ def main(argv=None):
             return 1
         print(f"check-dtl: {message}")
         return 0
-    if django.VERSION[:2] != (4, 2):
+    if django.VERSION[:2] != (4, 2) and not args.any_django:
         print(
-            f"check-dtl: warning: Django {django.get_version()} installed; the platform runs 4.2.",
+            f"check-dtl: Django {django.get_version()} is installed but the platform runs 4.2, "
+            'so results could differ. Install "django==4.2.*" or pass --any-django.',
             file=sys.stderr,
         )
+        return 1
 
-    engine = build_engine(load_inventory())
+    try:
+        inventory = load_inventory()
+    except (OSError, ValueError) as error:
+        print(f"check-dtl: cannot read {BUILTINS_FILE.name}: {error}", file=sys.stderr)
+        return 1
+    engine = build_engine(inventory)
     files, failures = check(args.root.resolve(), engine)
     if failures:
         print(f"check-dtl: {len(failures)} of {len(files)} templates failed to parse:", file=sys.stderr)

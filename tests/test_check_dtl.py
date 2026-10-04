@@ -35,7 +35,10 @@ class InventoryShape(unittest.TestCase):
                 if entry["kind"] == "simple":
                     compile(check_dtl._simple_tag_source(name, entry), name, "exec")
                 if entry["kind"] == "block":
+                    self.assertIsInstance(entry["parse_until"], list)
                     self.assertTrue(entry["parse_until"])
+                    for tag in entry["parse_until"]:
+                        self.assertIsInstance(tag, str)
         for name, entry in inventory["filters"].items():
             with self.subTest(filter=name):
                 self.assertIn(entry["arg"], {"none", "required", "optional"})

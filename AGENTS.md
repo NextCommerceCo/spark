@@ -5,7 +5,7 @@ Instructions for AI coding agents working in a Spark checkout. `CLAUDE.md` impor
 ## Overview
 Spark is a modern starter theme for Next Commerce storefronts. Tailwind CSS + vanilla JS. Clean, minimal commerce aesthetic. Intended to replace Intro Bootstrap as the default starter theme and become a product in its own right.
 
-**Current version:** 1.5.1
+**Current version:** 1.6.0
 **Repo:** `NextCommerceCo/spark` (public starter theme)
 **ntk config:** `config.yml` is gitignored and store-specific. Create it with `ntk init`; never commit store credentials.
 **Companion skills:** The [NEXT theme skills](https://github.com/NextCommerceCo/skills) are `next-theme-dev` (building, changing, and pushing themes), `next-theme-figma` (a Figma design to a handoff package), and `next-theme-design` (a live website or its HTML to a handoff package). The two handoff skills run before `next-theme-dev`. Load `next-theme-dev` for any theme work in this repo.

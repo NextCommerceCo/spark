@@ -760,6 +760,40 @@
       "exercises": [
         "partials/section_image_text.html"
       ]
+    },
+    {
+      "id": "FX-S11",
+      "group": "section-settings",
+      "name": "text-block-long-copy",
+      "description": "Text Block at the 100-character heading with eyebrow, a long multi-paragraph body, left alignment, wide width, and custom background and text colours.",
+      "fields": {
+        "show_text_block": true,
+        "text_block_eyebrow": "Fixture eyebrow",
+        "text_block_heading": "Fixture heading that runs to exactly one hundred characters so wrapping and collision can be checked",
+        "text_block_body": {"repeat": "Fixture body copy that fills the field. ", "max_length": 2000},
+        "text_block_align": "left",
+        "text_block_width": "wide",
+        "text_block_bg_color": "#1E293B",
+        "text_block_text_color": "#F8FAFC"
+      },
+      "exercises": [
+        "partials/section_text_block.html"
+      ]
+    },
+    {
+      "id": "FX-S12",
+      "group": "section-settings",
+      "name": "text-block-eyebrow-only",
+      "description": "Text Block toggled on with only an eyebrow; the setup placeholder renders in the Theme Editor and nothing renders live.",
+      "fields": {
+        "show_text_block": true,
+        "text_block_eyebrow": "Fixture eyebrow",
+        "text_block_heading": "",
+        "text_block_body": ""
+      },
+      "exercises": [
+        "partials/section_text_block.html"
+      ]
     }
   ]
 }

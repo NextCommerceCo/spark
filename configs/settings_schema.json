@@ -49,6 +49,13 @@
                 "type": "checkbox",
                 "default": false,
                 "help_text": "Display a two-column image and text section for a brand story, ingredient callout, or explainer."
+            },
+            {
+                "name": "show_text_block",
+                "label": "Show Text Block",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Display a standalone block of text, such as a brand statement or an intro paragraph, below the hero."
             }
         ],
         "Hero": [
@@ -844,6 +851,79 @@
                 "label": "Text Color",
                 "type": "color",
                 "help_text": "Heading, body, and outline button color. Leave blank for the theme defaults."
+            }
+        ],
+        "Text Block": [
+            {
+                "name": "text_block_eyebrow",
+                "label": "Eyebrow",
+                "type": "text",
+                "help_text": "Short uppercase label above the heading.",
+                "max_length": 50
+            },
+            {
+                "name": "text_block_heading",
+                "label": "Heading",
+                "type": "text",
+                "help_text": "Section heading.",
+                "max_length": 100
+            },
+            {
+                "name": "text_block_body",
+                "label": "Body",
+                "type": "richtext",
+                "help_text": "The text of the block. The section shows once it has a heading or body.",
+                "max_length": 2000
+            },
+            {
+                "name": "text_block_align",
+                "label": "Alignment",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Center",
+                        "value": "center"
+                    },
+                    {
+                        "name": "Left",
+                        "value": "left"
+                    }
+                ],
+                "default": "center",
+                "help_text": "Center the text, or align it to the left edge of the page content."
+            },
+            {
+                "name": "text_block_width",
+                "label": "Width",
+                "type": "select",
+                "options": [
+                    {
+                        "name": "Narrow",
+                        "value": "narrow"
+                    },
+                    {
+                        "name": "Medium",
+                        "value": "medium"
+                    },
+                    {
+                        "name": "Wide",
+                        "value": "wide"
+                    }
+                ],
+                "default": "medium",
+                "help_text": "Maximum line length of the text. Narrow reads best for short statements."
+            },
+            {
+                "name": "text_block_bg_color",
+                "label": "Background Color",
+                "type": "color",
+                "help_text": "Section background color. Leave blank for the page background."
+            },
+            {
+                "name": "text_block_text_color",
+                "label": "Text Color",
+                "type": "color",
+                "help_text": "Eyebrow, heading, and body color. Leave blank for the theme defaults."
             }
         ],
         "Custom CSS": [

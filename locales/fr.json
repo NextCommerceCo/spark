@@ -300,7 +300,8 @@
             "featured_categories": "Catégories en vedette - Paramètres > Accueil > Catégories en vedette",
             "on_sale": "En promotion - Paramètres > Accueil > En promotion > Produits",
             "featured_product": "Produit en vedette - Paramètres > Accueil > Produit en vedette",
-            "image_text": "Image avec texte - Paramètres > Accueil > Image avec texte"
+            "image_text": "Image avec texte - Paramètres > Accueil > Image avec texte",
+            "text_block": "Bloc de texte - Paramètres > Accueil > Bloc de texte"
         }
     }
 }

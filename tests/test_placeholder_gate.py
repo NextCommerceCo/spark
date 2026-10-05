@@ -53,6 +53,7 @@ class PlaceholderGate(unittest.TestCase):
                 "section_featured_categories.html",
                 "section_image_text.html",
                 "section_on_sale.html",
+                "section_text_block.html",
             }
             <= set(self.placeholder_partials())
         )

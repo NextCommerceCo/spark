@@ -300,7 +300,8 @@
             "featured_categories": "Featured Categories - Settings > Homepage > Featured Categories",
             "on_sale": "On Sale - Settings > Homepage > On Sale > Products",
             "featured_product": "Featured Product - Settings > Homepage > Featured Product",
-            "image_text": "Image with Text - Settings > Homepage > Image with Text"
+            "image_text": "Image with Text - Settings > Homepage > Image with Text",
+            "text_block": "Text Block - Settings > Homepage > Text Block"
         }
     }
 }

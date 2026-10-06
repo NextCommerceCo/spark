@@ -46,11 +46,14 @@
             {% else %}
                 <div class="py-16 text-center">
                     <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+                    <a href="{{ homepage_url }}" class="btn btn-secondary">{% t 'navigation.main.home' %}</a>
                 </div>
             {% endif %}
         </div>
     </div>
 
+    {# The partial guards only on filters, which Shop All receives even when #}
+    {# the setting is off, so the setting check here is required.            #}
     {% if settings.shop_all_filters %}
         {# Supplemental sticky filter bar - mobile and tablet only. #}
         {% include 'partials/catalogue_bar.html' %}

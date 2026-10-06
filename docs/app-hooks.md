@@ -32,6 +32,8 @@ Every Spark page extends `layouts/base.html`, so these three render on every pag
 | --- | --- | --- | --- |
 | `collection_review_feed` | Inside the page's outer `.container`, after the filter rail + product grid wrapper closes and before the sticky mobile filter bar include (`partials/catalogue_bar.html`). | Full-width position below the product grid and its pagination (or the empty-state block when the category has no products). | Once per page |
 
+The Shop All page (`templates/catalogue/index.html`) emits no app hooks, including when Shop All filters are on. `collection_review_feed` is category-only; adding a Shop All hook would be a new, additive hook under the policy below.
+
 ### Product detail (`templates/catalogue/product.html`)
 
 The first five are inside `{% block content %}`; the last two are at the end of `{% block extrascripts %}`, which `base.html` renders after the theme's own component scripts and before `delight_scripts`.

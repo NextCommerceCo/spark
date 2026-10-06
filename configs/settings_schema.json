@@ -1054,6 +1054,15 @@
                 "help_text": "How product cards render when a product cannot be bought. Hiding cards makes curated grids show fewer products than configured."
             }
         ],
+        "Shop All": [
+            {
+                "name": "shop_all_filters",
+                "label": "Show Filters on Shop All",
+                "type": "checkbox",
+                "default": false,
+                "help_text": "Show the product filters on the Shop All page as well as on category pages. Create filters under Storefront > Filters; nothing shows until at least one exists."
+            }
+        ],
         "Membership Pricing": [
             {
                 "name": "enable_membership_pricing",

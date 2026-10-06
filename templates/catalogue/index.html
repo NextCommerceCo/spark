@@ -18,18 +18,57 @@
 
 {% block content %}
 <div class="container py-8 md:py-12">
-    {% if products %}
-        <div class="product-grid">
-            {% for product in products %}
-                {% include 'partials/product_card.html' with product=product %}
-            {% endfor %}
-        </div>
 
-        {% include 'partials/pagination.html' %}
-    {% else %}
-        <div class="py-16 text-center">
-            <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+    {# Filters on Shop All are opt-in: Product Pages > Shop All > Show Filters. #}
+    {# The platform sends the same filters here as on category pages.          #}
+    {% if settings.shop_all_filters and filters %}
+        <div class="catalogue-filter-inline">
+            {% include 'partials/catalogue_filter_button.html' with button_class='catalogue-inline-filter-btn' %}
         </div>
     {% endif %}
+
+    <div{% if settings.shop_all_filters and filters %} class="catalogue-layout"{% endif %}>
+        {% if settings.shop_all_filters and filters %}
+            <aside class="catalogue-rail" aria-label="{% t 'store.catalogue.filters' %}">
+                {% include 'partials/catalogue_filters.html' %}
+            </aside>
+        {% endif %}
+
+        <div>
+            {% if products %}
+                <div class="product-grid" id="product-grid">
+                    {% for product in products %}
+                        {% include 'partials/product_card.html' with product=product %}
+                    {% endfor %}
+                </div>
+
+                {% include 'partials/pagination.html' %}
+            {% else %}
+                <div class="py-16 text-center">
+                    <p class="text-slate-500 mb-4">{% t 'store.catalogue.none_found' %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if settings.shop_all_filters %}
+        {# Supplemental sticky filter bar - mobile and tablet only. #}
+        {% include 'partials/catalogue_bar.html' %}
+    {% endif %}
+
 </div>
 {% endblock %}
+
+{% block modals %}
+    {{ block.super }}
+    {% if settings.shop_all_filters and filters %}
+        {% include 'partials/catalogue_filter_drawer.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block component_scripts %}
+    {{ block.super }}
+    {% if settings.shop_all_filters and filters %}
+        <script type="text/javascript" src="{{ 'js/spark-catalogue.js'|asset_url }}"></script>
+    {% endif %}
+{% endblock component_scripts %}

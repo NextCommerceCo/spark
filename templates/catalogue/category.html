@@ -40,7 +40,9 @@
 
     {# Filter rail beside the grid from 1024px up. Below that the rail is #}
     {# hidden and the same form is reached through the mobile drawer.     #}
-    <div class="catalogue-layout">
+    {# The two-column layout applies only when the rail renders; without  #}
+    {# it the grid would sit in the 15rem rail column.                    #}
+    <div{% if filters %} class="catalogue-layout"{% endif %}>
         {% if filters %}
             <aside class="catalogue-rail" aria-label="{% t 'store.catalogue.filters' %}">
                 {% include 'partials/catalogue_filters.html' %}

@@ -15,10 +15,23 @@ result set; the theme owns only their presentation.
 | `assets/js/spark-catalogue.js` | Page-scoped drawer, focus, filter-count, and sticky-bar behavior. |
 | `partials/pagination.html` | Pagination links that preserve active filters with the platform `add_query_param` tag. |
 
-`filters` and `has_active_filter` come from the platform's category view. Every
-filter surface is guarded by `{% if filters %}`, so a category without facets
-does not render empty controls. The shop index does not receive filter context
-and therefore has no filter UI.
+`filters` and `has_active_filter` come from the platform's catalogue search
+handler, which serves both category pages and the Shop All page
+(`templates/catalogue/index.html`). Filters exist only once the merchant creates
+them under Storefront > Filters in the dashboard; there is no theme setting that
+creates them. Every filter surface is guarded by `{% if filters %}`, so a store
+without filters renders no empty controls, and the two-column rail layout
+(`catalogue-layout`) is applied only when the rail renders.
+
+Category pages always show filters when they exist. Shop All shows them only
+when Product Pages > Shop All > Show Filters on Shop All (`shop_all_filters`) is
+on; it is off by default so upgrading stores keep their current Shop All page.
+The platform applies `filter.*` query parameters on Shop All either way; the
+setting controls only whether shoppers see the controls.
+
+Option counts are calculated by the platform from every public product in the
+store, not from the products on the current page. They are correct on Shop All
+but overstate counts on category pages. The theme prints the counts it is given.
 
 ## Responsive behavior
 

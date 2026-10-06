@@ -8,6 +8,9 @@ The GitHub release body is a summary, not a copy of the changelog section. Write
 
 ## Unreleased
 
+- Added Product Pages > Shop All > Show Filters on Shop All (`shop_all_filters`, off by default). When on, the Shop All page shows the same filter rail, mobile drawer, and sticky filter bar as category pages, using the filters created under Storefront > Filters. The platform already applied filter parameters on Shop All; only the controls were missing.
+- Fixed category pages without any Storefront filters squeezing the product grid into the 15rem filter-rail column from 1024px up (240px wide at a 1280px viewport). The two-column layout now applies only when the filter rail renders. Introduced in 1.2.0.
+
 ## 1.6.0 - 2026-10-05
 
 - Added the Text Block homepage section (`partials/section_text_block.html`, Theme Settings > Homepage > Text Block, toggle `show_text_block`, off by default): a standalone eyebrow, heading, and rich-text body for a brand statement or intro paragraph, with center or left alignment, narrow/medium/wide line length, and background and text colours. It is included from `templates/index.html` directly after the hero. It goes live once it has a heading or body; until then its setup placeholder shows only in the Theme Editor and theme previews. Spec: `docs/section-specs/text-block.md`; QA fixtures FX-S11 and FX-S12. `assets/main.css` grew from 50821 to 50885 bytes for the new width utilities (#30).

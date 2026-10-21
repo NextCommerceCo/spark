@@ -64,3 +64,15 @@ Spark has more partial files because it now includes homepage section partials, 
 - Whether header logo alignment should eventually move from CSS positioning to a more robust layout component once the navigation has more complex menus.
 - Whether homepage placeholders should hide automatically outside editor/preview mode once the platform exposes that context.
 - Whether to pursue a future NEXT theme sections platform contract so these homepage section partials can become reorderable, duplicable section instances beyond the homepage.
+
+## Editor content and legacy Support
+
+Pages and Support Articles use `.content-body` for editor-authored HTML: headings,
+paragraphs, lists, separators, tables, and code blocks keep their spacing after
+Tailwind's reset. Apply it only to rich content, not navigation or forms.
+
+Support category lists consume the platform-provided `articles` context and use
+the shared pagination partial. The platform filters category lists by category
+slug and `is_public=True`; an article existing in the Dashboard alone does not
+make it eligible. For an empty category, verify publication and category membership
+before changing the template. Search uses the platform form's `text` field.

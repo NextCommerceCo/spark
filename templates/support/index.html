@@ -22,7 +22,7 @@
 
     {# Search #}
     <form method="get" class="flex gap-2 mb-8 max-w-xl">
-        <input type="text" name="text"
+        <input type="text" name="text" value="{{ form.text.value|default_if_none:'' }}" aria-label="{% t 'global.button.search' %}"
                placeholder="{% t 'global.button.search' %}"
                class="flex-1 text-sm border border-slate-200 px-4 py-2" />
         <button class="btn btn-primary text-sm" type="submit">
@@ -118,5 +118,6 @@
             <p class="text-slate-500">{% t "store.support.no_categories" %}</p>
         {% endif %}
     {% endif %}
+    {% include "partials/pagination.html" %}
 </div>
 {% endblock content %}

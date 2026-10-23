@@ -20,9 +20,9 @@
 <div class="container py-8 md:py-12">
     <h1 class="text-2xl font-semibold text-slate-800 mb-6">{% t "store.support.heading" %}</h1>
 
-    {# Search #}
+    {# SupportSearchForm supplies the bound text field in both Support views. #}
     <form method="get" class="flex gap-2 mb-8 max-w-xl">
-        <input type="text" name="text"
+        <input type="text" name="text" value="{{ form.text.value|default_if_none:'' }}" aria-label="{% t 'global.button.search' %}"
                placeholder="{% t 'global.button.search' %}"
                class="flex-1 text-sm border border-slate-200 px-4 py-2" />
         <button class="btn btn-primary text-sm" type="submit">
@@ -117,6 +117,8 @@
         {% if not categories and not top_categories %}
             <p class="text-slate-500">{% t "store.support.no_categories" %}</p>
         {% endif %}
+        {# page_obj paginates categories; global article search is unpaginated. #}
+        {% include "partials/pagination.html" %}
     {% endif %}
 </div>
 {% endblock content %}

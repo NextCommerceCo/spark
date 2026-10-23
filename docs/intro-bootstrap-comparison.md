@@ -64,3 +64,27 @@ Spark has more partial files because it now includes homepage section partials, 
 - Whether header logo alignment should eventually move from CSS positioning to a more robust layout component once the navigation has more complex menus.
 - Whether homepage placeholders should hide automatically outside editor/preview mode once the platform exposes that context.
 - Whether to pursue a future NEXT theme sections platform contract so these homepage section partials can become reorderable, duplicable section instances beyond the homepage.
+
+## Editor content and legacy Support
+
+Pages and Support Articles use `.content-body` for editor-authored HTML: headings,
+paragraphs, lists, separators, tables, and code blocks keep their spacing after
+Tailwind's reset. Apply it only to rich content, not navigation or forms.
+
+Support category lists consume the platform-provided `articles` context and use
+the shared pagination partial. The platform filters category lists by category
+slug and `is_public=True`; an article existing in the Dashboard alone does not
+make it eligible. For an empty category, verify publication and category membership
+before changing the template. Search uses the platform form's `text` field.
+
+The Support views both supply a bound `SupportSearchForm` with a `text` field.
+The index `page_obj` paginates non-featured categories only; featured categories
+are separate and global article search is unpaginated. The category detail
+`page_obj` paginates articles, including category-scoped search results.
+
+Rich-content headings follow the merchant heading scale; editor h1/h2 use the
+section-heading token below the template's page title. Tables retain their native
+table layout. The theme script wraps each editor table in a keyboard-focusable
+horizontal scroller; the surrounding content remains in normal document flow so
+sticky elements and heading anchors retain the document scrollport. Without
+JavaScript, tables remain readable native tables but may overflow on narrow screens.

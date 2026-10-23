@@ -136,6 +136,8 @@
     .content-body th, .content-body td { padding: 0.75em; border: 1px solid var(--border-color, #E2E8F0); text-align: left; }
     .content-body > :first-child { margin-top: 0; }
     .content-body > :last-child { margin-bottom: 0; }
+    .content-body > .content-table-scroll:first-child > table { margin-top: 0; }
+    .content-body > .content-table-scroll:last-child > table { margin-bottom: 0; }
 
     /* Button base */
     .btn {

@@ -84,4 +84,7 @@ are separate and global article search is unpaginated. The category detail
 
 Rich-content headings follow the merchant heading scale; editor h1/h2 use the
 section-heading token below the template's page title. Tables retain their native
-table layout, with horizontal overflow contained by the rich-content region.
+table layout. The theme script wraps each editor table in a keyboard-focusable
+horizontal scroller; the surrounding content remains in normal document flow so
+sticky elements and heading anchors retain the document scrollport. Without
+JavaScript, tables remain readable native tables but may overflow on narrow screens.

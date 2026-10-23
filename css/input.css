@@ -98,7 +98,8 @@
 @layer components {
     /* Editor-authored Pages and Support Articles have no utility classes.
        Restore their document rhythm after Tailwind's element reset. */
-    .content-body { overflow-wrap: break-word; overflow-x: auto; }
+    .content-body { overflow-wrap: break-word; }
+    .content-table-scroll { max-width: 100%; overflow-x: auto; }
     .content-body p, .content-body ul, .content-body ol,
     .content-body blockquote, .content-body pre, .content-body table {
         margin-top: 1em;

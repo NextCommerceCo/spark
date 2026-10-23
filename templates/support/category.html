@@ -20,7 +20,7 @@
 
 {% block content %}
 <div class="container py-8 md:py-12">
-    {# Search #}
+    {# SupportSearchForm supplies the bound text field in both Support views. #}
     <form method="get" class="flex gap-2 mb-8 max-w-xl">
         <input type="text" name="text" value="{{ form.text.value|default_if_none:'' }}" aria-label="{% t 'global.button.search' %}"
                placeholder="{% t 'global.button.search' %}"

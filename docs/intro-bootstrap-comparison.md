@@ -76,3 +76,12 @@ the shared pagination partial. The platform filters category lists by category
 slug and `is_public=True`; an article existing in the Dashboard alone does not
 make it eligible. For an empty category, verify publication and category membership
 before changing the template. Search uses the platform form's `text` field.
+
+The Support views both supply a bound `SupportSearchForm` with a `text` field.
+The index `page_obj` paginates non-featured categories only; featured categories
+are separate and global article search is unpaginated. The category detail
+`page_obj` paginates articles, including category-scoped search results.
+
+Rich-content headings follow the merchant heading scale; editor h1/h2 use the
+section-heading token below the template's page title. Tables retain their native
+table layout, with horizontal overflow contained by the rich-content region.

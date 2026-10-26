@@ -419,7 +419,20 @@
 
     /* Init */
 
+    /* Keep wide editor tables scrollable without changing the article scrollport. */
+    function initContentTables() {
+        document.querySelectorAll('.content-body table').forEach(function(table) {
+            if (table.parentElement.classList.contains('content-table-scroll')) return;
+            var wrapper = document.createElement('div');
+            wrapper.className = 'content-table-scroll';
+            wrapper.tabIndex = 0;
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        initContentTables();
         initMobileNav();
         initSearchOverlay();
         initSideCart();

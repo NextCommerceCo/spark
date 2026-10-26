@@ -10,6 +10,8 @@ The GitHub release body is a summary, not a copy of the changelog section. Write
 
 - Added Product Pages > Shop All > Show Filters on Shop All (`shop_all_filters`, off by default). When on, the Shop All page shows the same filter rail, mobile drawer, and sticky filter bar as category pages, using the filters created under Storefront > Filters. The platform already applied filter parameters on Shop All; only the controls were missing.
 - Fixed category pages without any Storefront filters squeezing the product grid into the 15rem filter-rail column from 1024px up (240px wide at a 1280px viewport). The two-column layout now applies only when the filter rail renders. Introduced in 1.2.0.
+- Fixed Pages, Support Articles, and Blog posts showing editor-written content without paragraph, heading, list, separator, and table spacing. Tailwind's reset had removed it, and the `content-body` class the Article and Blog templates already carried had no styles. Editor headings now follow the Heading Scale setting and sit below the page title, which now uses the same heading scale on Pages, Articles, and Blog posts. Wide editor tables scroll sideways inside their own box instead of widening the page; without JavaScript they stay plain tables and may overflow on narrow screens (#85).
+- Added pagination to the Support index (categories) and Support category pages (articles), using the shared pagination partial. The Support search box now keeps the submitted search term and has an accessible label. A Support category only lists articles the platform marks public and assigned to that category, so an empty category means checking the article's publication and category in the Dashboard (#85).
 
 ## 1.6.0 - 2026-10-05
 

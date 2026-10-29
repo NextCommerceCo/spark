@@ -53,6 +53,8 @@
             "@type": "Product",
             "productID": "{{ child.id }}",
             "name": "{{ child.get_title|escapejs }}",
+            "description": "{% if product.description %}{{ product.description|striptags|escapejs }}{% else %}{{ product.get_meta_description|striptags|escapejs }}{% endif %}",
+            {% with child_images=child.get_all_images %}{% if child_images %}{% image_thumbnail child_images.0.original "1200x1200" upscale=False as child_thumb %}"image": "{{ child_thumb.url|escapejs }}",{% else %}"image": "{{ thumb.url|escapejs }}",{% endif %}{% endwith %}
             {% if child.sku %}"sku": "{{ child.sku|escapejs }}",{% endif %}
             {% if child.metadata.gtin %}"gtin": "{{ child.metadata.gtin|escapejs }}",{% elif child.upc and child.upc.isdigit and child.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ child.upc }}",{% endif %}
             {% if child.metadata.mpn %}"mpn": "{{ child.metadata.mpn|escapejs }}",{% endif %}

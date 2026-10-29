@@ -165,7 +165,7 @@ Do not split the PDP just to satisfy one custom design. Split when the same beha
 | JSON-LD field | Source |
 |---|---|
 | `@type` | `ProductGroup` for a parent product, `Product` otherwise |
-| `hasVariant[]` | One `Product` per child, each with its own `Offer` from `purchase_info_for_product` |
+| `hasVariant[]` | One `Product` per child, each with its own `Offer` from `purchase_info_for_product`, the child's first image (or the parent's when the child has none) and the product description. Google's merchant listings report rejects a variant without `image`. |
 | `brand.name` | Product metadata `brand`, else the store name |
 | `gtin` | Variant or product metadata `gtin`, else the UPC when it is 8, 12, 13 or 14 digits |
 | `mpn` | Product or variant metadata `mpn`; omitted otherwise |

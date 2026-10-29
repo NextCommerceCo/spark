@@ -1,0 +1,81 @@
+{# Spark Theme — PDP head metadata. Rendered from the seo block in templates/catalogue/product.html. #}
+{# Replaces the platform {% seo %} output on product pages: meta and Open Graph tags plus schema.org JSON-LD. #}
+{# Every string inside the JSON-LD goes through escapejs, so quotes, backslashes and </script> in merchant text stay valid JSON. #}
+{# Identifiers come from product metadata when the store defines them: brand, gtin, mpn. Without brand, the store name is used. #}
+{# gtin falls back to the UPC only when the UPC is 8, 12, 13 or 14 digits. The UPC is never emitted as mpn. #}
+{% image_thumbnail product.get_meta_image "1200x630" upscale=True crop="center" as thumb %}
+{% purchase_info_for_product request product as session %}
+
+<meta name="title" content="{{ product.get_meta_title }}" />
+<meta name="description" content="{{ product.get_meta_description|striptags|slice:160 }}" />
+{% if not product.is_public %}
+    <meta name="robots" content="noindex, nofollow" />
+{% endif %}
+<meta property="og:title" content="{{ product.get_meta_title }}" />
+<meta property="og:type" content="og:product" />
+<meta property="og:description" content="{{ product.get_meta_description|striptags|slice:160 }}" />
+<meta property="og:url" content="{{ product.get_primary_url }}" />
+<meta property="og:image" content="{{ thumb.url }}" />
+<meta property="product:brand" content="{% if product.metadata.brand %}{{ product.metadata.brand }}{% else %}{{ shop_name }}{% endif %}" />
+<meta property="product:availability" content="{% if session.availability.is_available_to_buy %}in stock{% else %}out of stock{% endif %}" />
+{% if session.price.exists %}
+    <meta property="product:price:amount" content="{{ session.price.price|stringformat:'s' }}" />
+    <meta property="product:price:currency" content="{{ session.price.currency }}" />
+{% endif %}
+<meta property="product:retailer_item_id" content="{{ product.id }}" />
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "{% if product.is_parent %}ProductGroup{% else %}Product{% endif %}",
+    {% if product.is_parent %}"productGroupID": "{{ product.id }}",{% else %}"productID": "{{ product.id }}",{% endif %}
+    "name": "{{ product.get_title|escapejs }}",
+    "description": "{% if product.description %}{{ product.description|striptags|escapejs }}{% else %}{{ product.get_meta_description|striptags|escapejs }}{% endif %}",
+    "url": "{{ product.get_primary_url|escapejs }}",
+    "image": [{% with images=product.get_all_images %}{% if images %}{% for image in images %}{% image_thumbnail image.original "1200x1200" upscale=False as image_thumb %}"{{ image_thumb.url|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}"{{ thumb.url|escapejs }}"{% endif %}{% endwith %}],
+    "brand": {
+        "@type": "Brand",
+        "name": "{% if product.metadata.brand %}{{ product.metadata.brand|escapejs }}{% else %}{{ shop_name|escapejs }}{% endif %}"
+    },
+    {% if product.metadata.mpn %}"mpn": "{{ product.metadata.mpn|escapejs }}",{% endif %}
+    {% if settings.product_reviews and product.rating and product.num_approved_reviews %}
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ product.rating|stringformat:'s' }}",
+        "reviewCount": "{{ product.num_approved_reviews }}"
+    },
+    {% endif %}
+    {% if product.is_parent %}
+    "hasVariant": [
+        {% for child in product.children.all %}
+        {% purchase_info_for_product request child as child_session %}
+        {
+            "@type": "Product",
+            "productID": "{{ child.id }}",
+            "name": "{{ child.get_title|escapejs }}",
+            {% if child.sku %}"sku": "{{ child.sku|escapejs }}",{% endif %}
+            {% if child.metadata.gtin %}"gtin": "{{ child.metadata.gtin|escapejs }}",{% elif child.upc and child.upc.isdigit and child.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ child.upc }}",{% endif %}
+            {% if child.metadata.mpn %}"mpn": "{{ child.metadata.mpn|escapejs }}",{% endif %}
+            "offers": {
+                "@type": "Offer",
+                {% if child_session.price.exists %}"price": "{{ child_session.price.price|stringformat:'s' }}",
+                "priceCurrency": "{{ child_session.price.currency }}",{% endif %}
+                "availability": "{% if child_session.availability.is_available_to_buy %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+                "url": "{{ product.get_primary_url|escapejs }}"
+            }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+    {% else %}
+    {% if product.sku %}"sku": "{{ product.sku|escapejs }}",{% endif %}
+    {% if product.metadata.gtin %}"gtin": "{{ product.metadata.gtin|escapejs }}",{% elif product.upc and product.upc.isdigit and product.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ product.upc }}",{% endif %}
+    "offers": {
+        "@type": "Offer",
+        {% if session.price.exists %}"price": "{{ session.price.price|stringformat:'s' }}",
+        "priceCurrency": "{{ session.price.currency }}",{% endif %}
+        "availability": "{% if session.availability.is_available_to_buy %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "url": "{{ product.get_primary_url|escapejs }}"
+    }
+    {% endif %}
+}
+</script>

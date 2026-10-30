@@ -157,3 +157,21 @@ Spark's current PDP is one template plus helper scripts. When repeated custom PD
 | `partials/product_related.html` | Recommended and related products. |
 
 Do not split the PDP just to satisfy one custom design. Split when the same behavior-preserving modules will be reused across multiple stores or when an app integration needs a stable override surface.
+
+## Structured data
+
+`templates/catalogue/product.html` overrides the `seo` block with `partials/product_structured_data.html`, which renders the product page's meta tags, Open Graph tags and schema.org JSON-LD. The platform `{% seo %}` tag is not called on product pages, so a fork that restores it gets the platform markup back and loses the variant and identifier fields below.
+
+| JSON-LD field | Source |
+|---|---|
+| `@type` | `ProductGroup` for a parent product, `Product` otherwise |
+| `hasVariant[]` | One `Product` per child, each with its own `Offer` from `purchase_info_for_product`, the child's first image (or the parent's when the child has none) and the product description. Google's merchant listings report rejects a variant without `image`. |
+| `brand.name` | Product metadata `brand`, else the store name |
+| `gtin` | Variant or product metadata `gtin`, else the UPC when it is 8, 12, 13 or 14 digits |
+| `mpn` | Product or variant metadata `mpn`; omitted otherwise |
+| `offers.price` | `session.price.price`, the price the page shows |
+| `aggregateRating` | Only when `settings.product_reviews` is on and the product has approved reviews |
+
+To use the metadata keys, create product metadata definitions with the keys `brand`, `gtin` and `mpn` in the Dashboard and fill them per product or variant.
+
+Every string written into the JSON-LD goes through `escapejs`. Keep that when editing the partial: a value written with `|safe` or without escaping breaks the JSON on the first title with a double quote, and a crawler then drops the whole block. Check a changed partial against a real product with a structured-data validator such as Google's Rich Results Test.

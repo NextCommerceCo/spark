@@ -12,12 +12,12 @@
     <meta name="robots" content="noindex, nofollow" />
 {% endif %}
 <meta property="og:title" content="{{ product.get_meta_title }}" />
-<meta property="og:type" content="og:product" />
+<meta property="og:type" content="product" />
 <meta property="og:description" content="{{ product.get_meta_description|striptags|slice:160 }}" />
 <meta property="og:url" content="{{ product.get_primary_url }}" />
 <meta property="og:image" content="{{ thumb.url }}" />
 <meta property="product:brand" content="{% if product.metadata.brand %}{{ product.metadata.brand }}{% else %}{{ shop_name }}{% endif %}" />
-<meta property="product:availability" content="{% if session.availability.is_available_to_buy %}in stock{% else %}out of stock{% endif %}" />
+<meta property="product:availability" content="{% if session.availability.is_available_to_buy %}instock{% else %}outofstock{% endif %}" />
 {% if session.price.exists %}
     <meta property="product:price:amount" content="{{ session.price.price|stringformat:'s' }}" />
     <meta property="product:price:currency" content="{{ session.price.currency }}" />
@@ -28,11 +28,10 @@
 {
     "@context": "https://schema.org",
     "@type": "{% if product.is_parent %}ProductGroup{% else %}Product{% endif %}",
-    {% if product.is_parent %}"productGroupID": "{{ product.id }}",{% else %}"productID": "{{ product.id }}",{% endif %}
     "name": "{{ product.get_title|escapejs }}",
     "description": "{% if product.description %}{{ product.description|striptags|escapejs }}{% else %}{{ product.get_meta_description|striptags|escapejs }}{% endif %}",
     "url": "{{ product.get_primary_url|escapejs }}",
-    "image": [{% with images=product.get_all_images %}{% if images %}{% for image in images %}{% image_thumbnail image.original "1200x1200" upscale=False as image_thumb %}"{{ image_thumb.url|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}"{{ thumb.url|escapejs }}"{% endif %}{% endwith %}],
+    {% with images=product.get_all_images %}{% if images %}"image": [{% for image in images|slice:':3' %}{% image_thumbnail image.original "1200x1200" upscale=False as image_thumb %}"{{ image_thumb.url|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}],{% elif thumb.url %}"image": "{{ thumb.url|escapejs }}",{% endif %}{% endwith %}
     "brand": {
         "@type": "Brand",
         "name": "{% if product.metadata.brand %}{{ product.metadata.brand|escapejs }}{% else %}{{ shop_name|escapejs }}{% endif %}"
@@ -51,33 +50,39 @@
         {% purchase_info_for_product request child as child_session %}
         {
             "@type": "Product",
-            "productID": "{{ child.id }}",
             "name": "{{ child.get_title|escapejs }}",
             "description": "{% if product.description %}{{ product.description|striptags|escapejs }}{% else %}{{ product.get_meta_description|striptags|escapejs }}{% endif %}",
-            {% with child_images=child.get_all_images %}{% if child_images %}{% image_thumbnail child_images.0.original "1200x1200" upscale=False as child_thumb %}"image": "{{ child_thumb.url|escapejs }}",{% else %}"image": "{{ thumb.url|escapejs }}",{% endif %}{% endwith %}
+            {% with child_images=child.get_all_images %}{% if child_images %}{% image_thumbnail child_images.0.original "1200x1200" upscale=False as child_thumb %}"image": "{{ child_thumb.url|escapejs }}",{% elif thumb.url %}"image": "{{ thumb.url|escapejs }}",{% endif %}{% endwith %}
             {% if child.sku %}"sku": "{{ child.sku|escapejs }}",{% endif %}
-            {% if child.metadata.gtin %}"gtin": "{{ child.metadata.gtin|escapejs }}",{% elif child.upc and child.upc.isdigit and child.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ child.upc }}",{% endif %}
+            {% if child.metadata.gtin %}"gtin": "{{ child.metadata.gtin|escapejs }}",{% elif child.upc and child.upc.isdigit and child.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ child.upc|escapejs }}",{% endif %}
             {% if child.metadata.mpn %}"mpn": "{{ child.metadata.mpn|escapejs }}",{% endif %}
+            {% if child_session.price.exists %}
             "offers": {
                 "@type": "Offer",
-                {% if child_session.price.exists %}"price": "{{ child_session.price.price|stringformat:'s' }}",
-                "priceCurrency": "{{ child_session.price.currency }}",{% endif %}
+                "price": "{{ child_session.price.price|stringformat:'s' }}",
+                "priceCurrency": "{{ child_session.price.currency }}",
                 "availability": "{% if child_session.availability.is_available_to_buy %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
                 "url": "{{ product.get_primary_url|escapejs }}"
-            }
+            },
+            {% endif %}
+            "productID": "{{ child.id }}"
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
-    ]
+    ],
+    "productGroupID": "{{ product.id }}"
     {% else %}
     {% if product.sku %}"sku": "{{ product.sku|escapejs }}",{% endif %}
-    {% if product.metadata.gtin %}"gtin": "{{ product.metadata.gtin|escapejs }}",{% elif product.upc and product.upc.isdigit and product.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ product.upc }}",{% endif %}
+    {% if product.metadata.gtin %}"gtin": "{{ product.metadata.gtin|escapejs }}",{% elif product.upc and product.upc.isdigit and product.upc|length|stringformat:'s' in '8,12,13,14'|split:',' %}"gtin": "{{ product.upc|escapejs }}",{% endif %}
+    {% if session.price.exists %}
     "offers": {
         "@type": "Offer",
-        {% if session.price.exists %}"price": "{{ session.price.price|stringformat:'s' }}",
-        "priceCurrency": "{{ session.price.currency }}",{% endif %}
+        "price": "{{ session.price.price|stringformat:'s' }}",
+        "priceCurrency": "{{ session.price.currency }}",
         "availability": "{% if session.availability.is_available_to_buy %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
         "url": "{{ product.get_primary_url|escapejs }}"
-    }
+    },
+    {% endif %}
+    "productID": "{{ product.id }}"
     {% endif %}
 }
 </script>

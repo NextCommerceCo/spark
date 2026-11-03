@@ -3,7 +3,7 @@
 {% block title %}{{ product.get_meta_title }} | {{ block.super }}{% endblock %}
 
 {% block seo %}
-    {% seo %}
+    {% include 'partials/product_structured_data.html' %}
 {% endblock %}
 
 {% block critical_preloads %}
